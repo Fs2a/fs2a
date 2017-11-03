@@ -1,0 +1,4 @@
+.*.swp
+bld/**
+!bld/.keep_as_build_directory
+tags

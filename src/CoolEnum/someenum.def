@@ -1,0 +1,9 @@
+#include <cstdint>
+#include <string>
+
+COOLENUM_BEGIN(someenum, uint8_t)
+COOLENUM(ALFA, 0x01)
+COOLENUM(BRAVO, 0x02)
+COOLENUM(CHARLIE, 0x03)
+COOLENUM(DELTA, 0x04)
+COOLENUM_END()
