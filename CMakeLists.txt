@@ -13,6 +13,8 @@ endif()
 # interpreted escape sequences
 set (CMAKE_COLOR_MAKEFILE=OFF)
 
+list (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+
 project (fs2a)
 
 # Custom C/C++ flags
@@ -26,13 +28,12 @@ set (CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS} -s")
 
 # Plain C flags
 set (CMAKE_C_FLAGS         "${CUSTOM_FLAGS}")
-set (CMAKE_C_FLAGS_DEBUG   "${CUSTOM_FLAGS} ${CUSTOM_DEBUG}")
-set (CMAKE_C_FLAGS_RELEASE "${CUSTOM_FLAGS} ${CUSTOM_RELEASE}")
+set (CMAKE_C_FLAGS_DEBUG   "${CUSTOM_DEBUG}")
+set (CMAKE_C_FLAGS_RELEASE "${CUSTOM_RELEASE}")
 
 # C++ flags, mostly the same as C
 set (CMAKE_CXX_FLAGS         "${CUSTOM_FLAGS} -std=gnu++11")
-set (CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS} ${CUSTOM_DEBUG}")
-set (CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} ${CUSTOM_RELEASE}")
+set (CMAKE_CXX_FLAGS_DEBUG   "${CUSTOM_DEBUG}")
+set (CMAKE_CXX_FLAGS_RELEASE "${CUSTOM_RELEASE}")
 
-add_subdirectory (src)
 add_subdirectory (chk)

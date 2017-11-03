@@ -4,8 +4,6 @@
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 
-using namespace std;
-
 /** Runs the check application.
  * @returns 0 on success, 1 if a check failed. */
 int main(void)
