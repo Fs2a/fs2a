@@ -18,7 +18,7 @@ namespace Fs2a {
 			static std::mutex mux_a;
 
 			/// Default constructor
-			inline Singleton<T>() {};
+			inline Singleton<T>() {}
 
 			/// Copy constructor
 			Singleton<T>(const Singleton<T> & obj_i) = delete;
@@ -27,7 +27,7 @@ namespace Fs2a {
 			Singleton<T> & operator=(const Singleton<T> & obj_i) = delete;
 
 			/// Destructor
-			~Singleton<T>();
+			inline ~Singleton<T>() {}
 
 		public:
 			/** Get the Singleton instance pointer.
