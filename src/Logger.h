@@ -27,10 +27,9 @@
 
 namespace Fs2a {
 
-	class Logger : public Fs2a::Singleton<Logger>
-	{
-		/// Singleton template as friend for construction
-		friend class Fs2a::Singleton<Logger>;
+	class Logger : public Fs2a::Singleton<Logger> {
+			/// Singleton template as friend for construction
+			friend class Fs2a::Singleton<Logger>;
 
 		private:
 			/// Default constructor
