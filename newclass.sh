@@ -6,12 +6,12 @@ then
 	exit 1
 fi
 
-EMAIL="simon@fs2a.eu"
+EMAIL="simon@fs2a.pro"
 COPY="Fs2a Ltd. (c) `date +%Y`"
 
 cat > $1.h << EOF
-/** @author Simon de Hartog <$EMAIL>
- * $COPY */
+/** @author   Simon de Hartog <$EMAIL>
+ * @copyright $COPY */
 
 #pragma once
 
@@ -26,8 +26,8 @@ class $1
 EOF
 
 cat > $1.cpp << EOF
-/** @author Simon de Hartog <$EMAIL>
- * $COPY */
+/** @author   Simon de Hartog <$EMAIL>
+ * @copyright $COPY */
 
 #include "$1.h"
 
