@@ -45,6 +45,10 @@ namespace Fs2a {
 			~Logger();
 
 		protected:
+			/** Maintain a local string for syslog program identification,
+			 * because openlog does not copy it. */
+			std::string ident_a;
+
 			/// Flag to keep track of whether syslog has been opened yet
 			bool opened_a;
 

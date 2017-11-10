@@ -2,6 +2,7 @@
  * @copyright Fs2a Ltd. (c) 2017 */
 
 #include <cstdarg>
+#include <iostream>
 #include <mutex>
 #include <sstream>
 #include <string>
@@ -35,19 +36,20 @@ namespace Fs2a {
 		const int priority_i,
 		const char *fmt_i,
 		...
-		)
+	)
 	{
 		va_list args;         // Variable arguments list
 		char buf[BUFSIZ];     // Buffer to store log string
-		size_t count=0;       // Number of percent signs in fmt_i
+		size_t count = 0;     // Number of percent signs in fmt_i
 		std::string fmt;      // Separate format string for counting
-		int offset=0;         // Offset to continue string printing
+		int offset = 0;       // Offset to continue string printing
 		std::ostringstream oss; // Output Stringstream to write Thread ID to
-		size_t pos=0;         // Position in string of character
+		size_t pos = 0;       // Position in string of character
 		struct timeval tv;    // Time value storage
 		struct tm timeParts;  // Different parts of current time
 
 		if (fmt_i == nullptr) return;
+
 		fmt.assign(fmt_i);
 
 		gettimeofday(&tv, nullptr);
@@ -55,68 +57,24 @@ namespace Fs2a {
 		oss << std::this_thread::get_id();
 
 		offset = sprintf(
-			buf,
-			"%02d:%02d:%02d.%06ld [%s] %s:%ld ",
-			timeParts.tm_hour,
-			timeParts.tm_min,
-			timeParts.tm_sec,
-			tv.tv_usec,
-			oss.str().c_str(),
-			file_i.substr(strip_a).c_str(),
-			line_i
-		);
-
-		switch (priority_i) {
-			case LOG_DEBUG:
-				strcpy(buf + offset, "DEBUG ");
-				offset += 6;
-				break;
-
-			case LOG_INFO:
-				strcpy(buf + offset, "INFO ");
-				offset += 5;
-				break;
-
-			case LOG_NOTICE:
-				strcpy(buf + offset, "NOTICE ");
-				offset += 7;
-				break;
-
-			case LOG_WARNING:
-				strcpy(buf + offset, "WARNING ");
-				offset += 8;
-				break;
-
-			case LOG_ERR:
-				strcpy(buf + offset, "ERROR ");
-				offset += 6;
-				break;
-
-			case LOG_CRIT:
-				strcpy(buf + offset, "CRITICAL ");
-				offset += 9;
-				break;
-
-			case LOG_ALERT:
-				strcpy(buf + offset, "ALERT ");
-				offset += 6;
-				break;
-
-			case LOG_EMERG:
-				strcpy(buf + offset, "EMERGENCY ");
-				offset += 10;
-				break;
-				
-			default:
-				break;
-		}
+					 buf,
+					 "%02d:%02d:%02d.%06ld [%s] %s:%ld ",
+					 timeParts.tm_hour,
+					 timeParts.tm_min,
+					 timeParts.tm_sec,
+					 tv.tv_usec,
+					 oss.str().c_str(),
+					 file_i.substr(strip_a).c_str(),
+					 line_i
+				 );
 
 		// Remove double percent signs
-		while ( (pos = fmt.find("%%")) != std::string::npos) fmt.erase(pos, 2);
+		while ((pos = fmt.find("%%")) != std::string::npos) fmt.erase(pos, 2);
 
 		// Now count remaining percent signs to know number of args
 		pos = 0;
-		while ( (pos = fmt.find('%', pos)) != std::string::npos) count++;
+
+		while ((pos = fmt.find('%', pos)) != std::string::npos) count++;
 
 		if (count > 0) {
 			va_start(args, count);
@@ -125,6 +83,7 @@ namespace Fs2a {
 		} else {
 			strcpy(buf + offset, fmt_i);
 		}
+
 		syslog(priority_i, "%s", buf);
 
 		return;
@@ -135,8 +94,11 @@ namespace Fs2a {
 		std::lock_guard<std::mutex> lck(mux_a);
 
 		if (opened_a) return false;
+
+		ident_a = ident_i;
 		strip_a = strip_i;
-		openlog(ident_i.c_str(), LOG_CONS | LOG_NDELAY | LOG_PID, facility_i);
+
+		openlog(ident_a.c_str(), LOG_CONS | LOG_NDELAY | LOG_PID, facility_i);
 		opened_a = true;
 		return true;
 	}
