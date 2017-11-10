@@ -2,7 +2,6 @@
  * @copyright Fs2a Ltd. (c) 2017 */
 
 #include <cstdarg>
-#include <iostream>
 #include <mutex>
 #include <sstream>
 #include <string>
@@ -22,7 +21,7 @@ namespace Fs2a {
 
 	Logger::~Logger()
 	{
-		std::lock_guard<std::mutex> lck(mux_a);
+		std::lock_guard<std::mutex> lck(mymux_a);
 
 		if (opened_a) {
 			closelog();
@@ -74,7 +73,10 @@ namespace Fs2a {
 		// Now count remaining percent signs to know number of args
 		pos = 0;
 
-		while ((pos = fmt.find('%', pos)) != std::string::npos) count++;
+		while ((pos = fmt.find('%', pos)) != std::string::npos) {
+			count++;
+			pos++;
+		}
 
 		if (count > 0) {
 			va_start(args, count);
@@ -91,7 +93,7 @@ namespace Fs2a {
 
 	bool Logger::open(const std::string ident_i, const int facility_i, const size_t strip_i)
 	{
-		std::lock_guard<std::mutex> lck(mux_a);
+		std::lock_guard<std::mutex> lck(mymux_a);
 
 		if (opened_a) return false;
 

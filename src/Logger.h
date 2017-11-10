@@ -49,6 +49,9 @@ namespace Fs2a {
 			 * because openlog does not copy it. */
 			std::string ident_a;
 
+			/// Internal mutex to be MT safe
+			std::mutex mymux_a;
+
 			/// Flag to keep track of whether syslog has been opened yet
 			bool opened_a;
 
