@@ -10,13 +10,14 @@ namespace Fs2a {
 
 	template <class T>
 	class Singleton {
-		protected:
+		private:
 			/// Internal pointer to instance
 			static T *instance_a;
 
 			/// Mutex to prevent race conditions upon construction
 			static std::mutex mux_a;
 
+		protected:
 			/// Default constructor
 			inline Singleton<T>() {}
 
@@ -35,7 +36,9 @@ namespace Fs2a {
 			static inline T *instance()
 			{
 				std::lock_guard<std::mutex> lck(mux_a);
+
 				if (instance_a == nullptr) instance_a = new T();
+
 				return instance_a;
 			}
 
@@ -43,6 +46,7 @@ namespace Fs2a {
 			static inline void close()
 			{
 				std::lock_guard<std::mutex> lck(mux_a);
+
 				if (instance_a != nullptr) {
 					delete instance_a;
 					instance_a = nullptr;
