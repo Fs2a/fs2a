@@ -11,7 +11,8 @@ COPY="Fs2a Ltd. (c) `date +%Y`"
 
 cat > $1.h << EOF
 /** @author   Simon de Hartog <$EMAIL>
- * @copyright $COPY */
+ * @copyright $COPY
+ * vim:set ts=2 sw=2 noexpandtab: */
 
 #pragma once
 
@@ -27,7 +28,8 @@ EOF
 
 cat > $1.cpp << EOF
 /** @author   Simon de Hartog <$EMAIL>
- * @copyright $COPY */
+ * @copyright $COPY
+ * vim:set ts=2 sw=2 noexpandtab: */
 
 #include "$1.h"
 

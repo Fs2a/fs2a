@@ -8,7 +8,8 @@ fi
 
 cat > $1.h << EOF
 /** @author   Simon de Hartog <simon@fs2a.pro>
- * @copyright Fs2a Ltd. (c) `date +%Y` */
+ * @copyright Fs2a Ltd. (c) `date +%Y`
+ * vim:set ts=2 sw=2 noexpandtab: */
 
 #pragma once
 
@@ -45,7 +46,8 @@ EOF
 
 cat > $1.cpp << EOF
 /** @author   Simon de Hartog <simon@fs2a.pro>
- * @copyright Fs2a Ltd. (c) `date +%Y` */
+ * @copyright Fs2a Ltd. (c) `date +%Y`
+ * vim:set ts=2 sw=2 noexpandtab: */
 
 #include "$1.h"
 
