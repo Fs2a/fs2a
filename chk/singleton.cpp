@@ -20,6 +20,9 @@ class CHECKNAME : public CppUnit::TestFixture {
 		class DummySingleton : public Fs2a::Singleton<DummySingleton> {
 				friend class Fs2a::Singleton<DummySingleton>;
 
+				DummySingleton()
+					: dummy(true) {}
+
 			protected:
 				bool dummy;
 

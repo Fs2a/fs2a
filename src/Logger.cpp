@@ -17,7 +17,7 @@
 namespace Fs2a {
 
 	Logger::Logger()
-		: opened_a(false), strip_a(0), syslog_a(false)
+		: strip_a(0), syslog_a(false)
 	{
 		levels_a[LOG_EMERG]  ="EMERGENCY";
 		levels_a[LOG_ALERT]  ="ALERT";
@@ -49,7 +49,6 @@ namespace Fs2a {
 	{
 		va_list args;         // Variable arguments list
 		char buf[BUFSIZ];     // Buffer to store log string
-		char lvl[16];         // Textual description of level
 		size_t count = 0;     // Number of percent signs in fmt_i
 		std::string fmt;      // Separate format string for counting
 		int offset = 0;       // Offset to continue string printing
@@ -105,7 +104,7 @@ namespace Fs2a {
 		}
 
 		if (syslog_a) {
-			syslog(priority_i, "%s", buf);
+			::syslog(priority_i, "%s", buf);
 		} else {
 			std::cerr << buf << std::endl;
 		}

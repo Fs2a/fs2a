@@ -1,5 +1,6 @@
 # @author    Simon de Hartog <simon@fs2a.pro>
-# @copyright Fs2a Ltd.
+# @copyright Fs2a Ltd. (c) 2018
+# vim:set ts=2 sw=2 noexpandtab:
 
 cmake_minimum_required (VERSION 2.8)
 if(POLICY CMP0015)
@@ -18,7 +19,7 @@ list (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 project (fs2a)
 
 # Custom C/C++ flags
-set (CUSTOM_FLAGS   "-Wall -Werror -Wextra -pedantic-errors")
+set (CUSTOM_FLAGS   "-Wall -Werror -Wextra -Wno-varargs")
 set (CUSTOM_DEBUG   "-O0 -g3 -ggdb")
 set (CUSTOM_RELEASE "-O3")
 
@@ -37,3 +38,4 @@ set (CMAKE_CXX_FLAGS_DEBUG   "${CUSTOM_DEBUG}")
 set (CMAKE_CXX_FLAGS_RELEASE "${CUSTOM_RELEASE}")
 
 add_subdirectory (chk)
+add_subdirectory (src)

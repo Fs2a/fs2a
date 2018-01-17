@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <map>
 #include <syslog.h>
 #include "Singleton.h"
 
@@ -25,11 +26,16 @@
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__)
 /** @} */
 
+class LoggerCheck;
+
 namespace Fs2a {
 
 	class Logger : public Fs2a::Singleton<Logger> {
 			/// Singleton template as friend for construction
 			friend class Fs2a::Singleton<Logger>;
+
+			/// Check class is also a friend
+			friend class ::LoggerCheck;
 
 		private:
 			/// Default constructor
