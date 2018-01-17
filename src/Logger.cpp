@@ -1,6 +1,8 @@
 /** @author   Simon de Hartog <simon@fs2a.pro>
- * @copyright Fs2a Ltd. (c) 2017 */
+ * @copyright Fs2a Ltd. (c) 2018
+ * vim:set ts=2 sw=2 noexpandtab: */
 
+#include <iostream>
 #include <cstdarg>
 #include <mutex>
 #include <sstream>
@@ -15,17 +17,25 @@
 namespace Fs2a {
 
 	Logger::Logger()
-		: opened_a(false), strip_a(0)
+		: opened_a(false), strip_a(0), syslog_a(false)
 	{
+		levels_a[LOG_EMERG]  ="EMERGENCY";
+		levels_a[LOG_ALERT]  ="ALERT";
+		levels_a[LOG_CRIT]   ="CRITICAL";
+		levels_a[LOG_ERR]    ="ERROR";
+		levels_a[LOG_WARNING]="WARNING";
+		levels_a[LOG_NOTICE] ="NOTICE";
+		levels_a[LOG_INFO]   ="INFO";
+		levels_a[LOG_DEBUG]  ="DEBUG";
 	}
 
 	Logger::~Logger()
 	{
 		std::lock_guard<std::mutex> lck(mymux_a);
 
-		if (opened_a) {
+		if (syslog_a) {
 			closelog();
-			opened_a = false;
+			syslog_a = false;
 		}
 	}
 
@@ -39,6 +49,7 @@ namespace Fs2a {
 	{
 		va_list args;         // Variable arguments list
 		char buf[BUFSIZ];     // Buffer to store log string
+		char lvl[16];         // Textual description of level
 		size_t count = 0;     // Number of percent signs in fmt_i
 		std::string fmt;      // Separate format string for counting
 		int offset = 0;       // Offset to continue string printing
@@ -67,6 +78,12 @@ namespace Fs2a {
 					 line_i
 				 );
 
+		if (!syslog_a) {
+			strcpy(buf+offset, levels_a[priority_i].c_str());
+			offset += levels_a[priority_i].length();
+			buf[offset++] = ' ';
+		}
+
 		// Remove double percent signs
 		while ((pos = fmt.find("%%")) != std::string::npos) fmt.erase(pos, 2);
 
@@ -87,22 +104,37 @@ namespace Fs2a {
 			strcpy(buf + offset, fmt_i);
 		}
 
-		syslog(priority_i, "%s", buf);
+		if (syslog_a) {
+			syslog(priority_i, "%s", buf);
+		} else {
+			std::cerr << buf << std::endl;
+		}
 
 		return;
 	}
 
-	bool Logger::open(const std::string ident_i, const int facility_i, const size_t strip_i)
+	void Logger::stderror(const size_t strip_i)
 	{
 		std::lock_guard<std::mutex> lck(mymux_a);
 
-		if (opened_a) return false;
+		if (syslog_a) {
+			closelog();
+			syslog_a = false;
+		}
+		strip_a = strip_i;
+	}
+
+	bool Logger::syslog(const std::string ident_i, const int facility_i, const size_t strip_i)
+	{
+		std::lock_guard<std::mutex> lck(mymux_a);
+
+		if (syslog_a) return false;
 
 		ident_a = ident_i;
 		strip_a = strip_i;
 
 		openlog(ident_a.c_str(), LOG_CONS | LOG_NDELAY | LOG_PID, facility_i);
-		opened_a = true;
+		syslog_a = true;
 		return true;
 	}
 
