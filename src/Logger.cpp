@@ -82,7 +82,8 @@ namespace Fs2a {
 			va_start(args, count);
 			vsprintf(buf + offset, fmt_i, args);
 			va_end(args);
-		} else {
+		}
+		else {
 			strcpy(buf + offset, fmt_i);
 		}
 

@@ -20,5 +20,5 @@ int main(void)
 	retval = runner.run();
 
 	// Convert the C-style true (1) to Shell-style true (0) and v.v.
-	return retval?0:1;
+	return retval ? 0 : 1;
 }

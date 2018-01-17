@@ -1,0 +1,29 @@
+# Please use long options in this file for clarity
+
+# Use this bracket style
+style=stroustrup
+
+# Indentation options
+indent=force-tab
+indent-classes
+indent-switches
+indent-namespaces
+indent-preprocessor
+indent-col1-comments
+min-conditional-indent=1
+
+# Padding options
+break-blocks
+pad-oper
+pad-header
+unpad-paren
+
+# Formatting options
+keep-one-line-statements
+align-pointer=name
+align-reference=middle
+mode=c
+
+# Other options
+suffix=none
+lineend=linux

@@ -10,11 +10,11 @@ namespace std {
 	bool operator<(const struct timespec & lhs, const struct timespec & rhs)
 	{
 		return (
-			lhs.tv_sec < rhs.tv_sec || (
-				lhs.tv_sec == rhs.tv_sec &&
-				lhs.tv_nsec < rhs.tv_nsec
-			)
-		);
+				   lhs.tv_sec < rhs.tv_sec || (
+					   lhs.tv_sec == rhs.tv_sec &&
+					   lhs.tv_nsec < rhs.tv_nsec
+				   )
+			   );
 
 	}
 
@@ -46,10 +46,12 @@ namespace std {
 	void operator-=(struct timespec & lhs, const struct timespec & rhs)
 	{
 		lhs.tv_sec -= rhs.tv_sec;
+
 		if (lhs.tv_nsec < rhs.tv_nsec) {
 			lhs.tv_nsec = lhs.tv_nsec + 1000000000 - rhs.tv_nsec;
 			lhs.tv_sec--;
-		} else lhs.tv_nsec -= rhs.tv_nsec;
+		}
+		else lhs.tv_nsec -= rhs.tv_nsec;
 	}
 
 	struct timespec operator+(const struct timespec & lhs, const struct timespec & rhs)
@@ -59,6 +61,7 @@ namespace std {
 		memcpy(&rv, &lhs, sizeof(struct timespec));
 		rv.tv_sec += rhs.tv_sec;
 		rv.tv_nsec += rhs.tv_nsec;
+
 		if (rv.tv_nsec >= 1000000000) {
 			rv.tv_nsec -= 1000000000;
 			rv.tv_sec++;

@@ -15,4 +15,4 @@
  * A colon and a line number
  * Severity in CAPS
  * Rest of message */
-// #define LD {BOOST_LOG_TRIVIAL(debug) << 
+// #define LD {BOOST_LOG_TRIVIAL(debug) <<
