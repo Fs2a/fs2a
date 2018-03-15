@@ -7,7 +7,13 @@ then
 fi
 
 EMAIL="simon@fs2a.pro"
-COPY="Fs2a Ltd. (c) `date +%Y`"
+if pwd | grep -q 'hyn'
+then
+	COPY="Hear-Your-News LLC"
+else
+	COPY="Fs2a Ltd."
+fi
+COPY="${COPY} (c) `date +%Y`"
 
 cat > $1.h << EOF
 /** @author   Simon de Hartog <$EMAIL>
