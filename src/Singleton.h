@@ -14,10 +14,11 @@ namespace Fs2a {
 			/// Internal pointer to instance
 			static T *instance_a;
 
-			/// Mutex to prevent race conditions upon construction
+		protected:
+			/** Mutex to prevent race conditions upon construction and for
+			 * other uses inside the subclass */
 			static std::mutex mux_a;
 
-		protected:
 			/// Default constructor
 			inline Singleton<T>() {}
 
