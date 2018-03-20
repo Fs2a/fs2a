@@ -42,7 +42,7 @@
 #define LW(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__)
 /// Log a Conditional Warning message and Return if condition does not hold
-#define LCIR(cond, ret, fmt, ...) \
+#define LCWR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__); \
 		return (ret); \
@@ -52,7 +52,7 @@
 #define LE(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__)
 /// Log a Conditional Error message and Return if condition does not hold
-#define LCIR(cond, ret, fmt, ...) \
+#define LCER(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__); \
 		return (ret); \
