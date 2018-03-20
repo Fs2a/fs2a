@@ -9,21 +9,54 @@
 
 /** @{ Logging macros for easy logging */
 
-/// Log a debug message
+#ifndef NDEBUG
+/// Log a Debug message
 #define LD(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_DEBUG, fmt, ##__VA_ARGS__)
+/// Log a Conditional Debug message and Return if condition does not hold
+#define LCDR(cond, ret, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_DEBUG, fmt, ##__VA_ARGS__); \
+		return (ret); \
+	}
+#else
+/// Debugging disabled
+#define LD(fmt, ...) {}
+#define LCDR(cond, ret, fmt, ...) \
+	if (!(cond)) { \
+		return (ret); \
+	}
+#endif
 
-/// Log an informational message
+/// Log an Informational message
 #define LI(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_INFO, fmt, ##__VA_ARGS__)
+/// Log a Conditional Informational message and Return if condition does not hold
+#define LCIR(cond, ret, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_INFO, fmt, ##__VA_ARGS__); \
+		return (ret); \
+	}
 
-/// Log a warning message
+/// Log a Warning message
 #define LW(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__)
+/// Log a Conditional Warning message and Return if condition does not hold
+#define LCIR(cond, ret, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__); \
+		return (ret); \
+	}
 
-/// Log an error message
+/// Log an Error message
 #define LE(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__)
+/// Log a Conditional Error message and Return if condition does not hold
+#define LCIR(cond, ret, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__); \
+		return (ret); \
+	}
 /** @} */
 
 class LoggerCheck;
