@@ -17,14 +17,14 @@
 #define LCDR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_DEBUG, fmt, ##__VA_ARGS__); \
-		return (ret); \
+		return ret; \
 	}
 #else
 /// Debugging disabled
 #define LD(fmt, ...) {}
 #define LCDR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
-		return (ret); \
+		return ret; \
 	}
 #endif
 
@@ -35,7 +35,7 @@
 #define LCIR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_INFO, fmt, ##__VA_ARGS__); \
-		return (ret); \
+		return ret; \
 	}
 
 /// Log a Warning message
@@ -45,7 +45,7 @@
 #define LCWR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__); \
-		return (ret); \
+		return ret; \
 	}
 
 /// Log an Error message
@@ -55,7 +55,7 @@
 #define LCER(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__); \
-		return (ret); \
+		return ret; \
 	}
 /** @} */
 
