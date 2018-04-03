@@ -13,6 +13,11 @@
 /// Log a Debug message
 #define LD(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_DEBUG, fmt, ##__VA_ARGS__)
+/// Log a Conditional Debug message
+#define LCD(cond, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_DEBUG, fmt, ##__VA_ARGS__); \
+	}
 /// Log a Conditional Debug message and Return if condition does not hold
 #define LCDR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
@@ -22,6 +27,8 @@
 #else
 /// Debugging disabled
 #define LD(fmt, ...) {}
+#define LCD(cond, fmt, ...) \
+	if (!(cond)) { }
 #define LCDR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		return ret; \
@@ -31,6 +38,11 @@
 /// Log an Informational message
 #define LI(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_INFO, fmt, ##__VA_ARGS__)
+/// Log a Conditional Informational message
+#define LCI(cond, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_INFO, fmt, ##__VA_ARGS__); \
+	}
 /// Log a Conditional Informational message and Return if condition does not hold
 #define LCIR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
@@ -41,6 +53,11 @@
 /// Log a Warning message
 #define LW(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__)
+/// Log a Conditional Warning message
+#define LCW(cond, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__); \
+	}
 /// Log a Conditional Warning message and Return if condition does not hold
 #define LCWR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
@@ -51,6 +68,11 @@
 /// Log an Error message
 #define LE(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__)
+/// Log a Conditional Error message
+#define LCE(cond, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__); \
+	}
 /// Log a Conditional Error message and Return if condition does not hold
 #define LCER(cond, ret, fmt, ...) \
 	if (!(cond)) { \
