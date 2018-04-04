@@ -60,10 +60,10 @@ namespace Fs2a {
 			~Observable() {}
 
 			// Retrieve the value
-			const T get() { return value_a.load(); }
+			const T get() const { return value_a.load(); }
 
 			/** Get the current list of observers. */
-			const std::set<Observer<T> *> & observers() { return observers_a; }
+			const std::set<Observer<T> *> & observers() const { return observers_a; }
 
 			/** Set the value and broadcast it if it actually changed.
 			 * @param valueI The new value to set. */
