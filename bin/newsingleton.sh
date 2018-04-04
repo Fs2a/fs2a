@@ -6,16 +6,15 @@ then
 	exit 1
 fi
 
-cat > $1.h << EOF
-/** @author   Simon de Hartog <simon@fs2a.pro>
- * @copyright Fs2a Ltd. (c) `date +%Y`
- * vim:set ts=4 sw=4 noexpandtab: */
+source $(readlink -f $(dirname ${BASH_SOURCE[0]}))/lib.sh
 
+cat > $1.h << EOF
+$(header)
 #pragma once
 
 #include "Singleton.h"
 
-namespace Fs2a {
+namespace $namespace {
 
 	class $1 : public Fs2a::Singleton<$1>
 	{
@@ -41,19 +40,17 @@ namespace Fs2a {
 
 	};
 
-} // Fs2a namespace
+} // $namespace namespace
 EOF
 
 cat > $1.cpp << EOF
-/** @author   Simon de Hartog <simon@fs2a.pro>
- * @copyright Fs2a Ltd. (c) `date +%Y`
- * vim:set ts=4 sw=4 noexpandtab: */
-
+$(header)
 #include "$1.h"
 
-namespace Fs2a {
+namespace $namespace {
 
 	$1::$1()
+	: Fs2a::Singleton<$1>::Singleton()
 	{
 	}
 
@@ -61,5 +58,5 @@ namespace Fs2a {
 	{
 	}
 
-} // Fs2a namespace
+} // $namespace namespace
 EOF

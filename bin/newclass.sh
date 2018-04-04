@@ -6,25 +6,13 @@ then
 	exit 1
 fi
 
-email="simon@fs2a.pro"
-if pwd | grep -q 'hyn'
-then
-	copy="Hear-Your-News LLC"
-	ns="HYN"
-else
-	copy="Fs2a Ltd."
-	ns="Fs2a"
-fi
-copy="${copy} (c) `date +%Y`"
+source $(readlink -f $(dirname ${BASH_SOURCE[0]}))/lib.sh
 
 cat > $1.h << EOF
-/** @author   Simon de Hartog <$email>
- * @copyright $copy
- * vim:set ts=4 sw=4 noexpandtab: */
-
+$(header)
 #pragma once
 
-namespace $ns {
+namespace $namespacce {
 
 	class $1
 	{
@@ -35,19 +23,16 @@ namespace $ns {
 		~$1();
 	};
 
-} // $ns namespace
+} // $namespace namespace
 EOF
 
 cat > $1.cpp << EOF
-/** @author   Simon de Hartog <$email>
- * @copyright $copy
- * vim:set ts=4 sw=4 noexpandtab: */
-
+$(header)
 #include "$1.h"
 
-namespace $ns {
+namespace $namespace {
 
 
 
-} // $ns namespace
+} // $namespace namespace
 EOF
