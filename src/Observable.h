@@ -29,7 +29,7 @@ namespace Fs2a {
 			std::set<Observer<T> *> observers_a;
 
 			// Keep track of the actual value
-			std::atomic<const T> value_a;
+			std::atomic<T> value_a;
 
 			/** Add an observer to this observable to receive future value updates.
 			 * @param observerI Observer that will be observing us.
