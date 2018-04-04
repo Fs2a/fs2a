@@ -11,6 +11,7 @@ include_directories (
 add_executable (chk
 	chk.cpp
 	logger.cpp
+	observing.cpp
 	singleton.cpp
 )
 target_link_libraries (chk
