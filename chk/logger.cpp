@@ -1,8 +1,7 @@
 /** @author   Simon de Hartog <simon@fs2a.pro>
  * @copyright Fs2a Ltd. (c) 2018
- * vim:set ts=2 sw=2 noexpandtab: */
+ * vim:set ts=4 sw=4 noexpandtab: */
 
-#include <memory>
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <Logger.h>
