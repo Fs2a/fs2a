@@ -10,10 +10,6 @@ if(POLICY CMP0056)
   cmake_policy(SET CMP0056 NEW)
 endif()
 
-# To prevent output in GVim's compile window to be cluttered with wrongly
-# interpreted escape sequences
-set (CMAKE_COLOR_MAKEFILE=OFF)
-
 list (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 
 project (fs2a)
