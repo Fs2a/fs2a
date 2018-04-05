@@ -14,13 +14,8 @@ namespace Fs2a {
 			/// Internal pointer to instance
 			static T *instance_a;
 
-		protected:
-			/** Mutex to prevent race conditions upon construction and for
-			 * other uses inside the subclass */
+			/// Mutex to prevent race conditions concerning instance_a
 			static std::mutex mux_a;
-
-			/// Default constructor
-			inline Singleton<T>() {}
 
 			/// Copy constructor
 			Singleton<T>(const Singleton<T> & obj_i) = delete;
@@ -28,8 +23,12 @@ namespace Fs2a {
 			/// Assignment constructor
 			Singleton<T> & operator=(const Singleton<T> & obj_i) = delete;
 
-			/// Destructor
-			inline ~Singleton<T>() {}
+		protected:
+			/** @{ Protected NoOp constructor and destructor to allow
+			 * calling superclass ctor/dtor from subclasses. */
+			inline Singleton() {}
+			inline ~Singleton() {}
+			/** @} */
 
 		public:
 			/** Get the Singleton instance pointer.
