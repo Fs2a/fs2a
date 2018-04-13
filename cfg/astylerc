@@ -1,14 +1,22 @@
 # Please use long options in this file for clarity
 
 # Use this bracket style
-style=stroustrup
+style=mozilla
+
+# Bracket overrides
+attach-closing-while
+attach-extern-c
+attach-inlines
+attach-namespaces
 
 # Indentation options
 indent=force-tab
+indent-after-parens
 indent-classes
 indent-switches
 indent-namespaces
 indent-preprocessor
+indent-preproc-block
 indent-col1-comments
 min-conditional-indent=1
 
