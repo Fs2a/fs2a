@@ -17,7 +17,7 @@ function setorg() {
 	if pwd | grep -q 'hyn'
 	then
 		copy="Hear-Your-News LLC"
-		ns="HYN"
+		namespace="HYN"
 	fi
 
 	copy="${copy} (c) `date +%Y`"
