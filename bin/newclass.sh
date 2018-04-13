@@ -10,9 +10,10 @@ source $(readlink -f $(dirname ${BASH_SOURCE[0]}))/lib.sh
 
 cat > $1.h << EOF
 $(header)
+
 #pragma once
 
-namespace $namespacce {
+namespace $namespace {
 
 	class $1
 	{
