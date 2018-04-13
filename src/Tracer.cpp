@@ -11,6 +11,7 @@ namespace Fs2a {
 	{
 		if (pf_i == NULL) pf = "(No function)";
 		else pf = pf_i;
+
 		LD("%s entry", pf.c_str());
 	}
 

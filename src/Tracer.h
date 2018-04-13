@@ -7,9 +7,9 @@
 #include <string>
 
 #ifndef NDEBUG
-#define TR Fs2a::Tracer tracerObject(__PRETTY_FUNCTION__)
+	#define TR Fs2a::Tracer tracerObject(__PRETTY_FUNCTION__)
 #else
-#define TR {}
+	#define TR {}
 #endif
 
 namespace Fs2a {
