@@ -85,7 +85,8 @@ class LoggerCheck;
 
 namespace Fs2a {
 
-	class Logger : public Fs2a::Singleton<Logger> {
+	class Logger : public Fs2a::Singleton<Logger>
+	{
 			/// Singleton template as friend for construction
 			friend class Fs2a::Singleton<Logger>;
 
@@ -126,7 +127,9 @@ namespace Fs2a {
 			/** Check whether the current logging destination is syslog.
 			 * @returns True if logging to syslog, false if logging to
 			 * stderr. */
-			inline bool destSyslog() const { return syslog_a; }
+			inline bool destSyslog() const {
+				return syslog_a;
+			}
 
 			/** Convenience syslogging function. Please call the appropriate logging
 			 * macros instead of this method.
