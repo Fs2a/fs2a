@@ -4,14 +4,25 @@
 ---
 version: "3"
 services:
+
+  base:
+    build: base
+    command: sleep infinity
+    hostname: base
+    image: "fs2a/base"
+    volumes:
+      - "binpkgs:/opt/binpkgs:ro"
+      - "/usr/portage:/usr/portage:ro"
+
   bld:
     build: bld
     command: sleep infinity
     hostname: bld
     image: "fs2a/bld"
     volumes:
-      - "/usr/portage:/usr/portage:ro"
       - "binpkgs:/opt/binpkgs"
+      - "/usr/portage:/usr/portage:ro"
+      - "/zfs/distfiles:/zfs/distfiles"
 
 volumes:
   binpkgs:
