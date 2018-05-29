@@ -8,7 +8,7 @@ ADD l /usr/local/bin/l
 ADD p /usr/local/bin/p
 RUN chmod 755 /usr/local/bin/[lp]
 RUN eselect news purge
-ADD ../make.conf /etc/portage/make.conf
+ADD make.conf /etc/portage/make.conf
 RUN echo 'DISTDIR="/zfs/distfiles"' >> /etc/portage/make.conf
 
 # Emerge or Re-emerge needed software

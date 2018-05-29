@@ -11,7 +11,7 @@ services:
     hostname: base
     image: "fs2a/base"
     volumes:
-      - "binpkgs:/opt/binpkgs:ro"
+      - "${PWD}/../pkgs:/opt/binpkgs:ro"
       - "/usr/portage:/usr/portage:ro"
 
   bld:
@@ -20,9 +20,6 @@ services:
     hostname: bld
     image: "fs2a/bld"
     volumes:
-      - "binpkgs:/opt/binpkgs"
+      - "${PWD}/../pkgs:/opt/binpkgs"
       - "/usr/portage:/usr/portage:ro"
       - "/zfs/distfiles:/zfs/distfiles"
-
-volumes:
-  binpkgs:
