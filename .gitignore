@@ -1,4 +1,6 @@
 .*.swp
 bld/**
 !bld/.keep_as_build_directory
+pkgs/**
+!pkgs/.keep_for_gentoo_binpkgs
 tags
