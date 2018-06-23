@@ -9,6 +9,7 @@
 #include <string>
 #include <thread>
 #include <pqxx/pqxx>
+#include <signal.h>
 #include "Singleton.h"
 
 /// Forward checkclass declaration for friendships
@@ -18,17 +19,22 @@ namespace Fs2a {
 
 	/** Database connection pool Singleton that manages all DB connections.
 	 */
-	class ConnPool : public Fs2a::Singleton<ConnPool>
+	template <class T>
+	class ConnPool : public Fs2a::Singleton<ConnPool<T> >
 	{
 			/// Check class can look inside data structures
 			friend class ::ConnPoolCheck;
 
 			/// Follow the Singleton pattern
-			friend class Fs2a::Singleton<ConnPool>;
+			friend class Fs2a::Singleton<ConnPool<T> >;
 
 		private:
 			/// Default constructor
-			ConnPool();
+			inline ConnPool() {
+				// Ignore SIGPIPE, otherwise it terminates our application when a
+				// connection can't be established or is broken
+				signal(SIGPIPE, SIG_IGN);
+			}
 
 			/// Copy constructor
 			ConnPool(const ConnPool & obj_i) = delete;
@@ -37,18 +43,14 @@ namespace Fs2a {
 			ConnPool & operator=(const ConnPool & obj_i) = delete;
 
 			/// Destructor
-			~ConnPool();
+			inline ~ConnPool() { purge(); }
 
 		protected:
-			/** Flag to determine whether we are simply checking code or
-			 * not. If so, use null connections. */
-			bool checking_a;
-
 			/** Type definition for a map containing thread IDs to shared
 			 * pointers with PostgreSQL connections. */
 			typedef std::map <
 			uint64_t,
-			std::shared_ptr<pqxx::connection>
+			std::shared_ptr<T>
 			> connmap_t;
 
 			/** Type definition for internal connection pool administration.
@@ -70,15 +72,20 @@ namespace Fs2a {
 			 * @param cm_i Connection map to purge of idle connections
 			 * @returns True when specified map is empty after purge,
 			 * false if not. */
-			bool purge_(connmap_t & cm_i);
+			bool purge_(connmap_t & cm_i)
+			{
+				std::set<uint64_t> idles;
+
+				for (auto & i : cm_i) {
+					if (i.second.use_count() == 1) idles.insert(i.first);
+				}
+				for (auto & i : idles) cm_i.erase(i);
+				return cm_i.size() == 0;
+			}
 
 		public:
-			/** Set checking on or off. When on, a null connection is used.
-			 * @param checking_i True when checking, false when not. */
-			void checking(const bool checking_i);
-
 			/** Shorthand type definition for DataBaseConnection. */
-			typedef std::shared_ptr<pqxx::connection> dbc_t;
+			typedef std::shared_ptr<T> dbc_t;
 
 			/** Get a database connection using @p params_i as connection
 			 * string.
@@ -86,7 +93,51 @@ namespace Fs2a {
 			 * string comes with its own connection pool.
 			 * @throws A runtime exception when the connection setup failed.
 			 * @returns A PostgreSQL connection inside a std::shared_ptr */
-			dbc_t get(const std::string & params_i);
+			dbc_t get(const std::string & params_i) {
+				dbc_t con;
+				std::stringstream ss;
+				uint64_t stid;
+
+				ss << std::this_thread::get_id();
+				ss >> stid;
+
+				std::lock_guard<std::mutex> lck(mux_a);
+
+				auto i = pool_a.find(params_i);
+
+				if (i == pool_a.end()) {
+					/** Create new connection. This throws a
+					 * pqxx::broken_connection exception when the connect fails.
+					 * This is ok to be propagated to the caller. */
+					con.reset(new T(params_i));
+					connmap_t cm;
+					cm[stid] = con;
+					pool_a[params_i] = cm;
+					return con;
+				}
+
+				// Thread is already using connection
+				auto j = i->second.find(stid);
+
+				if (j != i->second.end()) return j->second;
+
+				// Thread has not used a connection recently, find free one
+				for (j = i->second.begin(); j != i->second.end(); j++) {
+					if (j->second.use_count() == 1) {
+						// Connection is free
+						con = j->second;
+						i->second.erase(j->first);
+						i->second[stid] = con;
+						return con;
+					}
+				}
+
+				// No free one found, create new
+				con.reset(new T(params_i));
+				i->second[stid] = con;
+
+				return con;
+			}
 
 			/** Get a database connection using @p params_i as connection
 			 * string.
@@ -102,7 +153,23 @@ namespace Fs2a {
 			 * @param params_i Unique connection string identifying which pool
 			 * to purge. Can be the empty string (also the default) to purge
 			 * all pools of idle connections. */
-			void purge(const std::string & params_i = "");
+			void purge(const std::string & params_i = "")
+			{
+				std::set<std::string> toErase;
+				std::lock_guard<std::mutex> lck(mux_a);
+
+				if (params_i == "") {
+					for (auto & i : pool_a) {
+						if (purge_(i.second)) toErase.insert(i.first);
+					}
+					for (auto & i : toErase) pool_a.erase(i);
+					return;
+				}
+
+				auto i = pool_a.find(params_i);
+				if (i == pool_a.end()) return;
+				if (purge_(i->second)) pool_a.erase(i);
+			}
 
 	};
 

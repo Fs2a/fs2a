@@ -29,7 +29,7 @@ set (CMAKE_C_FLAGS_DEBUG   "${CUSTOM_DEBUG}")
 set (CMAKE_C_FLAGS_RELEASE "${CUSTOM_RELEASE}")
 
 # C++ flags, mostly the same as C
-set (CMAKE_CXX_FLAGS         "${CUSTOM_FLAGS} -std=gnu++11")
+set (CMAKE_CXX_FLAGS         "${CUSTOM_FLAGS} -std=gnu++1y")
 set (CMAKE_CXX_FLAGS_DEBUG   "${CUSTOM_DEBUG}")
 set (CMAKE_CXX_FLAGS_RELEASE "${CUSTOM_RELEASE}")
 

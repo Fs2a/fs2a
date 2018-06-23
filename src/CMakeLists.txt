@@ -7,7 +7,6 @@ include_directories (
 )
 
 add_library (fs2a SHARED
-	ConnPool.cpp
 	Logger.cpp
 	Tracer.cpp
 )
