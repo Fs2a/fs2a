@@ -33,5 +33,9 @@ set (CMAKE_CXX_FLAGS         "${CUSTOM_FLAGS} -std=gnu++11")
 set (CMAKE_CXX_FLAGS_DEBUG   "${CUSTOM_DEBUG}")
 set (CMAKE_CXX_FLAGS_RELEASE "${CUSTOM_RELEASE}")
 
+# Find necessary packages
+find_package (PQXX REQUIRED)
+find_package (Threads REQUIRED)
+
 add_subdirectory (chk)
 add_subdirectory (src)

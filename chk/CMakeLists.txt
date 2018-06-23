@@ -10,6 +10,7 @@ include_directories (
 
 add_executable (chk
 	chk.cpp
+	connpool.cpp
 	logger.cpp
 	observing.cpp
 	singleton.cpp
