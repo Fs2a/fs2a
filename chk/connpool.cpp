@@ -37,7 +37,7 @@ class CHECKNAME : public CppUnit::TestFixture
 		CPPUNIT_TEST_SUITE_END();
 
 	private:
-		Fs2a::ConnPool<pqxx::nullconnection> *cp;
+		std::shared_ptr<Fs2a::ConnPool<pqxx::nullconnection> > cp;
 		std::unique_ptr<std::thread> t1, t2;
 
 	public:
@@ -53,11 +53,9 @@ class CHECKNAME : public CppUnit::TestFixture
         }
 
 		void setUp() {
-			CPPUNIT_ASSERT_EQUAL(false,
-				Fs2a::ConnPool<pqxx::nullconnection>::is_constructed());
-			cp = Fs2a::ConnPool<pqxx::nullconnection>::instance();
-			CPPUNIT_ASSERT_EQUAL(true,
-				Fs2a::ConnPool<pqxx::nullconnection>::is_constructed());
+			CPPUNIT_ASSERT_EQUAL(false, (bool) cp);
+			cp = std::make_shared<Fs2a::ConnPool<pqxx::nullconnection> >();
+			CPPUNIT_ASSERT_EQUAL(true, (bool) cp);
 			connected = false;
 			stop = false;
 		}
@@ -73,15 +71,12 @@ class CHECKNAME : public CppUnit::TestFixture
 
 			if (t2) t2->join();
 
-			cp = nullptr;
-			Fs2a::ConnPool<pqxx::nullconnection>::close();
-			CPPUNIT_ASSERT_EQUAL(false,
-				Fs2a::ConnPool<pqxx::nullconnection>::is_constructed());
+			cp.reset();
+			CPPUNIT_ASSERT_EQUAL(false, (bool) cp);
 		}
 
-		static void connThread() {
-			Fs2a::ConnPool<pqxx::nullconnection>::dbc_t dbc =
-				Fs2a::ConnPool<pqxx::nullconnection>::instance()->get(TEMPLATEDB);
+		void connThread() {
+			auto dbc = cp->get(TEMPLATEDB);
 			connected = true;
 			concdv.notify_one();
 			std::unique_lock<std::mutex> lck(termmux);
@@ -96,16 +91,16 @@ class CHECKNAME : public CppUnit::TestFixture
 		void connect() {
 			CPPUNIT_ASSERT_EQUAL((size_t) 0, cp->pool_a.size());
 			CPPUNIT_ASSERT_EQUAL((size_t) 0, cp->pool_a.count(std::string(TEMPLATEDB)));
-			Fs2a::ConnPool<pqxx::nullconnection>::dbc_t dbc = cp->get(TEMPLATEDB);
+			auto dbc = cp->get(TEMPLATEDB);
 			CPPUNIT_ASSERT(dbc.get() != nullptr);
 			CPPUNIT_ASSERT_EQUAL(2L, dbc.use_count());
 			CPPUNIT_ASSERT_EQUAL((size_t) 1, cp->pool_a.size());
 			CPPUNIT_ASSERT_EQUAL((size_t) 1, cp->pool_a.count(std::string(TEMPLATEDB)));
 
-			Fs2a::ConnPool<pqxx::nullconnection>::pool_t::iterator i = cp->pool_a.begin();
+			auto i = cp->pool_a.begin();
 			CPPUNIT_ASSERT(i != cp->pool_a.end());
 			CPPUNIT_ASSERT_EQUAL((size_t) 1, i->second.size());
-			Fs2a::ConnPool<pqxx::nullconnection>::connmap_t::iterator j = i->second.begin();
+			auto j = i->second.begin();
 			CPPUNIT_ASSERT(j != i->second.end());
 			CPPUNIT_ASSERT_EQUAL(dbc, j->second);
 			CPPUNIT_ASSERT_EQUAL(simpleThreadId(), j->first);
@@ -113,7 +108,7 @@ class CHECKNAME : public CppUnit::TestFixture
 			/** Check what happens when we call up a second connection from
 			 * the same thread */
 			{
-				Fs2a::ConnPool<pqxx::nullconnection>::dbc_t dbc2 = cp->get(TEMPLATEDB);
+				auto dbc2 = cp->get(TEMPLATEDB);
 				CPPUNIT_ASSERT(dbc2.get() == dbc.get());
 				CPPUNIT_ASSERT_EQUAL(3L, dbc.use_count());
 				CPPUNIT_ASSERT_EQUAL(3L, dbc2.use_count());
@@ -132,8 +127,6 @@ class CHECKNAME : public CppUnit::TestFixture
 		}
 
 		void purge() {
-			Fs2a::ConnPool<pqxx::nullconnection>::pool_t::iterator i;
-
 			CPPUNIT_ASSERT_EQUAL((size_t) 0, cp->pool_a.size());
 
 			// Purge on empty connection list succeeds
@@ -141,9 +134,9 @@ class CHECKNAME : public CppUnit::TestFixture
 
 			{
 				// Acquire connection 1
-				Fs2a::ConnPool<pqxx::nullconnection>::dbc_t dbc = cp->get(TEMPLATEDB);
+				auto dbc = cp->get(TEMPLATEDB);
 				CPPUNIT_ASSERT_EQUAL((size_t) 1, cp->pool_a.size());
-				i = cp->pool_a.find(std::string(TEMPLATEDB));
+				auto i = cp->pool_a.find(std::string(TEMPLATEDB));
 				CPPUNIT_ASSERT(i != cp->pool_a.end());
 				CPPUNIT_ASSERT_EQUAL((size_t) 1, i->second.size());
 
@@ -157,9 +150,9 @@ class CHECKNAME : public CppUnit::TestFixture
 
 			{
 				// Acquire connection 2
-				Fs2a::ConnPool<pqxx::nullconnection>::dbc_t dbc2 = cp->get(POSTGRESDB);
+				auto dbc2 = cp->get(POSTGRESDB);
 				CPPUNIT_ASSERT_EQUAL((size_t) 2, cp->pool_a.size());
-				i = cp->pool_a.find(std::string(POSTGRESDB));
+				auto i = cp->pool_a.find(std::string(POSTGRESDB));
 				CPPUNIT_ASSERT(i != cp->pool_a.end());
 				CPPUNIT_ASSERT_EQUAL((size_t) 1, i->second.size());
 
@@ -177,7 +170,7 @@ class CHECKNAME : public CppUnit::TestFixture
 
 			// Purging connection 1 disconnects it ...
 			CPPUNIT_ASSERT_NO_THROW(cp->purge(TEMPLATEDB));
-			i = cp->pool_a.find(std::string(TEMPLATEDB));
+			auto i = cp->pool_a.find(std::string(TEMPLATEDB));
 			CPPUNIT_ASSERT(i == cp->pool_a.end());
 
 			// and leaves other idle conn 2 intact
@@ -191,18 +184,17 @@ class CHECKNAME : public CppUnit::TestFixture
 		}
 
 		void multi() {
-			Fs2a::ConnPool<pqxx::nullconnection>::pool_t::iterator i;
 			uint64_t tid1, tid2;
 
 			CPPUNIT_ASSERT_EQUAL((size_t) 0, cp->pool_a.size());
 
-			Fs2a::ConnPool<pqxx::nullconnection>::dbc_t dbc0 = cp->get(TEMPLATEDB);
+			auto dbc0 = cp->get(TEMPLATEDB);
 
 			{
 				CPPUNIT_ASSERT_EQUAL(false, connected);
 				CPPUNIT_ASSERT_EQUAL(false, stop);
 				std::unique_lock<std::mutex> lck(conmux);
-				t1.reset(new std::thread(CHECKNAME::connThread));
+				t1.reset(new std::thread(&CHECKNAME::connThread, this));
 				tid1 = simpleThreadId(t1->get_id());
 
 				// Wait until t1 is connected
@@ -215,7 +207,7 @@ class CHECKNAME : public CppUnit::TestFixture
 			}
 
 			CPPUNIT_ASSERT_EQUAL((size_t) 1, cp->pool_a.size());
-			i = cp->pool_a.find(std::string(TEMPLATEDB));
+			auto i = cp->pool_a.find(std::string(TEMPLATEDB));
 			CPPUNIT_ASSERT(i != cp->pool_a.end());
 			CPPUNIT_ASSERT_EQUAL((size_t) 2, i->second.size());
 			bool found = false;
@@ -253,7 +245,7 @@ class CHECKNAME : public CppUnit::TestFixture
 			// New thread, same conn, reuse from t1
 			{
 				std::unique_lock<std::mutex> lck(conmux);
-				t2.reset(new std::thread(CHECKNAME::connThread));
+				t2.reset(new std::thread(&CHECKNAME::connThread, this));
 				tid2 = simpleThreadId(t2->get_id());
 
 				// Wait until t2 is connected

@@ -6,46 +6,33 @@
 
 #include <map>
 #include <memory>
+#include <mutex>
+#include <set>
 #include <string>
 #include <thread>
 #include <pqxx/pqxx>
 #include <signal.h>
-#include "Singleton.h"
 
 /// Forward checkclass declaration for friendships
 class ConnPoolCheck;
 
 namespace Fs2a {
 
-	/** Database connection pool Singleton that manages all DB connections.
+	/** Database connection pool that manages all DB connections.
 	 */
 	template <class T>
-	class ConnPool : public Fs2a::Singleton<ConnPool<T> >
+	class ConnPool
 	{
 			/// Check class can look inside data structures
 			friend class ::ConnPoolCheck;
 
-			/// Follow the Singleton pattern
-			friend class Fs2a::Singleton<ConnPool<T> >;
-
 		private:
-			/// Default constructor
-			inline ConnPool() {
-				// Ignore SIGPIPE, otherwise it terminates our application when a
-				// connection can't be established or is broken
-				signal(SIGPIPE, SIG_IGN);
-			}
-
 			/// Copy constructor
 			ConnPool(const ConnPool & obj_i) = delete;
 
 			/// Assignment constructor
 			ConnPool & operator=(const ConnPool & obj_i) = delete;
 
-			/// Destructor
-			inline ~ConnPool() { purge(); }
-
-		protected:
 			/** Type definition for a map containing thread IDs to shared
 			 * pointers with PostgreSQL connections. */
 			typedef std::map <
@@ -84,6 +71,16 @@ namespace Fs2a {
 			}
 
 		public:
+			/// Constructor to ignore signals
+			inline ConnPool() {
+				// Ignore SIGPIPE, otherwise it terminates our application when a
+				// connection can't be established or is broken
+				signal(SIGPIPE, SIG_IGN);
+			}
+
+			/// Destructor to purge connections
+			inline ~ConnPool() { purge(); }
+
 			/** Shorthand type definition for DataBaseConnection. */
 			typedef std::shared_ptr<T> dbc_t;
 
@@ -153,7 +150,7 @@ namespace Fs2a {
 			 * @param params_i Unique connection string identifying which pool
 			 * to purge. Can be the empty string (also the default) to purge
 			 * all pools of idle connections. */
-			void purge(const std::string & params_i = "")
+			inline void purge(const std::string & params_i = "")
 			{
 				std::set<std::string> toErase;
 				std::lock_guard<std::mutex> lck(mux_a);
