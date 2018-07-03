@@ -1,15 +1,15 @@
 /** @author   Simon de Hartog <simon@fs2a.pro>
  * @copyright Fs2a Ltd. (c) 2018
- * vim:set ts=2 sw=2 noexpandtab: */
+ * vim:set ts=4 sw=4 noexpandtab: */
 
 #include <iostream>
+#include <iomanip>
 #include <cstdarg>
 #include <mutex>
 #include <sstream>
 #include <string>
 #include <thread>
 #include <stdio.h>
-#include <string.h>
 #include <time.h>
 #include <sys/time.h>
 #include "Logger.h"
@@ -19,14 +19,14 @@ namespace Fs2a {
 	Logger::Logger()
 		: strip_a(0), syslog_a(false)
 	{
-		levels_a[LOG_EMERG]  ="EMERGENCY";
-		levels_a[LOG_ALERT]  ="ALERT";
-		levels_a[LOG_CRIT]   ="CRITICAL";
-		levels_a[LOG_ERR]    ="ERROR";
-		levels_a[LOG_WARNING]="WARNING";
-		levels_a[LOG_NOTICE] ="NOTICE";
-		levels_a[LOG_INFO]   ="INFO";
-		levels_a[LOG_DEBUG]  ="DEBUG";
+		levels_a[LOG_EMERG]   = "EMERGENCY";
+		levels_a[LOG_ALERT]   = "ALERT";
+		levels_a[LOG_CRIT]    = "CRITICAL";
+		levels_a[LOG_ERR]     = "ERROR";
+		levels_a[LOG_WARNING] = "WARNING";
+		levels_a[LOG_NOTICE]  = "NOTICE";
+		levels_a[LOG_INFO]    = "INFO";
+		levels_a[LOG_DEBUG]   = "DEBUG";
 	}
 
 	Logger::~Logger()
@@ -47,15 +47,14 @@ namespace Fs2a {
 		...
 	)
 	{
-		va_list args;         // Variable arguments list
-		char buf[BUFSIZ];     // Buffer to store log string
-		size_t count = 0;     // Number of percent signs in fmt_i
-		std::string fmt;      // Separate format string for counting
-		int offset = 0;       // Offset to continue string printing
-		std::ostringstream oss; // Output Stringstream to write Thread ID to
-		size_t pos = 0;       // Position in string of character
-		struct timeval tv;    // Time value storage
-		struct tm timeParts;  // Different parts of current time
+		va_list args;           // Variable arguments list
+		char buf[BUFSIZ];       // Char buffer for doing vsnprintf
+		size_t count = 0;       // Number of percent signs in fmt_i
+		std::string fmt;        // Separate format string for counting
+		std::ostringstream oss; // Output Stringstream to write log string to
+		size_t pos = 0;         // Position in string of character
+		struct timeval tv;      // Time value storage
+		struct tm timeParts;    // Different parts of current time
 
 		if (fmt_i == nullptr) return;
 
@@ -63,25 +62,17 @@ namespace Fs2a {
 
 		gettimeofday(&tv, nullptr);
 		gmtime_r(&(tv.tv_sec), &timeParts);
-		oss << std::this_thread::get_id();
 
-		offset = sprintf(
-					 buf,
-					 "%02d:%02d:%02d.%06ld [%s] %s:%ld ",
-					 timeParts.tm_hour,
-					 timeParts.tm_min,
-					 timeParts.tm_sec,
-					 tv.tv_usec,
-					 oss.str().c_str(),
-					 file_i.substr(strip_a).c_str(),
-					 line_i
-				 );
+		oss << std::setfill('0') << std::setw(2);
+		oss << timeParts.tm_hour << ':';
+		oss << timeParts.tm_min << ':';
+		oss << timeParts.tm_sec << '.';
+		oss << std::setw(6) << tv.tv_usec;
+		oss << " [" << std::this_thread::get_id() << "] ";
+		oss << file_i.substr(strip_a) << ':';
+		oss << std::setw(0) << line_i << ' ';
 
-		if (!syslog_a) {
-			strcpy(buf+offset, levels_a[priority_i].c_str());
-			offset += levels_a[priority_i].length();
-			buf[offset++] = ' ';
-		}
+		if (!syslog_a) oss << levels_a[priority_i] << ' ';
 
 		// Remove double percent signs
 		while ((pos = fmt.find("%%")) != std::string::npos) fmt.erase(pos, 2);
@@ -96,17 +87,16 @@ namespace Fs2a {
 
 		if (count > 0) {
 			va_start(args, count);
-			vsprintf(buf + offset, fmt_i, args);
+			size_t rv = vsnprintf(buf, BUFSIZ, fmt_i, args);
 			va_end(args);
-		}
-		else {
-			strcpy(buf + offset, fmt_i);
-		}
+			oss << buf;
+			if (rv >= BUFSIZ) oss << " (truncated)";
+		} else oss << fmt_i;
 
 		if (syslog_a) {
-			::syslog(priority_i, "%s", buf);
+			::syslog(priority_i, "%s", oss.str().c_str());
 		} else {
-			std::cerr << buf << std::endl;
+			std::cerr << oss.str() << std::endl;
 		}
 
 		return;
@@ -120,6 +110,7 @@ namespace Fs2a {
 			closelog();
 			syslog_a = false;
 		}
+
 		strip_a = strip_i;
 	}
 
