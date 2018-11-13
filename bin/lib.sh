@@ -20,6 +20,13 @@ function setorg() {
 		namespace="HYN"
 	fi
 
+	if pwd | grep -q 'vwapi'
+	then
+		copy="Artilium GmbH"
+		email="simon.dehartog@artilium.de"
+		namespace="Artilium"
+	fi
+
 	copy="${copy} (c) `date +%Y`"
 }
 

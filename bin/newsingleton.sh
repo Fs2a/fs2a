@@ -8,6 +8,8 @@ fi
 
 source $(readlink -f $(dirname ${BASH_SOURCE[0]}))/lib.sh
 
+setorg
+
 cat > $1.h << EOF
 $(header)
 #pragma once
