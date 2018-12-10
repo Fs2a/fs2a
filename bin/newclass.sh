@@ -8,10 +8,10 @@ fi
 
 source $(readlink -f $(dirname ${BASH_SOURCE[0]}))/lib.sh
 
-setorg
+setns
 
 cat > $1.h << EOF
-$(header)
+// vim:set ts=4 sw=4 noexpandtab:
 
 #pragma once
 
@@ -33,7 +33,7 @@ namespace $namespace {
 EOF
 
 cat > $1.cpp << EOF
-$(header)
+// vim:set ts=4 sw=4 noexpandtab:
 
 #include "$1.h"
 

@@ -3,12 +3,10 @@
 # @author    Simon de Hartog <simon@fs2a.pro>
 # @copyright Fs2a Ltd. (c) 2018
 
-copy="Fs2a Ltd."
-email="simon@fs2a.pro"
-namespace="Fs2a"
+namespace=""
 
-function setorg() {
-	if [ "${copy}" = *" (c) "* ]
+function setns() {
+	if [ -n "${namespace}" ]
 	then
 		# Already done
 		return
@@ -16,27 +14,16 @@ function setorg() {
 
 	if pwd | grep -q 'hyn'
 	then
-		copy="Hear-Your-News LLC"
 		namespace="HYN"
 	fi
 
 	if pwd | grep -q 'vwapi'
 	then
-		copy="Artilium GmbH"
-		email="simon.dehartog@artilium.de"
-		namespace="Artilium"
+		namespace="Cloud2com"
 	fi
 
-	copy="${copy} (c) `date +%Y`"
-}
-
-function header() {
-setorg
-
-cat << EOF
-/** @author   Simon de Hartog <$email>
- * @copyright $copy
- * vim:set ts=4 sw=4 noexpandtab: */
-
-EOF
+	if [ -z "${namespace}" ]
+	then
+		namespace="Fs2a"
+	fi
 }
