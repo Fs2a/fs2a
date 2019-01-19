@@ -1,0 +1,53 @@
+// vim:set ts=4 sw=4 noexpandtab ft=asciidoc:
+= Notes on Gentoo Docker
+Simon de_Hartog <simon@fs2a.pro>
+:doctype: article
+
+== General
+
+So just few thoughts, notes and ideas. Gentoo already provides prebuilt docker
+images. These are failry large, because they just contain a stage3 archive.
+
+== Goal
+
+I would like to easily build infrastructures using Gentoo Linux as OS inside a
+dockerized environment. I don't want to have to maintain each individual
+container and prevent inclusion from an entire build toolchain in every
+container. So development (both for Gentoo packages as well as custom
+software) has to be done in a separate build container.
+
+== Known challenges
+
+* A binhost as other container is not available on the same
+  docker system when the containers are built, only possible to install them
+  from an external URL.
+
+== Controlled upgrades
+
+I would like to have only controlled upgrades of software. This means that
+newer Gentoo packages should first be built in the build container, then
+deployed to a testing and acceptance environment before being deployed on
+production. Needless to say, every container should however run a periodic
+GLSA check (but without automatic fixing).
+
+== Questions for myself
+
+* Does every client need to have a full make.conf and customized /etc/portage
+  tree? Yes, with BINHOST specs and correct FEATURES and EMERGE_DEFAULT_OPTS.
+  However, all USE flags and such can already be set in the custom profile.
+* Do I need to create a separate Gentoo profile to change the @system list
+  (for e.g. excluding gcc and such)? Yes, prevent inclusion of gcc, binutils
+  and e2fsprogs.
+* How can I use the same profile on th build host? Just do, and install
+  toolchain stuff as extra. It doesn't need to be in the @system stuff to be
+  able to install it.
+* Can Gluster be run in a container, with the storage on a Docker volume?
+  Guess so.
+* Do I need a custom portage tree? No, just use an overlay that also contains
+  a custom profile.
+
+== Decisions
+
+* All packages should be installed and configured during container building.
+* Distribute custom portage overlay as squashfs in VM's, let containers mount it
+  RO. Or perhaps via Gluster.
