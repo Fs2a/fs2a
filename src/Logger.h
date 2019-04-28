@@ -25,6 +25,12 @@
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_DEBUG, fmt, ##__VA_ARGS__); \
 		return ret; \
 	}
+/// Log a Conditional Debug message and Throw if condition does not hold
+#define LCDT(cond, exc, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_DEBUG, fmt, ##__VA_ARGS__); \
+		throw exc; \
+	}
 #else
 /// Debugging disabled
 #define LD(fmt, ...) {}
@@ -33,6 +39,10 @@
 #define LCDR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		return ret; \
+	}
+#define LCDT(cond, exc, fmt, ...) \
+	if (!(cond)) { \
+		throw exc; \
 	}
 #endif
 
@@ -53,8 +63,8 @@
 /// Log a Conditional Informational message and Throw if condition does not hold
 #define LCIT(cond, exc, fmt, ...) \
 	if (!(cond)) { \
-		std::string Logger__logmsg = Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_INFO, fmt, ##__VA_ARGS__); \
-		throw exc(Logger__logmsg); \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_INFO, fmt, ##__VA_ARGS__); \
+		throw exc; \
 	}
 
 /// Log a Warning message
@@ -74,8 +84,8 @@
 /// Log a Conditional Warning message and Throw if condition does not hold
 #define LCWT(cond, exc, fmt, ...) \
 	if (!(cond)) { \
-		std::string Logger__logmsg = Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__); \
-		throw exc(Logger__logmsg); \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__); \
+		throw exc; \
 	}
 
 /// Log an Error message
@@ -95,8 +105,8 @@
 /// Log a Conditional Error message and Throw if condition does not hold
 #define LCET(cond, exc, fmt, ...) \
 	if (!(cond)) { \
-		std::string Logger__logmsg = Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__); \
-		throw exc(Logger__logmsg); \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__); \
+		throw exc; \
 	}
 /** @} */
 
@@ -157,9 +167,8 @@ namespace Fs2a {
 			 * @param file_i Filename we are logging from
 			 * @param line_i Line number at which we are logging
 			 * @param priority_i Syslog priority level
-			 * @param fmt_i Format argument for remainder of arguments
-			 * @returns The formatted log string. */
-			std::string log(
+			 * @param fmt_i Format argument for remainder of arguments */
+			void log(
 				const std::string & file_i,
 				const size_t & line_i,
 				const int priority_i,
