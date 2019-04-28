@@ -19,6 +19,12 @@
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_DEBUG, fmt, ##__VA_ARGS__); \
 	}
+/// Log a Conditional Debug message and do Action if condition does not hold
+#define LCDA(cond, action, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_DEBUG, fmt, ##__VA_ARGS__); \
+		action; \
+	}
 /// Log a Conditional Debug message and Return if condition does not hold
 #define LCDR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
@@ -36,6 +42,10 @@
 #define LD(fmt, ...) {}
 #define LCD(cond, fmt, ...) \
 	if (!(cond)) { }
+#define LCDA(cond, action, fmt, ...) \
+	if (!(cond)) { \
+		action; \
+	}
 #define LCDR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		return ret; \
@@ -53,6 +63,12 @@
 #define LCI(cond, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_INFO, fmt, ##__VA_ARGS__); \
+	}
+/// Log a Conditional Informational message and do Action if condition does not hold
+#define LCIA(cond, action, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_INFO, fmt, ##__VA_ARGS__); \
+		action; \
 	}
 /// Log a Conditional Informational message and Return if condition does not hold
 #define LCIR(cond, ret, fmt, ...) \
@@ -75,6 +91,12 @@
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__); \
 	}
+/// Log a Conditional Warning message and do Action if condition does not hold
+#define LCWA(cond, action, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__); \
+		action; \
+	}
 /// Log a Conditional Warning message and Return if condition does not hold
 #define LCWR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
@@ -95,6 +117,12 @@
 #define LCE(cond, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__); \
+	}
+/// Log a Conditional Error message and do Action if condition does not hold
+#define LCEA(cond, action, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__); \
+		action; \
 	}
 /// Log a Conditional Error message and Return if condition does not hold
 #define LCER(cond, ret, fmt, ...) \
