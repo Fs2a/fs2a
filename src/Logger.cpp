@@ -39,7 +39,7 @@ namespace Fs2a {
 		}
 	}
 
-	void Logger::log(
+	std::string Logger::log(
 		const std::string & file_i,
 		const size_t & line_i,
 		const int priority_i,
@@ -56,7 +56,7 @@ namespace Fs2a {
 		struct timeval tv;      // Time value storage
 		struct tm timeParts;    // Different parts of current time
 
-		if (fmt_i == nullptr) return;
+		if (fmt_i == nullptr) return fmt;
 
 		fmt.assign(fmt_i);
 
@@ -99,7 +99,7 @@ namespace Fs2a {
 			std::cerr << oss.str() << std::endl;
 		}
 
-		return;
+		return std::move(oss.str());
 	}
 
 	void Logger::stderror(const size_t strip_i)

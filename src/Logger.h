@@ -4,6 +4,7 @@
 #pragma once
 
 #include <map>
+#include <stdexcept>
 #include <syslog.h>
 #include "Singleton.h"
 
@@ -12,7 +13,7 @@
 #ifndef NDEBUG
 /// Log a Debug message
 #define LD(fmt, ...) \
-	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_DEBUG, fmt, ##__VA_ARGS__)
+	Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_DEBUG, fmt, ##__VA_ARGS__) \
 /// Log a Conditional Debug message
 #define LCD(cond, fmt, ...) \
 	if (!(cond)) { \
@@ -49,6 +50,12 @@
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_INFO, fmt, ##__VA_ARGS__); \
 		return ret; \
 	}
+/// Log a Conditional Informational message and Throw if condition does not hold
+#define LCIT(cond, exc, fmt, ...) \
+	if (!(cond)) { \
+		std::string Logger__logmsg = Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_INFO, fmt, ##__VA_ARGS__); \
+		throw exc(Logger__logmsg); \
+	}
 
 /// Log a Warning message
 #define LW(fmt, ...) \
@@ -64,6 +71,12 @@
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__); \
 		return ret; \
 	}
+/// Log a Conditional Warning message and Throw if condition does not hold
+#define LCWT(cond, exc, fmt, ...) \
+	if (!(cond)) { \
+		std::string Logger__logmsg = Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_WARNING, fmt, ##__VA_ARGS__); \
+		throw exc(Logger__logmsg); \
+	}
 
 /// Log an Error message
 #define LE(fmt, ...) \
@@ -78,6 +91,12 @@
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__); \
 		return ret; \
+	}
+/// Log a Conditional Error message and Throw if condition does not hold
+#define LCET(cond, exc, fmt, ...) \
+	if (!(cond)) { \
+		std::string Logger__logmsg = Fs2a::Logger::instance()->log(__FILE__, __LINE__, LOG_ERR, fmt, ##__VA_ARGS__); \
+		throw exc(Logger__logmsg); \
 	}
 /** @} */
 
@@ -131,13 +150,16 @@ namespace Fs2a {
 				return syslog_a;
 			}
 
-			/** Convenience syslogging function. Please call the appropriate logging
-			 * macros instead of this method.
+			/** Log a formatted message based on the given parameters.
+			 * Please use the convenience logging macros instead of this
+			 * method.
+			 * @param log_i Whether to log the formatted line as well
 			 * @param file_i Filename we are logging from
 			 * @param line_i Line number at which we are logging
 			 * @param priority_i Syslog priority level
-			 * @param fmt_i Format argument for remainder of arguments */
-			void log(
+			 * @param fmt_i Format argument for remainder of arguments
+			 * @returns The formatted log string. */
+			std::string log(
 				const std::string & file_i,
 				const size_t & line_i,
 				const int priority_i,
