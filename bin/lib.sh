@@ -12,18 +12,27 @@ function setns() {
 		return
 	fi
 
-	if pwd | grep -q 'hyn'
-	then
-		namespace="HYN"
-	fi
+	namespace=$(awk '
+	BEGIN {
+		cnt["Fs2a"] = 0
+	}
 
-	if pwd | grep -q 'vwapi'
-	then
-		namespace="Cloud2com"
-	fi
+	/^namespace / {
+		if ($2 in cnt) cnt[$2]++;
+		else cnt[$2] = 1
+	}
 
-	if [ -z "${namespace}" ]
-	then
-		namespace="Fs2a"
-	fi
+	END {
+		winner = "Fs2a";
+		wincount = 0;
+
+		for (ns in cnt) {
+			if (cnt[ns] > wincount) {
+				winner = ns;
+				wincount = cnt[ns];
+			}
+		}
+
+		printf "%s\n", winner
+	}' *.cpp *.h)
 }

@@ -11,7 +11,7 @@ source $(readlink -f $(dirname ${BASH_SOURCE[0]}))/lib.sh
 class=$(echo $1 | tr '[:upper:]' '[:lower:]')
 
 cat > $class.cpp << EOF
-$(header)
+// vim:set ts=4 sw=4 noexpandtab:
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
@@ -40,4 +40,6 @@ class CHECKNAME : public CppUnit::TestFixture {
 		}
 
 };
+
+#undef CHECKNAME
 EOF
