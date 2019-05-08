@@ -10,6 +10,7 @@ include_directories (
 add_library (fs2a SHARED
 	IOsvcWrapper.cpp
 	Logger.cpp
+	Semaphore.cpp
 	Tracer.cpp
 )
 
