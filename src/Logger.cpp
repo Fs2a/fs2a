@@ -17,16 +17,13 @@
 namespace Fs2a {
 
 	Logger::Logger()
-		: strip_a(0), syslog_a(false)
+		: maxlevel_a(Logger::debug), strip_a(0), syslog_a(false)
 	{
-		levels_a[LOG_EMERG]   = "EMERGENCY";
-		levels_a[LOG_ALERT]   = "ALERT";
-		levels_a[LOG_CRIT]    = "CRITICAL";
-		levels_a[LOG_ERR]     = "ERROR";
-		levels_a[LOG_WARNING] = "WARNING";
-		levels_a[LOG_NOTICE]  = "NOTICE";
-		levels_a[LOG_INFO]    = "INFO";
-		levels_a[LOG_DEBUG]   = "DEBUG";
+		levels_a[error]   = "ERROR";
+		levels_a[warning] = "WARNING";
+		levels_a[notice]  = "NOTICE";
+		levels_a[info]    = "INFO";
+		levels_a[debug]   = "DEBUG";
 	}
 
 	Logger::~Logger()
@@ -42,7 +39,7 @@ namespace Fs2a {
 	void Logger::log(
 		const std::string & file_i,
 		const size_t & line_i,
-		const int priority_i,
+		const loglevel_t priority_i,
 		const char *fmt_i,
 		...
 	)
@@ -57,6 +54,8 @@ namespace Fs2a {
 		struct tm timeParts;    // Different parts of current time
 
 		if (fmt_i == nullptr) return;
+
+		if (priority_i > maxlevel_a) return;
 
 		fmt.assign(fmt_i);
 
