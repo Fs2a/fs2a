@@ -168,6 +168,7 @@ namespace Fs2a {
 		public:
 			/// Definition of logging levels
 			enum loglevel_t : uint8_t {
+				none = LOG_CRIT,
 				error = LOG_ERR,
 				warning = LOG_WARNING,
 				notice = LOG_NOTICE,
