@@ -1,5 +1,5 @@
 /** @author   Simon de Hartog <simon@fs2a.pro>
- * @copyright Fs2a Ltd. (c) 2018 */
+ * @copyright Fs2a Ltd. (c) 2019 */
 
 #pragma once
 
@@ -9,6 +9,12 @@
 #include <stdexcept>
 #include <syslog.h>
 #include "Singleton.h"
+
+/** Prevent unused parameter warnings from the compiler. This definition is
+ * supposed to be in a separate header file, but Logger is included everywhere
+ * anyway and otherwise this special header file would only contain this
+ * definition. */
+#define UNUSED(expr) (void)(expr)
 
 /** @{ Logging macros for easy logging */
 
@@ -84,6 +90,24 @@
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt, ##__VA_ARGS__); \
 		throw exc; \
 	}
+
+/// Log a Notice message
+#define LN(fmt, ...) \
+	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt, ##__VA_ARGS__)
+/// Log a Conditional Notice message
+#define LNI(cond, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt, ##__VA_ARGS__); \
+	}
+/// Log a Conditional Notice message and do Action if condition does not hold
+#define LCNA(cond, action, fmt, ...) \
+	if (!(cond)) { \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt, ##__VA_ARGS__); \
+		action; \
+	}
+/* Throw and Return variants are deprecated and only defined with other loglevels for backward compatibility.
+ * Since the Notice level has not been used before, there is no need for backward compatibility for
+ * this loglevel. */
 
 /// Log a Warning message
 #define LW(fmt, ...) \
