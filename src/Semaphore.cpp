@@ -24,7 +24,7 @@ namespace Fs2a {
 		return count_a;
 	}
 
-	void Semaphore::operator--()
+	void Semaphore::dec()
 	{
 		if (destructing_a) {
 			throw std::logic_error("Semaphore is being destroyed while decreasing counter");
@@ -42,7 +42,7 @@ namespace Fs2a {
 		count_a--;
 	}
 
-	void Semaphore::operator++()
+	void Semaphore::inc()
 	{
 		if (destructing_a) {
 			throw std::logic_error("Semaphore is being destroyed while increasing counter");

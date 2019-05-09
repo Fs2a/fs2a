@@ -38,11 +38,11 @@ namespace Fs2a {
 
 		/** Decrease the internal semaphore counter, blocking if count is zero.
 		 */
-		void operator--();
+		void dec();
 
 		/** Increase the internal semaphore counter and notify a waiting thread,
 		 * if any. */
-		void operator++();
+		void inc();
 
 		/** Try to decrease the internal semaphore counter, but do not block
 		 * if it's count is currently zero.
