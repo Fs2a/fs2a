@@ -27,7 +27,7 @@ namespace Fs2a {
 			/** @{ Protected NoOp constructor and destructor to allow
 			 * calling superclass ctor/dtor from subclasses. */
 			inline Singleton() {}
-			inline ~Singleton() {}
+			virtual inline ~Singleton() {}
 			/** @} */
 
 		public:
