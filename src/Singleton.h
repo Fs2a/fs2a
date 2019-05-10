@@ -61,7 +61,7 @@ namespace Fs2a {
 
 	};
 
-	template <class T> T *(Singleton<T>::instance_a) = nullptr;
+	template <class T> T *Singleton<T>::instance_a = nullptr;
 	template <class T> std::mutex Singleton<T>::mux_a;
 
 } // Fs2a namespace
