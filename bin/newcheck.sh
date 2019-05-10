@@ -29,15 +29,15 @@ class CHECKNAME : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE_END();
 
 	public:
-		void setUp() {
-		}
+	void setUp() {
+	}
 
-		void tearDown() {
-		}
+	void tearDown() {
+	}
 
-		void firstTest() {
+	void firstTest() {
 
-		}
+	}
 
 };
 

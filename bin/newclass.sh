@@ -22,11 +22,11 @@ namespace $namespace {
 		protected:
 
 		public:
-			/// Constructor
-			$1();
+		/// Constructor
+		$1();
 
-			/// Destructor
-			~$1();
+		/// Destructor
+		~$1();
 	};
 
 } // $namespace namespace

@@ -25,17 +25,17 @@ namespace $namespace {
 		friend class Fs2a::Singleton<$1>;
 
 		private:
-			/// Default constructor
-			$1();
+		/// Default constructor
+		$1();
 
-			/// Copy constructor
-			$1(const $1 & obj_i) = delete;
+		/// Copy constructor
+		$1(const $1 & obj_i) = delete;
 
-			/// Assignment constructor
-			$1 & operator=(const $1 & obj_i) = delete;
+		/// Assignment constructor
+		$1 & operator=(const $1 & obj_i) = delete;
 
-			/// Destructor
-			~$1();
+		/// Destructor
+		~$1();
 
 		protected:
 
