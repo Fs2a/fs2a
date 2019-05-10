@@ -28,7 +28,15 @@ class CHECKNAME : public CppUnit::TestFixture {
 	CPPUNIT_TEST(firstTest);
 	CPPUNIT_TEST_SUITE_END();
 
+	protected:
+	Fs2a::Logger * logger;
+
 	public:
+
+	CHECKNAME()
+	: logger(nullptr)
+	{ }
+
 	void setUp() {
 	}
 
