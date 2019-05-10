@@ -23,10 +23,10 @@ namespace $namespace {
 
 		public:
 		/// Constructor
-		$1();
+		$1() = default;
 
 		/// Destructor
-		~$1();
+		~$1() = default;
 	};
 
 } // $namespace namespace

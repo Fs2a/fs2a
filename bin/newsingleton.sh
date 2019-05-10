@@ -35,7 +35,7 @@ namespace $namespace {
 		$1 & operator=(const $1 & obj_i) = delete;
 
 		/// Destructor
-		~$1();
+		~$1() = default;
 
 		protected:
 
@@ -56,10 +56,7 @@ namespace $namespace {
 	$1::$1()
 	: Fs2a::Singleton<$1>::Singleton()
 	{
-	}
 
-	$1::~$1()
-	{
 	}
 
 } // $namespace namespace
