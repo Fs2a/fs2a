@@ -62,11 +62,10 @@ namespace Fs2a {
 		gettimeofday(&tv, nullptr);
 		gmtime_r(&(tv.tv_sec), &timeParts);
 
-		oss << std::setfill('0') << std::setw(2);
-		oss << timeParts.tm_hour << ':';
-		oss << timeParts.tm_min << ':';
-		oss << timeParts.tm_sec << '.';
-		oss << std::setw(6) << tv.tv_usec;
+		oss << std::setfill('0') << std::setw(2) << timeParts.tm_hour << ':';
+		oss << std::setfill('0') << std::setw(2) << timeParts.tm_min << ':';
+		oss << std::setfill('0') << std::setw(2) << timeParts.tm_sec << '.';
+		oss << std::setfill('0') << std::setw(6) << tv.tv_usec;
 		oss << " [" << std::this_thread::get_id() << "] ";
 		oss << file_i.substr(strip_a) << ':';
 		oss << std::setw(0) << line_i << ' ';
