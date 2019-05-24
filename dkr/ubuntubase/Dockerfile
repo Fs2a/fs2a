@@ -24,6 +24,7 @@ RUN apt-get ${APT_OPTIONS} update && \
 	iproute2 \
 	less \
 	net-tools \
+	openssh-server \
 	runit \
 	vim-tiny \
 	&& apt-get ${APT_OPTIONS} autoremove && \
@@ -43,12 +44,33 @@ ENV LC_TIME en_DK.UTF-8
 # Start runit by default
 ENTRYPOINT ["/sbin/runit"]
 
+# Add SdH user to run unprivileged processes
+RUN useradd -c "Simon de Hartog" -d /home/sdh \
+	-m -k /dev/null -N -g 100 -u 1000 \
+	-s /bin/bash sdh && \
+	install -o sdh -g users -m 0700 -d /home/sdh/.ssh && \
+	usermod -p '*' sdh && passwd -u sdh
+
 # Setup initialization scripts
 RUN install -o root -g root -m 0755 -d \
-	/etc/runit
+	/etc/runit \
+	/etc/service/sshd \
+	/var/run/sshd
+
+# Configure SSH authorized keys
+RUN install -o root -g root -m 0700 -d /root/.ssh
+ADD sdh.authkeys /root/.ssh/authorized_keys
+ADD sdh.authkeys /home/sdh/.ssh/authorized_keys
+RUN chown root:root /root/.ssh/authorized_keys
+RUN chown sdh:users /home/sdh/.ssh/authorized_keys
 
 ADD 1 /etc/runit/1
 ADD 2 /etc/runit/2
 ADD 3 /etc/runit/3
 RUN chmod 755 /etc/runit/[123]
 
+# Set up SSH server
+ADD sshd_config /etc/ssh/sshd_config
+RUN rm -f /etc/ssh/ssh_host*_key*
+ADD sshd-run /etc/service/sshd/run
+RUN chmod 755 /etc/service/sshd/run
