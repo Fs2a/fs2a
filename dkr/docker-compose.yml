@@ -1,18 +1,9 @@
 # @author Simon de Hartog <simon@fs2a.pro>
-# @copyright Fs2a Ltd. (c) 2018
+# @copyright Fs2a Ltd. (c) 2019
 # vim:set ts=2 sw=2 expandtab:
 ---
 version: "3"
 services:
-
-  base:
-    build: base
-    command: sleep infinity
-    hostname: base
-    image: "fs2a/base"
-    volumes:
-      - "${PWD}/../pkgs:/opt/binpkgs:ro"
-      - "/usr/portage:/usr/portage:ro"
 
   bld:
     build: bld
@@ -23,3 +14,12 @@ services:
       - "${PWD}/../pkgs:/opt/binpkgs"
       - "/usr/portage:/usr/portage:ro"
       - "/zfs/distfiles:/zfs/distfiles"
+
+  gentoobase:
+    build: gentoobase
+    command: sleep infinity
+    hostname: gentoobase
+    image: "fs2a/gentoobase"
+    volumes:
+      - "${PWD}/../pkgs:/opt/binpkgs:ro"
+      - "/usr/portage:/usr/portage:ro"
