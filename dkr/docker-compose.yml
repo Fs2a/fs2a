@@ -31,3 +31,11 @@ services:
     image: "fs2a/ubuntubase"
     volumes:
       - "${HOME}/Cloud2com:/opt/Cloud2com:ro"
+
+  zoiper:
+    build: zoiper
+    command: sleep infinity
+    hostname: zoiper
+    image: "fs2a/zoiper"
+    volumes:
+      - "${HOME}/Cloud2com:/opt/Cloud2com:ro"
