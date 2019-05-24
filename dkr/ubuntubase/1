@@ -1,0 +1,11 @@
+#!/bin/bash
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+for F in /[0-9][0-9]_*.sh
+do
+	source $F
+done
+
+touch /etc/runit/stopit
+chmod 0 /etc/runit/stopit

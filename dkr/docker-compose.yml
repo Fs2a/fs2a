@@ -23,3 +23,11 @@ services:
     volumes:
       - "${PWD}/../pkgs:/opt/binpkgs:ro"
       - "/usr/portage:/usr/portage:ro"
+
+  ubuntubase:
+    build: ubuntubase
+    command: sleep infinity
+    hostname: ubuntubase
+    image: "fs2a/ubuntubase"
+    volumes:
+      - "${HOME}/Cloud2com:/opt/Cloud2com:ro"
