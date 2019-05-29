@@ -1,5 +1,5 @@
-/** @author   Simon de Hartog <simon@fs2a.eu>
- * @copyright Fs2a Ltd. (c) 2017 */
+/** @author   Simon de Hartog <simon@fs2a.pro>
+ * @copyright Fs2a Ltd. (c) 2019 */
 
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
