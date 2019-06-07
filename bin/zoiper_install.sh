@@ -12,9 +12,11 @@ function fail() {
 
 base="/opt/zoiper"
 
+command -v debootstrap &>/dev/null || \
+	fail "Please install debootstrap with: ACCEPT_KEYWORDS=\"~amd64\" sudo emerge -av debootstrap"
+[ -r /usr/share/debootstrap/scripts/bionic ] || fail "Please install a beta version of debootstrap"
 [ -d $base ] || sudo install -o root -g root -d $base || fail "Failed creating $base"
-command -v debootstrap &>/dev/null || fail "Please install debootstrap with: sudo emerge -av debootstrap"
-sudo debootstrap xenial /opt/zoiper http://ftp.halifax.rwth-aachen.de/ubuntu/
+sudo debootstrap bionic /opt/zoiper http://ftp.halifax.rwth-aachen.de/ubuntu/ || fail "Debootstrap failed"
 command -v schroot &>/dev/null || fail "Please install schroot with: sudo emerge -av schroot"
 [ -d /etc/schroot/ubuntu ] || sudo install -o root -g root -d /etc/schroot/ubuntu
 
@@ -28,8 +30,10 @@ cat >$tmpfile <<EOF
 /sys            /sys            none    rw,bind         0       0
 /dev            /dev            none    rw,bind         0       0
 /dev/pts        /dev/pts        none    rw,bind         0       0
+/dev/shm        /dev/shm        none    rw,bind         0       0
 /home/sdh       /home/sdh       none    rw,bind         0       0
 /tmp            /tmp            none    rw,bind         0       0
+/run/user/1000  /run/user/1000  none    rw,bind         0       0
 
 # For PulseAudio and other desktop-related things
 /var/lib/dbus    /var/lib/dbus  none    rw,bind         0       0
@@ -41,31 +45,23 @@ sudo cp /dev/null /etc/schroot/ubuntu/nssdatabases
 
 tmpfile=$(mktemp)
 cat >$tmpfile <<EOF
-[xenial]
+[bionic]
 type=directory
-description=Ubuntu Xenial Xerus for Zoiper
+description=Ubuntu Bionic Beaver for Zoiper
 root-users=$USER,root
 directory=$base
+preserve-environment=true
 profile=ubuntu
 EOF
-sudo install -o root -g root -m 0644 $tmpfile /etc/schroot/chroot.d/xenial
+sudo install -o root -g root -m 0644 $tmpfile /etc/schroot/chroot.d/bionic
+sudo bash -c "echo deb http://ftp.halifax.rwth-aachen.de/ubuntu bionic main universe > $base/etc/apt/sources.list"
 
-if ! sudo schroot -c xenial -- getent passwd _apt &>/dev/null; then
-	sudo schroot -c xenial -- adduser --quiet --system --home /nonexistent --shell /bin/false \
-	--no-create-home --uid 168 --gid 65534 --disabled-password --force-badname _apt
-fi
-
-if ! sudo schroot -c xenial -- getent group staff &>/dev/null; then
-	sudo schroot -c xenial -- addgroup --quiet --system staff
-fi
-
-if ! sudo schroot -c xenial -- grep -q "de\.archive.ubuntu.com" /etc/apt/sources.list; then
-	sudo schroot -c xenial -- sed -i -e 's/\/\/archive\.ubuntu/de.archive.ubuntu/g' /etc/apt/sources.list
-fi
-
-if ! sudo schroot -c xenial -- dpkg -l | grep -q "^ii.*zoiper5" ; then
-	sudo schroot -c xenial -- apt-get install -y libnotify4 libv4l-0 libnss3
-	sudo schroot -c xenial -- dpkg -i /home/sdh/Cloud2com/Relations/Zoiper/*.deb
+if ! sudo schroot -c bionic -- dpkg -l | grep -q "^ii *zoiper5" ; then
+	sudo schroot -c bionic -- apt-get update \; apt-get install -y libnotify4 libv4l-0 libnss3 \
+	libgtk2.0-0 libxss1 libpulse0 syslog-ng-core libasound2-dev libgl1 \
+	libcanberra-gtk-module libcanberra-gtk3-module
+	sudo schroot -c bionic -- dpkg -i /home/sdh/Cloud2com/Relations/Zoiper/zoiper5*.deb
+	sudo schroot -c bionic -- install -o root -g root -m 1777 -d /run/user
 fi
 
 exit 0
