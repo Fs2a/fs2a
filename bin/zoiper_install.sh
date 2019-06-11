@@ -16,7 +16,7 @@ command -v debootstrap &>/dev/null || \
 	fail "Please install debootstrap with: ACCEPT_KEYWORDS=\"~amd64\" sudo emerge -av debootstrap"
 [ -r /usr/share/debootstrap/scripts/bionic ] || fail "Please install a beta version of debootstrap"
 [ -d $base ] || sudo install -o root -g root -d $base || fail "Failed creating $base"
-sudo debootstrap bionic /opt/zoiper http://ftp.halifax.rwth-aachen.de/ubuntu/ || fail "Debootstrap failed"
+sudo debootstrap bionic /opt/zoiper http://ftp.halifax.rwth-aachen.de/ubuntu/
 command -v schroot &>/dev/null || fail "Please install schroot with: sudo emerge -av schroot"
 [ -d /etc/schroot/ubuntu ] || sudo install -o root -g root -d /etc/schroot/ubuntu
 
@@ -57,9 +57,11 @@ sudo install -o root -g root -m 0644 $tmpfile /etc/schroot/chroot.d/bionic
 sudo bash -c "echo deb http://ftp.halifax.rwth-aachen.de/ubuntu bionic main universe > $base/etc/apt/sources.list"
 
 if ! sudo schroot -c bionic -- dpkg -l | grep -q "^ii *zoiper5" ; then
-	sudo schroot -c bionic -- apt-get update \; apt-get install -y libnotify4 libv4l-0 libnss3 \
-	libgtk2.0-0 libxss1 libpulse0 syslog-ng-core libasound2-dev libgl1 \
-	libcanberra-gtk-module libcanberra-gtk3-module
+	sudo schroot -c bionic -- apt-get update
+	sudo schroot -c bionic -- apt-get install -y libnotify4 libv4l-0 libnss3
+	sudo schroot -c bionic -- apt-get install -y libgtk2.0-0 libxss1 libpulse0
+	sudo schroot -c bionic -- apt-get install -y syslog-ng-core libasound2-dev libgl1
+	sudo schroot -c bionic -- apt-get install -y  libcanberra-gtk-module libcanberra-gtk3-module
 	sudo schroot -c bionic -- dpkg -i /home/sdh/Cloud2com/Relations/Zoiper/zoiper5*.deb
 	sudo schroot -c bionic -- install -o root -g root -m 1777 -d /run/user
 fi
