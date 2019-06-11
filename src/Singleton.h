@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <stdlib.h>
 #include <memory>
 #include <mutex>
 
@@ -36,6 +37,8 @@ namespace Fs2a {
 			static inline T *instance()
 			{
 				std::lock_guard<std::mutex> lck(mux_a);
+
+				atexit(Singleton<T>::close);
 
 				if (instance_a == nullptr) instance_a = new T();
 
