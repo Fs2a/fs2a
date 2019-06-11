@@ -38,9 +38,10 @@ namespace Fs2a {
 			{
 				std::lock_guard<std::mutex> lck(mux_a);
 
-				atexit(Singleton<T>::close);
-
-				if (instance_a == nullptr) instance_a = new T();
+				if (instance_a == nullptr) {
+					instance_a = new T();
+					atexit(Singleton<T>::close);
+				}
 
 				return instance_a;
 			}
