@@ -34,10 +34,17 @@ endif()
 
 list (APPEND CMAKE_MODULE_PATH "\${CMAKE_SOURCE_DIR}/cmake/modules")
 
+# Set the Git repository root directory
+execute_process (
+	COMMAND git rev-parse --show-toplevel
+	OUTPUT_VARIABLE GITREPOROOT
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
 project ($prj)
 
 # Custom C/C++ flags
-set (CUSTOM_FLAGS   "-Wall -Werror -Wextra -Wno-varargs")
+set (CUSTOM_FLAGS   "-Wall -Werror -Wextra -Wno-varargs -DGITREPOROOT='\${GITREPOROOT}'")
 set (CUSTOM_DEBUG   "-O0 -g3 -ggdb")
 set (CUSTOM_RELEASE "-O3")
 
