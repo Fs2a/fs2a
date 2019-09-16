@@ -95,7 +95,7 @@
 #define LN(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt, ##__VA_ARGS__)
 /// Log a Conditional Notice message
-#define LNI(cond, fmt, ...) \
+#define LCN(cond, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt, ##__VA_ARGS__); \
 	}
