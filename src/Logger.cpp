@@ -28,7 +28,7 @@ namespace Fs2a {
 
 	Logger::~Logger()
 	{
-		std::lock_guard<std::mutex> lck(mymux_a);
+		GRD(mymux_a);
 
 		if (syslog_a) {
 			closelog();
@@ -100,7 +100,7 @@ namespace Fs2a {
 
 	void Logger::stderror(const size_t strip_i)
 	{
-		std::lock_guard<std::mutex> lck(mymux_a);
+		GRD(mymux_a);
 
 		if (syslog_a) {
 			closelog();
@@ -112,7 +112,7 @@ namespace Fs2a {
 
 	bool Logger::syslog(const std::string ident_i, const int facility_i, const size_t strip_i)
 	{
-		std::lock_guard<std::mutex> lck(mymux_a);
+		GRD(mymux_a);
 
 		if (syslog_a) return false;
 

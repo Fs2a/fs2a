@@ -1,5 +1,5 @@
 /** @author   Simon de Hartog <simon@fs2a.pro>
- * @copyright Fs2a Ltd. (c) 2017 */
+ * @copyright Fs2a Ltd. (c) 2019 */
 
 #pragma once
 
@@ -7,8 +7,47 @@
 #include <memory>
 #include <mutex>
 
+#define GRD(x) std::lock_guard<std::mutex> lckgrd(x)
+
 namespace Fs2a {
 
+	/** Fs2a Singleton class.
+	 * If you want to use this class to model your own Singleton class, e.g.
+	 * MySingleton, be sure to:
+	 * 1. Use your class as template instantion of this one, so:
+	 *    Fs2a::Singleton<MySingleton>
+	 * 2. Use this as a superclass, so:
+	 *    class MySingleton :public Fs2a::Singleton<MySingleton>
+	 * 3. Declare this class a friend of your class, so add this line to your
+	 *    class definition:
+	 *    friend class Fs2a::Singleton<MySingleton>;
+	 * 4. Follow the default conventions of declaring private constructors and
+	 *    destructor.
+	 * Summarizing, here's an example header definition for your Singleton
+	 * class named MySingleton:
+	 *
+	 * class MySingleton : public Fs2a::Singleton<MySingleton>
+	 * {
+	 *   // Singleton template as friend for construction
+	 *   friend class Fs2a::Singleton<MySingleton>;
+	 *
+	 *   private:
+	 *   // Default constructor
+	 *   MySingleton();
+	 *
+	 *   // Copy constructor
+	 *   MySingleton(const MySingleton & obj_i) = delete;
+	 *
+	 *   // Assignment constructor
+	 *   MySingleton & operator=(const MySingleton & obj_i) = delete;
+	 *
+	 *   // Destructor
+	 *   ~MySingleton();
+	 *
+	 *   public:
+	 *   ...
+	 * };
+	 */
 	template <class T>
 	class Singleton {
 		private:
@@ -36,7 +75,7 @@ namespace Fs2a {
 			 * @returns a pointer to the singleton instance. */
 			static inline T *instance()
 			{
-				std::lock_guard<std::mutex> lck(mux_a);
+				GRD(mux_a);
 
 				if (instance_a == nullptr) {
 					instance_a = new T();
@@ -49,7 +88,7 @@ namespace Fs2a {
 			/** Explicitly close the singleton */
 			static inline void close()
 			{
-				std::lock_guard<std::mutex> lck(mux_a);
+				GRD(mux_a);
 
 				if (instance_a != nullptr) {
 					delete instance_a;
@@ -59,7 +98,8 @@ namespace Fs2a {
 
 			static inline bool is_constructed()
 			{
-				std::lock_guard<std::mutex> lck(mux_a);
+				GRD(mux_a);
+
 				return instance_a != nullptr;
 			}
 
