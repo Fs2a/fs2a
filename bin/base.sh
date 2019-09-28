@@ -80,6 +80,7 @@ add_subdirectory (chk)
 
 add_custom_target (BuildApp ALL DEPENDS $prj)
 EOF
+cp $base/cmake/modules/CodeCoverage.cmake cmake/modules
 fi
 
 if ! [ -r src/CMakeLists.txt ]; then
