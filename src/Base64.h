@@ -43,14 +43,12 @@ namespace Fs2a {
 						i++; continue;
 
 					case '\\':
-						i++;
-						if (i < b64_i.size() && b64_i[i] == 'n') {
-							/* \n found meaning newline, skip it entirely.
-							 * This is not according to standards, but it is
-							 * something the Bunq Bank API uses. */
-							i++;
-						}
-						continue;
+						/** When receiving data from PHP-generated HTTP
+						 * responses, PHP "automagically" adds backslashes to
+						 * any slash in the output. This is quite annoying,
+						 * but not many web developers seem to be aware of
+						 * this. So skip this character gracefully. */
+						i++; continue;
 
 					case '=':
 						switch (offset) {
@@ -110,6 +108,7 @@ namespace Fs2a {
 			}
 
 			offset = (offset + 1) % 4;
+			i++;
 		}
 
 		return data;
