@@ -5,21 +5,24 @@
 #include <string>
 #include <boost/asio/io_service.hpp>
 #include <websocketpp/client.hpp>
-#include "asioNoLog.h"
-#include "Logger.h"
+#include <websocketpp/config/asio_client.hpp>
+#include "asioTlsClientNoLog.h"
+#include "../Logger.h"
+
+#define WSTYPE websocketpp::config::asio_tls_client
 
 namespace Fs2a {
 
-	class WsClient : public websocketpp::client<asioNoLog>
+	class WsClient : public websocketpp::client<WSTYPE>
 	{
 		public:
 		/// Constructor
 		inline WsClient() :
-		websocketpp::client<asioNoLog>()
+		websocketpp::client<WSTYPE>()
 		{ }
 
 		/// Destructor
-		~WsClient() = default;
+		virtual ~WsClient() = default;
 
 		/// Shared pointer to connection object
 		connection_ptr con_a;
@@ -40,6 +43,9 @@ namespace Fs2a {
 			using websocketpp::lib::placeholders::_1;
 			using websocketpp::lib::placeholders::_2;
 			using websocketpp::lib::bind;
+
+			// Set the TLS init handler
+			set_tls_init_handler(Fs2a::WsClient::tlsInitHandler);
 
 			// Ugly hack to prevent diamond problem, duplicate code in WsClient
 			set_close_handler(bind(&Fs2a::WsClient::on_close,this,_1));
@@ -70,6 +76,19 @@ namespace Fs2a {
 		virtual inline void on_close(websocketpp::connection_hdl hdl_i) { UNUSED(hdl_i); }
 		virtual inline void on_open(websocketpp::connection_hdl hdl_i) { UNUSED(hdl_i); }
 		/** @} */
+
+		static inline websocketpp::lib::shared_ptr<boost::asio::ssl::context>
+			tlsInitHandler(websocketpp::connection_hdl hdl_i)
+		{
+			UNUSED(hdl_i);
+
+			websocketpp::lib::shared_ptr<boost::asio::ssl::context> sp;
+			sp.reset(new boost::asio::ssl::context(boost::asio::ssl::context::sslv23));
+			sp->set_default_verify_paths();
+
+			return sp;
+		}
+
 	};
 
 } // Fs2a namespace
