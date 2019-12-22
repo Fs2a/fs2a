@@ -5,9 +5,7 @@
 
 #include <stdlib.h>
 #include <memory>
-#include <mutex>
-
-#define GRD(x) std::lock_guard<std::mutex> lckgrd(x)
+#include "common.h"
 
 namespace Fs2a {
 

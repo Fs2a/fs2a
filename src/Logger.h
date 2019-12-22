@@ -8,13 +8,8 @@
 #include <map>
 #include <stdexcept>
 #include <syslog.h>
+#include "common.h"
 #include "Singleton.h"
-
-/** Prevent unused parameter warnings from the compiler. This definition is
- * supposed to be in a separate header file, but Logger is included everywhere
- * anyway and otherwise this special header file would only contain this
- * definition. */
-#define UNUSED(expr) (void)(expr)
 
 /** @{ Logging macros for easy logging */
 
