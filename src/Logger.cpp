@@ -36,7 +36,7 @@ namespace Fs2a {
 		}
 	}
 
-	void Logger::log(
+	std::unique_ptr<std::string> Logger::log(
 		const std::string & file_i,
 		const size_t & line_i,
 		const loglevel_t priority_i,
@@ -53,9 +53,9 @@ namespace Fs2a {
 		struct timeval tv;      // Time value storage
 		struct tm timeParts;    // Different parts of current time
 
-		if (fmt_i == nullptr) return;
+		if (fmt_i == nullptr) return std::unique_ptr<std::string>();
 
-		if (priority_i > maxlevel_a) return;
+		if (priority_i > maxlevel_a) return std::unique_ptr<std::string>();
 
 		fmt.assign(fmt_i);
 
@@ -96,6 +96,7 @@ namespace Fs2a {
 		} else {
 			std::cerr << oss.str() << std::endl;
 		}
+		return std::unique_ptr<std::string>(new std::string(oss.str()));
 	}
 
 	void Logger::stderror(const size_t strip_i)

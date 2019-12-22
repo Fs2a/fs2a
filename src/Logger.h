@@ -34,12 +34,6 @@
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt, ##__VA_ARGS__); \
 		return ret; \
 	}
-/// Log a Conditional Debug message and Throw if condition does not hold
-#define LCDT(cond, exc, fmt, ...) \
-	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt, ##__VA_ARGS__); \
-		throw exc; \
-	}
 #else
 /// Debugging disabled
 #define LD(fmt, ...) {}
@@ -52,10 +46,6 @@
 #define LCDR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		return ret; \
-	}
-#define LCDT(cond, exc, fmt, ...) \
-	if (!(cond)) { \
-		throw exc; \
 	}
 #endif
 
@@ -78,12 +68,6 @@
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt, ##__VA_ARGS__); \
 		return ret; \
-	}
-/// Log a Conditional Informational message and Throw if condition does not hold
-#define LCIT(cond, exc, fmt, ...) \
-	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt, ##__VA_ARGS__); \
-		throw exc; \
 	}
 
 /// Log a Notice message
@@ -127,8 +111,9 @@
 /// Log a Conditional Warning message and Throw if condition does not hold
 #define LCWT(cond, exc, fmt, ...) \
 	if (!(cond)) { \
+		std::unique_ptr<std::string> logstr = \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt, ##__VA_ARGS__); \
-		throw exc; \
+		throw exc(logstr->c_str()); \
 	}
 
 /// Log an Error message
@@ -154,8 +139,9 @@
 /// Log a Conditional Error message and Throw if condition does not hold
 #define LCET(cond, exc, fmt, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
-		throw exc; \
+		std::unique_ptr<std::string> logstr = \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
+		throw exc(logstr->c_str()); \
 	}
 /** @} */
 
@@ -231,8 +217,9 @@ namespace Fs2a {
 			 * @param file_i Filename we are logging from
 			 * @param line_i Line number at which we are logging
 			 * @param priority_i Syslog priority level
-			 * @param fmt_i Format argument for remainder of arguments */
-			void log(
+			 * @param fmt_i Format argument for remainder of arguments
+			 * @returns Unique pointer to logged string. */
+			std::unique_ptr<std::string> log(
 				const std::string & file_i,
 				const size_t & line_i,
 				const loglevel_t priority_i,
