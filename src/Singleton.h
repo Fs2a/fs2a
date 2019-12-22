@@ -5,7 +5,7 @@
 
 #include <stdlib.h>
 #include <memory>
-#include "common.h"
+#include "commondefs.h"
 
 namespace Fs2a {
 

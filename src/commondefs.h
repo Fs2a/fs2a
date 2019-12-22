@@ -1,7 +1,7 @@
 // vim:set ts=4 sw=4 noexpandtab:
 
-/** This header file contains common code that is used in other Fs2a code and
- * can also serve new code. */
+/** This header file contains common preprocessor definitations that are used
+ * in other Fs2a code and can also serve new code. */
 
 #pragma once
 

@@ -8,7 +8,7 @@
 #include <map>
 #include <stdexcept>
 #include <syslog.h>
-#include "common.h"
+#include "commondefs.h"
 #include "Singleton.h"
 
 /** @{ Logging macros for easy logging */
