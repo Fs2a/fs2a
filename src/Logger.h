@@ -17,25 +17,27 @@
 /// Log a Debug message
 #define LD(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt, ##__VA_ARGS__) \
+
 /// Log a Conditional Debug message
 #define LCD(cond, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt, ##__VA_ARGS__); \
 	}
+
 /// Log a Conditional Debug message and do Action if condition does not hold
 #define LCDA(cond, action, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt, ##__VA_ARGS__); \
 		action; \
 	}
+
 /// Log a Conditional Debug message and Return if condition does not hold
 #define LCDR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt, ##__VA_ARGS__); \
 		return ret; \
 	}
-#else
-/// Debugging disabled
+#else /// Debugging disabled
 #define LD(fmt, ...) {}
 #define LCD(cond, fmt, ...) \
 	if (!(cond)) { }
@@ -52,11 +54,13 @@
 /// Log an Informational message
 #define LI(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt, ##__VA_ARGS__)
+
 /// Log a Conditional Informational message
 #define LCI(cond, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt, ##__VA_ARGS__); \
 	}
+
 /// Log a Conditional Informational message and do Action if condition does not hold
 #define LCIA(cond, action, fmt, ...) \
 	if (!(cond)) { \
@@ -73,11 +77,13 @@
 /// Log a Notice message
 #define LN(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt, ##__VA_ARGS__)
+
 /// Log a Conditional Notice message
 #define LCN(cond, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt, ##__VA_ARGS__); \
 	}
+
 /// Log a Conditional Notice message and do Action if condition does not hold
 #define LCNA(cond, action, fmt, ...) \
 	if (!(cond)) { \
@@ -91,23 +97,27 @@
 /// Log a Warning message
 #define LW(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt, ##__VA_ARGS__)
+
 /// Log a Conditional Warning message
 #define LCW(cond, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt, ##__VA_ARGS__); \
 	}
+
 /// Log a Conditional Warning message and do Action if condition does not hold
 #define LCWA(cond, action, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt, ##__VA_ARGS__); \
 		action; \
 	}
+
 /// Log a Conditional Warning message and Return if condition does not hold
 #define LCWR(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt, ##__VA_ARGS__); \
 		return ret; \
 	}
+
 /// Log a Conditional Warning message and Throw if condition does not hold
 #define LCWT(cond, exc, fmt, ...) \
 	if (!(cond)) { \
@@ -119,28 +129,32 @@
 /// Log an Error message
 #define LE(fmt, ...) \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__)
+
 /// Log a Conditional Error message
 #define LCE(cond, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
 	}
+
 /// Log a Conditional Error message and do Action if condition does not hold
 #define LCEA(cond, action, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
 		action; \
 	}
+
 /// Log a Conditional Error message and Return if condition does not hold
 #define LCER(cond, ret, fmt, ...) \
 	if (!(cond)) { \
 		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
 		return ret; \
 	}
+
 /// Log a Conditional Error message and Throw if condition does not hold
 #define LCET(cond, exc, fmt, ...) \
 	if (!(cond)) { \
 		std::unique_ptr<std::string> logstr = \
-			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
+											  Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
 		throw exc(logstr->c_str()); \
 	}
 /** @} */
@@ -149,8 +163,7 @@ class LoggerCheck;
 
 namespace Fs2a {
 
-	class Logger : public Fs2a::Singleton<Logger>
-	{
+	class Logger : public Fs2a::Singleton<Logger> {
 			/// Singleton template as friend for construction
 			friend class Fs2a::Singleton<Logger>;
 
@@ -206,7 +219,8 @@ namespace Fs2a {
 			/** Check whether the current logging destination is syslog.
 			 * @returns True if logging to syslog, false if logging to
 			 * stderr. */
-			inline bool destSyslog() const {
+			inline bool destSyslog() const
+			{
 				return syslog_a;
 			}
 
@@ -229,11 +243,17 @@ namespace Fs2a {
 
 			/** Return the maximum log level which is logged.
 			 * @returns Maximum log level. */
-			inline loglevel_t maxlevel() const { return maxlevel_a; }
+			inline loglevel_t maxlevel() const
+			{
+				return maxlevel_a;
+			}
 
 			/** Set the maximum log level to log.
 			 * @param level_i New maximum log level. */
-			inline void maxlevel(const loglevel_t level_i) { maxlevel_a = level_i; }
+			inline void maxlevel(const loglevel_t level_i)
+			{
+				maxlevel_a = level_i;
+			}
 
 			/** Write all subsequent logs to stderr.
 			 * @param strip_i Number of characters to strip from beginning of

@@ -88,14 +88,18 @@ namespace Fs2a {
 			size_t rv = vsnprintf(buf, BUFSIZ, fmt_i, args);
 			va_end(args);
 			oss << buf;
+
 			if (rv >= BUFSIZ) oss << " (truncated)";
-		} else oss << fmt_i;
+		}
+		else oss << fmt_i;
 
 		if (syslog_a) {
 			::syslog(priority_i, "%s", oss.str().c_str());
-		} else {
+		}
+		else {
 			std::cerr << oss.str() << std::endl;
 		}
+
 		return std::unique_ptr<std::string>(new std::string(oss.str()));
 	}
 
