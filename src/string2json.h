@@ -1,4 +1,6 @@
-// vim:set ts=4 sw=4 noexpandtab:
+/** @author   Simon de Hartog <simon@fs2a.pro>
+ * @copyright Fs2a (c) 2020
+ * vim:set ts=4 sw=4 noexpandtab: */
 
 #pragma once
 
