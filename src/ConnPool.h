@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 #include <thread>
-#include <pqxx/pqxx>
 #include <signal.h>
 
 /// Forward checkclass declaration for friendships
