@@ -1,5 +1,5 @@
 /** @author   Simon de Hartog <simon@fs2a.pro>
- * @copyright Fs2a Ltd. (c) 2018
+ * @copyright Fs2a Ltd. (c) 2020
  * vim:set ts=4 sw=4 noexpandtab: */
 
 #pragma once
@@ -34,14 +34,14 @@ namespace Fs2a {
 			ConnPool & operator=(const ConnPool & obj_i) = delete;
 
 			/** Type definition for a map containing thread IDs to shared
-			 * pointers with PostgreSQL connections. */
+			 * pointers with DB connections. */
 			typedef std::map <
 			uint64_t,
 			std::shared_ptr<T>
 			> connmap_t;
 
 			/** Type definition for internal connection pool administration.
-			 * The map has a string as key, containing the PostgreSQL
+			 * The map has a string as key, containing the DB
 			 * connection string. Only a literal string comparison is matched,
 			 * permutations of settings are not taken into account. */
 			typedef std::map <
@@ -86,10 +86,10 @@ namespace Fs2a {
 
 			/** Get a database connection using @p params_i as connection
 			 * string.
-			 * @param params_i A PostgreSQL connection string. Each connection
+			 * @param params_i A DB connection string. Each connection
 			 * string comes with its own connection pool.
 			 * @throws A runtime exception when the connection setup failed.
-			 * @returns A PostgreSQL connection inside a std::shared_ptr */
+			 * @returns A DB connection inside a std::shared_ptr */
 			dbc_t get(const std::string & params_i) {
 				dbc_t con;
 				std::stringstream ss;
@@ -138,10 +138,10 @@ namespace Fs2a {
 
 			/** Get a database connection using @p params_i as connection
 			 * string.
-			 * @param params_i A PostgreSQL connection string. Each connection
+			 * @param params_i A DB connection string. Each connection
 			 * string comes with its own connection pool.
 			 * @throws A runtime exception when the connection setup failed.
-			 * @returns A PostgreSQL connection inside a std::shared_ptr */
+			 * @returns A DB connection inside a std::shared_ptr */
 			inline dbc_t get(const char *params_i) {
 				return get(std::string(params_i));
 			}
