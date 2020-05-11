@@ -87,11 +87,22 @@ namespace Fs2a {
 			va_start(args, count);
 			size_t rv = vsnprintf(buf, BUFSIZ, fmt_i, args);
 			va_end(args);
-			oss << buf;
+			fmt.assign(buf);
 
-			if (rv >= BUFSIZ) oss << " (truncated)";
+			if (rv >= BUFSIZ) fmt += " (truncated)";
+		} else {
+			fmt.assign(fmt_i);
 		}
-		else oss << fmt_i;
+
+		// Now remove double percent signs
+		pos = fmt.find("%%");
+		while (pos != std::string::npos) {
+			fmt.erase(pos, 1); 
+			pos = fmt.find("%%", pos+1);
+		}   
+
+		// And add to stringstream to output
+		oss << fmt;
 
 		if (syslog_a) {
 			::syslog(priority_i, "%s", oss.str().c_str());
