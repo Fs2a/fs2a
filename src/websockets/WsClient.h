@@ -34,7 +34,7 @@ vim:set ts=4 sw=4 noexpandtab: */
 #include "asioTlsClientNoLog.h"
 #include "../Logger.h"
 
-#define WSTYPE websocketpp::config::asio_tls_client
+#define WSTYPE Fs2a::asioTlsClientNoLog
 
 namespace Fs2a {
 

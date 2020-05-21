@@ -43,7 +43,7 @@ namespace Fs2a {
 			return false;
 		}
 
-		websocketpp::client<asioNoLog>::connect(con_a);
+		websocketpp::client<WSTYPE>::connect(con_a);
 		return true;
 	}
 
