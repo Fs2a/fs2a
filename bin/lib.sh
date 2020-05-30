@@ -74,7 +74,7 @@ function writeCppLicense() {
 
 	echo -n "/* "
 	head -n 1 "$1" | sed -E -e "s/[0-9][0-9][0-9][0-9]/$(date +%Y)/g"
-	tail -n +2 "$lf" | sed -E \
+	tail -n +2 "$1" | sed -E \
 		-e "s/[0-9][0-9][0-9][0-9]/$(date +%Y)/g" \
 		-e 's/^./ * &/g' \
 		-e 's/^$/ */g'
