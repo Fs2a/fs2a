@@ -1,6 +1,6 @@
 #!/bin/bash
 # Copyright (c) 2020 Simon de Hartog <simon@dehartog.name>
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
 # met:
@@ -12,7 +12,7 @@
 # 3. Neither the name of the copyright holder nor the names of its
 # contributors may be used to endorse or promote products derived from this
 # software without specific prior written permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 # IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
 # THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
@@ -29,6 +29,57 @@
 
 namespace=""
 
+function findLicenseFile() {
+	if [ $# -ne 1 ]
+	then
+		echo "Please pass a directory to look for the license file" >&2
+		echo ""
+		return
+	fi
+
+	if [ -r "$1/LICENSE" ]
+	then
+		echo "$1/LICENSE"
+		return
+	fi
+
+	if [ "$1" = "/" ]
+	then
+		echo ""
+		return
+	fi
+
+	findLicenseFile "$(readlink -f $1/..)"
+}
+
+function writeBashLicense() {
+	if [ $# -ne 1 ]
+	then
+		echo "Please specify the license file to format" >&2
+		exit 1
+	fi
+
+	sed -E \
+	-e "s/[0-9][0-9][0-9][0-9]/$(date +%Y)/g" \
+	-e 's/^./# &/g' \
+	-e 's/^$/#/g' "$1"
+}
+
+function writeCppLicense() {
+	if [ $# -ne 1 ]
+	then
+		echo "Please specify the license file to format" >&2
+		exit 1
+	fi
+
+	echo -n "/* "
+	head -n 1 "$1" | sed -E -e "s/[0-9][0-9][0-9][0-9]/$(date +%Y)/g"
+	tail -n +2 "$lf" | sed -E \
+		-e "s/[0-9][0-9][0-9][0-9]/$(date +%Y)/g" \
+		-e 's/^./ * &/g' \
+		-e 's/^$/ */g'
+}
+
 function setns() {
 	if [ -n "${namespace}" ]
 	then
@@ -36,27 +87,32 @@ function setns() {
 		return
 	fi
 
-	namespace=$(awk '
-	BEGIN {
-		cnt["Fs2a"] = 0
-	}
-
-	/^namespace / {
-		if ($2 in cnt) cnt[$2]++;
-		else cnt[$2] = 1
-	}
-
-	END {
-		winner = "Fs2a";
-		wincount = 0;
-
-		for (ns in cnt) {
-			if (cnt[ns] > wincount) {
-				winner = ns;
-				wincount = cnt[ns];
-			}
+	if [ $(find . -maxdepth 1 -name "*.cpp" -o -name "*.h" | wc -l) -gt 0 ]
+	then
+		namespace=$(awk '
+		BEGIN {
+			cnt["Fs2a"] = 0
 		}
 
-		printf "%s\n", winner
-	}' *.cpp *.h)
+		/^namespace / {
+			if ($2 in cnt) cnt[$2]++;
+			else cnt[$2] = 1
+		}
+
+		END {
+			winner = "Fs2a";
+			wincount = 0;
+
+			for (ns in cnt) {
+				if (cnt[ns] > wincount) {
+					winner = ns;
+					wincount = cnt[ns];
+				}
+			}
+
+			printf "%s\n", winner
+		}' *.cpp *.h)
+	else
+		namespace="Fs2a"
+	fi
 }
