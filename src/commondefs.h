@@ -38,6 +38,10 @@ vim:set ts=4 sw=4 noexpandtab: */
 /** Shorthand for setting up a lock guard for a recursive mutex. */
 #define RGRD(x) std::lock_guard<std::recursive_mutex> lckgrd(x)
 
+/** Convert a defined name into a string */
+#define STR(s) XSTR(s)
+#define XSTR(s) #s
+
 /** Prevent unused parameter warnings from the compiler. */
 #define UNUSED(expr) (void)(expr)
 
