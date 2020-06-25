@@ -29,6 +29,7 @@ vim:set ts=4 sw=4 noexpandtab: */
 
 #include <atomic>
 #include <cstdint>
+#include <iostream>
 #include <map>
 #include <stdexcept>
 #include <syslog.h>
@@ -232,6 +233,9 @@ namespace Fs2a {
 			/// Internal mutex to be MT safe
 			std::mutex mymux_a;
 
+			/// Stream to write to
+			std::ostream * stream_a;
+
 			/// Characters to strip from beginning of filenames
 			size_t strip_a;
 
@@ -282,7 +286,16 @@ namespace Fs2a {
 			/** Write all subsequent logs to stderr.
 			 * @param strip_i Number of characters to strip from beginning of
 			 * filenames to shorten log output, default 0 */
-			void stderror(const size_t strip_i = 0);
+			inline void stderror(const size_t strip_i = 0) { stream(&std::cerr, strip_i); }
+
+			/** Write all following logs to an output stream.
+			 * @param stream_i Pointer to stream to write to, can be std::cout,
+			 * std::cerr or any other output stream.
+			 * @param strip_i Number of characters to strip from beginning of
+			 * filenames to shorten log output, default 0.
+			 * @throws std::invalid_argument when a null pointer is passed to
+			 * @p stream_i. */
+			void stream(std::ostream * stream_i, const size_t strip_i = 0);
 
 			/** Write all following logs to syslog with specified program name.
 			 * @param ident_i Program identification

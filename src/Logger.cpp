@@ -30,6 +30,7 @@ vim:set ts=4 sw=4 noexpandtab: */
 #include <cstdarg>
 #include <mutex>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <stdio.h>
@@ -40,7 +41,7 @@ vim:set ts=4 sw=4 noexpandtab: */
 namespace Fs2a {
 
 	Logger::Logger()
-		: maxlevel_a(Logger::debug), strip_a(0), syslog_a(false)
+		: maxlevel_a(Logger::debug), stream_a(nullptr), strip_a(0), syslog_a(false)
 	{
 		levels_a[error]   = "ERROR";
 		levels_a[warning] = "WARNING";
@@ -56,7 +57,7 @@ namespace Fs2a {
 		if (syslog_a) {
 			closelog();
 			syslog_a = false;
-		}
+		} else stream_a = nullptr;
 	}
 
 	std::unique_ptr<std::string> Logger::log(
@@ -122,7 +123,7 @@ namespace Fs2a {
 		while (pos != std::string::npos) {
 			fmt.erase(pos, 1); 
 			pos = fmt.find("%%", pos+1);
-		}   
+		}
 
 		// And add to stringstream to output
 		oss << fmt;
@@ -131,14 +132,21 @@ namespace Fs2a {
 			::syslog(priority_i, "%s", oss.str().c_str());
 		}
 		else {
-			std::cerr << oss.str() << std::endl;
+			if (stream_a == nullptr) {
+				throw std::logic_error("Asked to log to stream, but stream is NULL");
+			}
+			*stream_a << oss.str() << std::endl;
 		}
 
 		return std::unique_ptr<std::string>(new std::string(oss.str()));
 	}
 
-	void Logger::stderror(const size_t strip_i)
+	void Logger::stream(std::ostream * stream_i, const size_t strip_i)
 	{
+		if (stream_i == nullptr) {
+			throw std::invalid_argument("Unable to write log output to NULL stream pointer");
+		}
+
 		GRD(mymux_a);
 
 		if (syslog_a) {
@@ -147,6 +155,8 @@ namespace Fs2a {
 		}
 
 		strip_a = strip_i;
+
+		stream_a = stream_i;
 	}
 
 	bool Logger::syslog(const std::string ident_i, const int facility_i, const size_t strip_i)
@@ -159,6 +169,7 @@ namespace Fs2a {
 		strip_a = strip_i;
 
 		openlog(ident_a.c_str(), LOG_CONS | LOG_NDELAY | LOG_PID, facility_i);
+		stream_a = nullptr;
 		syslog_a = true;
 		return true;
 	}
