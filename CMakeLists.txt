@@ -68,6 +68,7 @@ set (CMAKE_CXX_FLAGS_RELEASE "${CUSTOM_RELEASE}")
 
 # Find necessary packages
 find_package (Boost REQUIRED COMPONENTS system)
+find_package (fmt REQUIRED)
 find_package (PQXX REQUIRED)
 find_package (Threads REQUIRED)
 

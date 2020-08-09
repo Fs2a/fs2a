@@ -41,5 +41,6 @@ add_library (fs2a SHARED
 target_link_libraries (fs2a
 	${CMAKE_THREAD_LIBS_INIT}
 	${Boost_LIBRARIES}
+	fmt::fmt
 	${PQXX_LIBRARIES}
 )
