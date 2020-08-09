@@ -222,25 +222,25 @@ namespace Fs2a {
 		protected:
 			/** Maintain a local string for syslog program identification,
 			 * because openlog does not copy it. */
-			std::string ident_a;
+			std::string ident_;
 
 			/// Textual syslog levels map.
-			std::map<loglevel_t, std::string> levels_a;
+			std::map<loglevel_t, std::string> levels_;
 
 			/// Maximum log level to log.
-			std::atomic<loglevel_t> maxlevel_a;
+			std::atomic<loglevel_t> maxlevel_;
 
 			/// Internal mutex to be MT safe
-			std::mutex mymux_a;
+			std::mutex mymux_;
 
 			/// Stream to write to
-			std::ostream * stream_a;
+			std::ostream * stream_;
 
 			/// Characters to strip from beginning of filenames
-			size_t strip_a;
+			size_t strip_;
 
 			/// True when logging to syslog, false when logging to stderr
-			bool syslog_a;
+			bool syslog_;
 
 		public:
 
@@ -249,7 +249,7 @@ namespace Fs2a {
 			 * stderr. */
 			inline bool destSyslog() const
 			{
-				return syslog_a;
+				return syslog_;
 			}
 
 			/** Log a formatted message based on the given parameters.
@@ -273,14 +273,14 @@ namespace Fs2a {
 			 * @returns Maximum log level. */
 			inline loglevel_t maxlevel() const
 			{
-				return maxlevel_a;
+				return maxlevel_;
 			}
 
 			/** Set the maximum log level to log.
 			 * @param level_i New maximum log level. */
 			inline void maxlevel(const loglevel_t level_i)
 			{
-				maxlevel_a = level_i;
+				maxlevel_ = level_i;
 			}
 
 			/** Write all subsequent logs to stderr.

@@ -41,23 +41,23 @@ vim:set ts=4 sw=4 noexpandtab: */
 namespace Fs2a {
 
 	Logger::Logger()
-		: maxlevel_a(Logger::debug), stream_a(nullptr), strip_a(0), syslog_a(false)
+		: maxlevel_(Logger::debug), stream_(nullptr), strip_(0), syslog_(false)
 	{
-		levels_a[error]   = "ERROR";
-		levels_a[warning] = "WARNING";
-		levels_a[notice]  = "NOTICE";
-		levels_a[info]    = "INFO";
-		levels_a[debug]   = "DEBUG";
+		levels_[error]   = "ERROR";
+		levels_[warning] = "WARNING";
+		levels_[notice]  = "NOTICE";
+		levels_[info]    = "INFO";
+		levels_[debug]   = "DEBUG";
 	}
 
 	Logger::~Logger()
 	{
 		GRD(mymux_a);
 
-		if (syslog_a) {
+		if (syslog_) {
 			closelog();
-			syslog_a = false;
-		} else stream_a = nullptr;
+			syslog_ = false;
+		} else stream_ = nullptr;
 	}
 
 	std::unique_ptr<std::string> Logger::log(
@@ -79,7 +79,7 @@ namespace Fs2a {
 
 		if (fmt_i == nullptr) return std::unique_ptr<std::string>();
 
-		if (priority_i > maxlevel_a) return std::unique_ptr<std::string>();
+		if (priority_i > maxlevel_) return std::unique_ptr<std::string>();
 
 		fmt.assign(fmt_i);
 
@@ -91,10 +91,10 @@ namespace Fs2a {
 		oss << std::setfill('0') << std::setw(2) << timeParts.tm_sec << '.';
 		oss << std::setfill('0') << std::setw(6) << tv.tv_usec;
 		oss << " [" << std::this_thread::get_id() << "] ";
-		oss << file_i.substr(strip_a) << ':';
+		oss << file_i.substr(strip_) << ':';
 		oss << std::setw(0) << line_i << ' ';
 
-		if (!syslog_a) oss << levels_a[priority_i] << ' ';
+		if (!syslog_) oss << levels_[priority_i] << ' ';
 
 		// Remove double percent signs
 		while ((pos = fmt.find("%%")) != std::string::npos) fmt.erase(pos, 2);
@@ -128,14 +128,14 @@ namespace Fs2a {
 		// And add to stringstream to output
 		oss << fmt;
 
-		if (syslog_a) {
+		if (syslog_) {
 			::syslog(priority_i, "%s", oss.str().c_str());
 		}
 		else {
-			if (stream_a == nullptr) {
+			if (stream_ == nullptr) {
 				throw std::logic_error("Asked to log to stream, but stream is NULL");
 			}
-			*stream_a << oss.str() << std::endl;
+			*stream_ << oss.str() << std::endl;
 		}
 
 		return std::unique_ptr<std::string>(new std::string(oss.str()));
@@ -149,28 +149,28 @@ namespace Fs2a {
 
 		GRD(mymux_a);
 
-		if (syslog_a) {
+		if (syslog_) {
 			closelog();
-			syslog_a = false;
+			syslog_ = false;
 		}
 
-		strip_a = strip_i;
+		strip_ = strip_i;
 
-		stream_a = stream_i;
+		stream_ = stream_i;
 	}
 
 	bool Logger::syslog(const std::string ident_i, const int facility_i, const size_t strip_i)
 	{
 		GRD(mymux_a);
 
-		if (syslog_a) return false;
+		if (syslog_) return false;
 
-		ident_a = ident_i;
-		strip_a = strip_i;
+		ident_ = ident_i;
+		strip_ = strip_i;
 
-		openlog(ident_a.c_str(), LOG_CONS | LOG_NDELAY | LOG_PID, facility_i);
-		stream_a = nullptr;
-		syslog_a = true;
+		openlog(ident_.c_str(), LOG_CONS | LOG_NDELAY | LOG_PID, facility_i);
+		stream_ = nullptr;
+		syslog_ = true;
 		return true;
 	}
 
