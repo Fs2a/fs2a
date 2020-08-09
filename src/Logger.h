@@ -29,10 +29,13 @@ vim:set ts=4 sw=4 noexpandtab: */
 
 #include <atomic>
 #include <cstdint>
+#include <cstring>
 #include <iostream>
 #include <map>
 #include <stdexcept>
+#include <string>
 #include <syslog.h>
+#include <fmt/format.h>
 #include "commondefs.h"
 #include "Singleton.h"
 
@@ -40,79 +43,126 @@ vim:set ts=4 sw=4 noexpandtab: */
 
 #ifndef NDEBUG
 /// Log a Debug message
-#define LD(fmt, ...) \
-	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt, ##__VA_ARGS__) \
+#define LD(fmtstr, ...) { \
+	if (strchr(fmtstr, '%') != NULL) { \
+		char logbuf[BUFSIZ]; \
+		snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, logbuf); \
+	} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt::format(fmtstr, ##__VA_ARGS__)); \
+}
 
 /// Log a Conditional Debug message
-#define LCD(cond, fmt, ...) \
+#define LCD(cond, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt::format(fmtstr, ##__VA_ARGS__)); \
 	}
 
 /// Log a Conditional Debug message and do Action if condition does not hold
-#define LCDA(cond, action, fmt, ...) \
+#define LCDA(cond, action, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt::format(fmtstr, ##__VA_ARGS__)); \
 		action; \
 	}
 
 /// Log a Conditional Debug message and Return if condition does not hold
-#define LCDR(cond, ret, fmt, ...) \
+#define LCDR(cond, ret, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt::format(fmtstr, ##__VA_ARGS__)); \
 		return ret; \
 	}
 #else /// Debugging disabled
-#define LD(fmt, ...) {}
-#define LCD(cond, fmt, ...) \
+#define LD(fmtstr, ...) {}
+#define LCD(cond, fmtstr, ...) \
 	if (!(cond)) { }
-#define LCDA(cond, action, fmt, ...) \
+#define LCDA(cond, action, fmtstr, ...) \
 	if (!(cond)) { \
 		action; \
 	}
-#define LCDR(cond, ret, fmt, ...) \
+#define LCDR(cond, ret, fmtstr, ...) \
 	if (!(cond)) { \
 		return ret; \
 	}
 #endif
 
 /// Log an Informational message
-#define LI(fmt, ...) \
-	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt, ##__VA_ARGS__)
+#define LI(fmtstr, ...) { \
+	if (strchr(fmtstr, '%') != NULL) { \
+		char logbuf[BUFSIZ]; \
+		snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, logbuf); \
+	} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt::format(fmtstr, ##__VA_ARGS__)); \
+}
 
 /// Log a Conditional Informational message
-#define LCI(cond, fmt, ...) \
+#define LCI(cond, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt::format(fmtstr, ##__VA_ARGS__)); \
 	}
 
 /// Log a Conditional Informational message and do Action if condition does not hold
-#define LCIA(cond, action, fmt, ...) \
+#define LCIA(cond, action, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt::format(fmtstr, ##__VA_ARGS__)); \
 		action; \
 	}
 /// Log a Conditional Informational message and Return if condition does not hold
-#define LCIR(cond, ret, fmt, ...) \
+#define LCIR(cond, ret, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt::format(fmtstr, ##__VA_ARGS__)); \
 		return ret; \
 	}
 
 /// Log a Notice message
-#define LN(fmt, ...) \
-	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt, ##__VA_ARGS__)
+#define LN(fmtstr, ...) { \
+	if (strchr(fmtstr, '%') != NULL) { \
+		char logbuf[BUFSIZ]; \
+		snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, logbuf); \
+	} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt::format(fmtstr, ##__VA_ARGS__)); \
+}
 
 /// Log a Conditional Notice message
-#define LCN(cond, fmt, ...) \
+#define LCN(cond, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt::format(fmtstr, ##__VA_ARGS__)); \
 	}
 
 /// Log a Conditional Notice message and do Action if condition does not hold
-#define LCNA(cond, action, fmt, ...) \
+#define LCNA(cond, action, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt::format(fmtstr, ##__VA_ARGS__)); \
 		action; \
 	}
 /* Throw and Return variants are deprecated and only defined with other loglevels for backward compatibility.
@@ -120,66 +170,108 @@ vim:set ts=4 sw=4 noexpandtab: */
  * this loglevel. */
 
 /// Log a Warning message
-#define LW(fmt, ...) \
-	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt, ##__VA_ARGS__)
+#define LW(fmtstr, ...) { \
+	if (strchr(fmtstr, '%') != NULL) { \
+		char logbuf[BUFSIZ]; \
+		snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, logbuf); \
+	} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(fmtstr, ##__VA_ARGS__)); \
+}
 
 /// Log a Conditional Warning message
-#define LCW(cond, fmt, ...) \
+#define LCW(cond, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(fmtstr, ##__VA_ARGS__)); \
 	}
 
 /// Log a Conditional Warning message and do Action if condition does not hold
-#define LCWA(cond, action, fmt, ...) \
+#define LCWA(cond, action, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(fmtstr, ##__VA_ARGS__)); \
 		action; \
 	}
 
 /// Log a Conditional Warning message and Return if condition does not hold
-#define LCWR(cond, ret, fmt, ...) \
+#define LCWR(cond, ret, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(fmtstr, ##__VA_ARGS__)); \
 		return ret; \
 	}
 
 /// Log a Conditional Warning message and Throw if condition does not hold
-#define LCWT(cond, exc, fmt, ...) \
+#define LCWT(cond, exc, fmtstr, ...) \
 	if (!(cond)) { \
-		std::unique_ptr<std::string> logstr = \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt, ##__VA_ARGS__); \
+		std::unique_ptr<std::string> logstr; \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			logstr = Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, logbuf); \
+		} else logstr = Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(fmtstr, ##__VA_ARGS__)); \
 		throw exc(logstr->c_str()); \
 	}
 
 /// Log an Error message
-#define LE(fmt, ...) \
-	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__)
+#define LE(fmtstr, ...) { \
+	if (strchr(fmtstr, '%') != NULL) { \
+		char logbuf[BUFSIZ]; \
+		snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, logbuf); \
+	} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(fmtstr, ##__VA_ARGS__)); \
+}
 
 /// Log a Conditional Error message
-#define LCE(cond, fmt, ...) \
+#define LCE(cond, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(fmtstr, ##__VA_ARGS__)); \
 	}
 
 /// Log a Conditional Error message and do Action if condition does not hold
-#define LCEA(cond, action, fmt, ...) \
+#define LCEA(cond, action, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(fmtstr, ##__VA_ARGS__)); \
 		action; \
 	}
 
 /// Log a Conditional Error message and Return if condition does not hold
-#define LCER(cond, ret, fmt, ...) \
+#define LCER(cond, ret, fmtstr, ...) \
 	if (!(cond)) { \
-		Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, logbuf); \
+		} else Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(fmtstr, ##__VA_ARGS__)); \
 		return ret; \
 	}
 
 /// Log a Conditional Error message and Throw if condition does not hold
-#define LCET(cond, exc, fmt, ...) \
+#define LCET(cond, exc, fmtstr, ...) \
 	if (!(cond)) { \
-		std::unique_ptr<std::string> logstr = \
-			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
+		std::unique_ptr<std::string> logstr; \
+		if (strchr(fmtstr, '%') != NULL) { \
+			char logbuf[BUFSIZ]; \
+			snprintf(logbuf, BUFSIZ, fmtstr, ##__VA_ARGS__); \
+			logstr = Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, logbuf); \
+		} else logstr = Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(fmtstr, ##__VA_ARGS__)); \
 		throw exc(logstr->c_str()); \
 	}
 /** @} */
@@ -255,18 +347,16 @@ namespace Fs2a {
 			/** Log a formatted message based on the given parameters.
 			 * Please use the convenience logging macros instead of this
 			 * method.
-			 * @param log_i Whether to log the formatted line as well
 			 * @param file_i Filename we are logging from
 			 * @param line_i Line number at which we are logging
 			 * @param priority_i Syslog priority level
-			 * @param fmt_i Format argument for remainder of arguments
+			 * @param msg_i Formatted message
 			 * @returns Unique pointer to logged string. */
 			std::unique_ptr<std::string> log(
 				const std::string & file_i,
 				const size_t & line_i,
 				const loglevel_t priority_i,
-				const std::string & fmt_i,
-				...
+				const std::string & msg_i
 			);
 
 			/** Return the maximum log level which is logged.

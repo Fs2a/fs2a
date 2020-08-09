@@ -65,11 +65,9 @@ namespace Fs2a {
 		const std::string & file_i,
 		const size_t & line_i,
 		const loglevel_t priority_i,
-		const std::string & fmt_i,
-		...
+		const std::string & msg_i
 	)
 	{
-		va_list args;           // Variable arguments list
 		struct timeval tv;      // Time value storage
 		std::string le;         // Log Entry containing final result
 
@@ -90,15 +88,7 @@ namespace Fs2a {
 			le += " ";
 		}
 
-		va_start(args, fmt_i);
-		if (fmt_i.find('%') != std::string::npos) {
-			char buf[BUFSIZ];
-			vsnprintf(buf, BUFSIZ, fmt_i.c_str(), args);
-			le += buf;
-		} else {
-//			le += fmt::vformat(fmt_i, (args);
-		}
-		va_end(args);
+		le += msg_i;
 
 		if (syslog_) {
 			::syslog(priority_i, "%s", le.c_str());
