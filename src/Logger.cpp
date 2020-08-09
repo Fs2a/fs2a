@@ -26,15 +26,16 @@ POSSIBILITY OF SUCH DAMAGE.
 vim:set ts=4 sw=4 noexpandtab: */
 
 #include <iostream>
-#include <iomanip>
 #include <cstdarg>
 #include <mutex>
-#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <thread>
-#include <stdio.h>
+#include <stdarg.h>
 #include <time.h>
+#include <fmt/chrono.h>
+#include <fmt/format.h>
+#include <fmt/printf.h>
 #include <sys/time.h>
 #include "Logger.h"
 
@@ -64,81 +65,52 @@ namespace Fs2a {
 		const std::string & file_i,
 		const size_t & line_i,
 		const loglevel_t priority_i,
-		const char *fmt_i,
+		const std::string & fmt_i,
 		...
 	)
 	{
 		va_list args;           // Variable arguments list
-		char buf[BUFSIZ];       // Char buffer for doing vsnprintf
-		size_t count = 0;       // Number of percent signs in fmt_i
-		std::string fmt;        // Separate format string for counting
-		std::ostringstream oss; // Output Stringstream to write log string to
-		size_t pos = 0;         // Position in string of character
 		struct timeval tv;      // Time value storage
-		struct tm timeParts;    // Different parts of current time
-
-		if (fmt_i == nullptr) return std::unique_ptr<std::string>();
+		std::string le;         // Log Entry containing final result
 
 		if (priority_i > maxlevel_) return std::unique_ptr<std::string>();
 
-		fmt.assign(fmt_i);
-
 		gettimeofday(&tv, nullptr);
-		gmtime_r(&(tv.tv_sec), &timeParts);
 
-		oss << std::setfill('0') << std::setw(2) << timeParts.tm_hour << ':';
-		oss << std::setfill('0') << std::setw(2) << timeParts.tm_min << ':';
-		oss << std::setfill('0') << std::setw(2) << timeParts.tm_sec << '.';
-		oss << std::setfill('0') << std::setw(6) << tv.tv_usec;
-		oss << " [" << std::this_thread::get_id() << "] ";
-		oss << file_i.substr(strip_) << ':';
-		oss << std::setw(0) << line_i << ' ';
+		le = fmt::format("{:%T}.{:06d} [{}] {}:{} ",
+			fmt::localtime(tv.tv_sec),
+			tv.tv_usec,
+			std::this_thread::get_id(),
+			file_i.substr(strip_),
+			line_i
+		);
 
-		if (!syslog_) oss << levels_[priority_i] << ' ';
-
-		// Remove double percent signs
-		while ((pos = fmt.find("%%")) != std::string::npos) fmt.erase(pos, 2);
-
-		// Now count remaining percent signs to know number of args
-		pos = 0;
-
-		while ((pos = fmt.find('%', pos)) != std::string::npos) {
-			count++;
-			pos++;
+		if (!syslog_) {
+			le += levels_[priority_i];
+			le += " ";
 		}
 
-		if (count > 0) {
-			va_start(args, count);
-			size_t rv = vsnprintf(buf, BUFSIZ, fmt_i, args);
-			va_end(args);
-			fmt.assign(buf);
-
-			if (rv >= BUFSIZ) fmt += " (truncated)";
+		va_start(args, fmt_i);
+		if (fmt_i.find('%') != std::string::npos) {
+			char buf[BUFSIZ];
+			vsnprintf(buf, BUFSIZ, fmt_i.c_str(), args);
+			le += buf;
 		} else {
-			fmt.assign(fmt_i);
+//			le += fmt::vformat(fmt_i, (args);
 		}
-
-		// Now remove double percent signs
-		pos = fmt.find("%%");
-		while (pos != std::string::npos) {
-			fmt.erase(pos, 1); 
-			pos = fmt.find("%%", pos+1);
-		}
-
-		// And add to stringstream to output
-		oss << fmt;
+		va_end(args);
 
 		if (syslog_) {
-			::syslog(priority_i, "%s", oss.str().c_str());
+			::syslog(priority_i, "%s", le.c_str());
 		}
 		else {
 			if (stream_ == nullptr) {
 				throw std::logic_error("Asked to log to stream, but stream is NULL");
 			}
-			*stream_ << oss.str() << std::endl;
+			*stream_ << le << std::endl;
 		}
 
-		return std::unique_ptr<std::string>(new std::string(oss.str()));
+		return std::unique_ptr<std::string>(new std::string(le));
 	}
 
 	void Logger::stream(std::ostream * stream_i, const size_t strip_i)

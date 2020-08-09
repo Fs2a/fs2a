@@ -179,7 +179,7 @@ vim:set ts=4 sw=4 noexpandtab: */
 #define LCET(cond, exc, fmt, ...) \
 	if (!(cond)) { \
 		std::unique_ptr<std::string> logstr = \
-											  Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
+			Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt, ##__VA_ARGS__); \
 		throw exc(logstr->c_str()); \
 	}
 /** @} */
@@ -265,7 +265,7 @@ namespace Fs2a {
 				const std::string & file_i,
 				const size_t & line_i,
 				const loglevel_t priority_i,
-				const char *fmt_i,
+				const std::string & fmt_i,
 				...
 			);
 
