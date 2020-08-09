@@ -52,7 +52,7 @@ namespace Fs2a {
 
 	Logger::~Logger()
 	{
-		GRD(mymux_a);
+		GRD(mymux_);
 
 		if (syslog_) {
 			closelog();
@@ -147,7 +147,7 @@ namespace Fs2a {
 			throw std::invalid_argument("Unable to write log output to NULL stream pointer");
 		}
 
-		GRD(mymux_a);
+		GRD(mymux_);
 
 		if (syslog_) {
 			closelog();
@@ -161,7 +161,7 @@ namespace Fs2a {
 
 	bool Logger::syslog(const std::string ident_i, const int facility_i, const size_t strip_i)
 	{
-		GRD(mymux_a);
+		GRD(mymux_);
 
 		if (syslog_) return false;
 
