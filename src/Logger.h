@@ -39,7 +39,8 @@ vim:set ts=4 sw=4 noexpandtab: */
 #include "commondefs.h"
 #include "Singleton.h"
 
-/** @{ Logging macros for easy logging */
+/** @{ Logging macros for easy logging using old-school *printf %
+ * replacements. */
 
 #ifndef NDEBUG
 /// Log a Debug message
@@ -234,6 +235,35 @@ if (!(cond)) { \
 	logstr = Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, logbuf); \
 	throw exc(logstr->c_str()); \
 }
+/** @} */
+
+/** @{ Easy logging macros that use libFmt formatting. */
+#ifndef NDEBUG
+#define FD(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt::format(str, ##__VA_ARGS__))
+#else
+#define FD(str, ...) {}
+#endif
+
+#define FI(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt::format(str, ##__VA_ARGS__))
+#define FN(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt::format(str, ##__VA_ARGS__))
+#define FW(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(str, ##__VA_ARGS__))
+#define FCW(cond, str, ...) if (!(cond)) { Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(str, ##__VA_ARGS__)); }
+
+#define FE(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__))
+#define FCE(cond, str, ...) if (!(cond)) { Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__)); }
+#define FCEA(cond, action, str, ...) if (!(cond)) { \
+	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__)); \
+	action; \
+}
+#define FCER(cond, ret, str, ...) if (!(cond)) { \
+	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__)); \
+	return ret; \
+}
+#define FCET(cond, exc, str, ...) if (!(cond)) { \
+	throw exc(Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__))->c_str()); \
+}
+
+
 /** @} */
 
 class LoggerCheck;
