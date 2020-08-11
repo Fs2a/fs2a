@@ -254,6 +254,8 @@ if (!(cond)) { \
 }
 
 #define FE(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__))
+#define FET(exc, str, ...) \
+	throw exc(Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__))->c_str())
 #define FCE(cond, str, ...) if (!(cond)) { Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__)); }
 #define FCEA(cond, action, str, ...) if (!(cond)) { \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__)); \
