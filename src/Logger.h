@@ -245,7 +245,19 @@ if (!(cond)) { \
 #endif
 
 #define FI(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt::format(str, ##__VA_ARGS__))
+#define FCI(cond, str, ...) if (!(cond)) { Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt::format(str, ##__VA_ARGS__)); }
+#define FCIA(cond, action, str, ...) if (!(cond)) { \
+	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt::format(str, ##__VA_ARGS__)); \
+	action; \
+}
+
 #define FN(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt::format(str, ##__VA_ARGS__))
+#define FCN(cond, str, ...) if (!(cond)) { Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt::format(str, ##__VA_ARGS__)); }
+#define FCNA(cond, action, str, ...) if (!(cond)) { \
+	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt::format(str, ##__VA_ARGS__)); \
+	action; \
+}
+
 #define FW(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(str, ##__VA_ARGS__))
 #define FCW(cond, str, ...) if (!(cond)) { Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(str, ##__VA_ARGS__)); }
 #define FCWA(cond, action, str, ...) if (!(cond)) { \
