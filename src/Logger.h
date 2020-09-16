@@ -239,48 +239,63 @@ if (!(cond)) { \
 
 /** @{ Easy logging macros that use libFmt formatting. */
 #ifndef NDEBUG
+/** log a libFmt formatted Debug string */
 #define FD(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt::format(str, ##__VA_ARGS__))
 #else
 #define FD(str, ...) {}
 #endif
 
+/** log a libFmt formatted Informational string */
 #define FI(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt::format(str, ##__VA_ARGS__))
+/** log a Conditional libFmt formatted Informational string */
 #define FCI(cond, str, ...) if (!(cond)) { Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt::format(str, ##__VA_ARGS__)); }
+/** log a Conditional libFmt formatted Informational string and execute an additional Action when condition does not hold */
 #define FCIA(cond, action, str, ...) if (!(cond)) { \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::info, fmt::format(str, ##__VA_ARGS__)); \
 	action; \
 }
 
+/** log a libFmt formatted Notification string */
 #define FN(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt::format(str, ##__VA_ARGS__))
+/** log a Conditional libFmt formatted Notification string */
 #define FCN(cond, str, ...) if (!(cond)) { Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt::format(str, ##__VA_ARGS__)); }
+/** log a Conditional libFmt formatted Notification string and execute an additional Action when condition does not hold */
 #define FCNA(cond, action, str, ...) if (!(cond)) { \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::notice, fmt::format(str, ##__VA_ARGS__)); \
 	action; \
 }
 
+/** log a libFmt formatted Warning string */
 #define FW(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(str, ##__VA_ARGS__))
+/** log a Conditional libFmt formatted Notification string */
 #define FCW(cond, str, ...) if (!(cond)) { Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(str, ##__VA_ARGS__)); }
+/** log a Conditional libFmt formatted Warning string and execute an additional Action when condition does not hold */
 #define FCWA(cond, action, str, ...) if (!(cond)) { \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(str, ##__VA_ARGS__)); \
 	action; \
 }
 
+/** log a libFmt formatted Error string */
 #define FE(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__))
+/** log a libFmt formatted Error string and Throw an exception with that same string */
 #define FET(exc, str, ...) \
 	throw exc(Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__))->c_str())
+/** log a Conditional libFmt formatted Error string */
 #define FCE(cond, str, ...) if (!(cond)) { Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__)); }
+/** log a Conditional libFmt formatted Error string and execute an additional Action when condition does not hold */
 #define FCEA(cond, action, str, ...) if (!(cond)) { \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__)); \
 	action; \
 }
+/** log a Conditional libFmt formatted Error string and Return when condition does not hold */
 #define FCER(cond, ret, str, ...) if (!(cond)) { \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__)); \
 	return ret; \
 }
+/** log a Conditional libFmt formatted Error string and Throw an exception with that same string */
 #define FCET(cond, exc, str, ...) if (!(cond)) { \
 	throw exc(Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__))->c_str()); \
 }
-
 
 /** @} */
 
