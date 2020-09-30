@@ -30,7 +30,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# vim:set ts=4 sw=4 noexpandtab:
+# vim:set ts=4 sw=4 noet:
 
 if [ $# -ne 1 ]
 then
@@ -59,7 +59,7 @@ setns
 writeCppLicense "$lf" > $1.h
 cat >> $1.h << EOF
  *
- * vim:set ts=4 sw=4 noexpandtab: */
+ * vim:set ts=4 sw=4 noet: */
 
 #pragma once
 
@@ -83,7 +83,7 @@ EOF
 writeCppLicense "$lf" > $1.cpp
 cat >> $1.cpp << EOF
  *
- * vim:set ts=4 sw=4 noexpandtab: */
+ * vim:set ts=4 sw=4 noet: */
 
 #include "$1.h"
 
