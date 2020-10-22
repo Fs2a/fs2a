@@ -274,6 +274,11 @@ if (!(cond)) { \
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(str, ##__VA_ARGS__)); \
 	action; \
 }
+/** log a Conditional libFmt formatted Warning string and Return when condition does not hold */
+#define FCWR(cond, ret, str, ...) if (!(cond)) { \
+	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::warning, fmt::format(str, ##__VA_ARGS__)); \
+	return ret; \
+}
 
 /** log a libFmt formatted Error string */
 #define FE(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::error, fmt::format(str, ##__VA_ARGS__))
