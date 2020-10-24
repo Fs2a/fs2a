@@ -31,7 +31,7 @@ if ! [ -r chk/chk.cpp ]; then
 writeCppLicense ./LICENSE > chk/chk.cpp
 cat >>chk/chk.cpp <<EOF
  *
- * vim:set ts=4 sw=4 noexpandtab: */
+ * vim:set ts=4 sw=4 noet: */
 
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
@@ -61,7 +61,7 @@ if ! [ -r ./CMakeLists.txt ]; then
 writeBashLicense ./LICENSE > ./CMakeLists.txt
 cat >>./CMakeLists.txt <<EOF
 #
-# vim:set ts=2 sw=2 noexpandtab:
+# vim:set ts=2 sw=2 noet:
 
 cmake_minimum_required (VERSION 3.4)
 if(POLICY CMP0015)
@@ -73,6 +73,8 @@ endif()
 
 list (APPEND CMAKE_MODULE_PATH "\${CMAKE_SOURCE_DIR}/cmake")
 
+project ($prj)
+
 # Set the Git repository root directory
 execute_process (
 	COMMAND git rev-parse --show-toplevel
@@ -80,7 +82,10 @@ execute_process (
 	OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-project ($prj)
+# Offer option to do code coverage when build type is Debug
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+	option (RUN_COVERAGE "Analyze the code coverage of the unitchecks" ON)
+endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # Custom C/C++ flags
 set (CUSTOM_FLAGS   "-Wall -Werror -Wextra -Wno-varargs -DGITREPOROOT='\${GITREPOROOT}'")
@@ -149,8 +154,21 @@ if ! [ -r chk/CMakeLists.txt ]; then
 writeBashLicense ./LICENSE > chk/CMakeLists.txt
 cat >>chk/CMakeLists.txt <<EOF
 #
-# vim:set ts=4 sw=4 noexpandtab:
+# vim:set ts=4 sw=4 noet:
 
+# Include stuff for code coverage
+if (RUN_COVERAGE STREQUAL "ON")
+	include(CodeCoverage)
+	append_coverage_compiler_flags()
+	setup_target_for_coverage_gcovr_html(
+		NAME coverage
+		EXECUTABLE chk
+		BASE_DIRECTORY "${PROJECT_SOURCE_DIR}/src"
+		EXCLUDE "${PROJECT_SOURCE_DIR}/chk"
+	)
+endif (RUN_COVERAGE STREQUAL "ON")
+
+# Find the CppUnit package
 find_package (CppUnit REQUIRED)
 
 include_directories (
