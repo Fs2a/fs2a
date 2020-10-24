@@ -130,7 +130,7 @@ if ! [ -r src/CMakeLists.txt ]; then
 writeBashLicense ./LICENSE > src/CMakeLists.txt
 cat >>src/CMakeLists.txt <<EOF
 #
-# vim:set ts=4 sw=4 noexpandtab:
+# vim:set ts=4 sw=4 noet:
 
 include_directories (
         \${Boost_INCLUDE_DIRS}
