@@ -35,12 +35,12 @@ namespace Fs2a {
 		if (pf_i == NULL) pf = "(No function)";
 		else pf = pf_i;
 
-		LD("%s entry", pf.c_str());
+		FD("{} entry", pf);
 	}
 
 	Tracer::~Tracer()
 	{
-		LD("%s exit", pf.c_str());
+		FD("{} exit", pf);
 	}
 
 } // Fs2a namespace
