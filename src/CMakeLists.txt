@@ -36,6 +36,7 @@ include_directories (
 )
 
 add_library (fs2a SHARED
+	CsvWriter.cpp
 	IOsvcWrapper.cpp
 	Logger.cpp
 	Semaphore.cpp
