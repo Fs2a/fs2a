@@ -29,6 +29,7 @@ vim:set ts=4 sw=4 noexpandtab: */
 #include <condition_variable>
 #include <memory>
 #include <mutex>
+#include <pqxx/pqxx>
 #include <string>
 #include <thread>
 #include <Logger.h>

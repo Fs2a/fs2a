@@ -45,18 +45,10 @@ class CHECKNAME : public CppUnit::TestFixture {
 	CPPUNIT_TEST(construction);
 	CPPUNIT_TEST(columns);
 	CPPUNIT_TEST(rows);
+	CPPUNIT_TEST(cells);
 	CPPUNIT_TEST_SUITE_END();
 
 	public:
-
-	CHECKNAME()
-	{ }
-
-	void setUp() {
-	}
-
-	void tearDown() {
-	}
 
 	void construction() {
 		Fs2a::Table<int> t;
@@ -111,6 +103,61 @@ class CHECKNAME : public CppUnit::TestFixture {
 
 		// Assure row count is still zero after column set
 		CPPUNIT_ASSERT_EQUAL(0, t.rows());
+
+		// Clearing data throws nothing
+		CPPUNIT_ASSERT_NO_THROW(t.rows(0));
+		CPPUNIT_ASSERT_EQUAL(0, t.rows());
+
+		// Allocate a couple of rows
+		CPPUNIT_ASSERT_NO_THROW(t.rows(3));
+		CPPUNIT_ASSERT_EQUAL(3, t.rows());
+
+		// Clear allocated rows
+		CPPUNIT_ASSERT_NO_THROW(t.rows(0));
+		CPPUNIT_ASSERT_EQUAL(0, t.rows());
+
+		// Allocate different rows
+		CPPUNIT_ASSERT_NO_THROW(t.rows(5));
+		CPPUNIT_ASSERT_EQUAL(5, t.rows());
+
+		// Allocation of same rowcount succeeds
+		CPPUNIT_ASSERT_NO_THROW(t.rows(5));
+		CPPUNIT_ASSERT_EQUAL(5, t.rows());
+
+		// Allocation of higher rowcount succeeds
+		CPPUNIT_ASSERT_NO_THROW(t.rows(8));
+		CPPUNIT_ASSERT_EQUAL(8, t.rows());
+
+		// Allocation of lower rowcount succeeds
+		CPPUNIT_ASSERT_NO_THROW(t.rows(4));
+		CPPUNIT_ASSERT_EQUAL(4, t.rows());
+	}
+
+	void cells()
+	{
+		Fs2a::Table<int> t;
+
+		CPPUNIT_ASSERT_NO_THROW(t.columns(3));
+
+		// Check bounds
+		CPPUNIT_ASSERT_THROW(t.cell(5, 0), std::out_of_range);
+		CPPUNIT_ASSERT_EQUAL(0, t.rows());
+		CPPUNIT_ASSERT_THROW(t.cell(3, 2), std::out_of_range);
+		CPPUNIT_ASSERT_EQUAL(0, t.rows());
+
+		// Get reference to first cell
+		auto r1 = t.cell(0, 0);
+		CPPUNIT_ASSERT_EQUAL(1, t.rows());
+		auto r2 = t.cell(0, 0);
+		CPPUNIT_ASSERT_EQUAL(1, t.rows());
+		CPPUNIT_ASSERT_EQUAL(r2, r1);
+		r1 = 42;
+		CPPUNIT_ASSERT_EQUAL(42, r2);
+
+		// Create some rows through cell referencing
+		r1 = t.cell(2, 6);
+		CPPUNIT_ASSERT_EQUAL(7, t.rows());
+	}
 
 };
 

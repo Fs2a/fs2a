@@ -32,6 +32,7 @@
 
 include_directories (
 	${Boost_INCLUDE_DIRS}
+	${CMAKE_SOURCE_DIR}/src
 	${PQXX_INCLUDE_DIRS}
 )
 
@@ -48,4 +49,5 @@ target_link_libraries (fs2a
 	${Boost_LIBRARIES}
 	fmt::fmt
 	${PQXX_LIBRARIES}
+	utf8cpp
 )
