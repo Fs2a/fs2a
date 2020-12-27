@@ -56,7 +56,7 @@ class CHECKNAME : public CppUnit::TestFixture {
 			CPPUNIT_ASSERT_EQUAL(false, l->destSyslog());
 
 			// Ensure syslog level mappings are in place
-			CPPUNIT_ASSERT_EQUAL((size_t) 8, l->levels_a.size());
+			CPPUNIT_ASSERT_EQUAL((size_t) 5, l->levels_.size());
 
 			// Can we open to syslog?
 			CPPUNIT_ASSERT(l->syslog("LoggerCheck"));
