@@ -241,8 +241,17 @@ if (!(cond)) { \
 #ifndef NDEBUG
 /** log a libFmt formatted Debug string */
 #define FD(str, ...) Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt::format(str, ##__VA_ARGS__))
+/** log a Conditional libFmt formatted Debug string */
+#define FCD(cond, str, ...) if (!(cond)) { Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt::format(str, ##__VA_ARGS__)); }
+/** log a Conditional libFmt formatted Debug string and execute an additional Action when condition does not hold */
+#define FCDA(cond, action, str, ...) if (!(cond)) { \
+	Fs2a::Logger::instance()->log(__FILE__, __LINE__, Fs2a::Logger::debug, fmt::format(str, ##__VA_ARGS__)); \
+	action; \
+}
 #else
 #define FD(str, ...) {}
+#define FCD(cond, str, ...) if (!(cond)) {}
+#define FCDA(cond, action, str, ...) if (!(cond)) { action; }
 #endif
 
 /** log a libFmt formatted Informational string */
