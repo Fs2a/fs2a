@@ -25,7 +25,7 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# vim:set ts=4 sw=4 noexpandtab:
+# vim:set ts=4 sw=4 noet tw=120:
 
 # Add this script to the bin directory of your repository. Add the
 # following lines to your CMakeLists.txt (example currency):
@@ -107,7 +107,7 @@ fi
 export base=$( basename "$infile" .tbl )
 
 cat > "${outdir}/${base}.h" <<EOF
-// vim:set ts=4 sw=4 noexpandtab:
+// vim:set ts=4 sw=4 noet tw=120:
 
 #pragma once
 

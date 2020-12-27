@@ -25,7 +25,7 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# vim:set ts=2 sw=2 noexpandtab:
+# vim:set ts=2 sw=2 noet tw=120:
 
 repo="$(git rev-parse --show-toplevel)"
 
