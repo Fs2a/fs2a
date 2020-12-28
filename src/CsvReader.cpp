@@ -55,10 +55,38 @@ namespace Fs2a {
 		enum expect_e : uint8_t {
 			startOfField,
 			readField,
-			quoteEnd
+			endOfRecord,
+			separator
 		};
 
 		expect_e e = startOfField;
+
+		auto fieldReady = [&](const bool foundSep) {
+			if (readingHeader) {
+				h.push_back(f);
+				if (foundSep) {
+					e = startOfField;
+				} else {
+					e = separator;
+				}
+				return;
+			} else {
+				t.cell(col, row) = f;
+				if (col >= t.columns()) {
+					throw std::runtime_error(ERR + "More than "s + std::to_string(t.columns()) + " fields found in current record");
+				}
+				if (col == t.columns() - 1) {
+					e = endOfRecord;
+				} else {
+					if (foundSep) {
+						col++;
+						e = startOfField;
+					} else {
+						e = separator;
+					}
+				}
+			}
+		};
 
 		while (stream_i.good()) {
 			stream_i.read(&c, 1);
@@ -72,26 +100,15 @@ namespace Fs2a {
 				case startOfField:
 					f.clear();
 					switch (c) {
-						case '\'':
 						case '"':
 							quoted = true;
-							s = readField;
-							break;
+							e = readField;
+							continue;
 
 						case separator_i:
 							// Empty field
-							if (readingHeader) {
-								h.push_back("");
-							} else {
-								t.cell(col, row) = "";
-								if (col >= t.columns()) {
-									throw std::runtime_error(ERR + "Line contains at least "s +
-										std::to_string(col + 1) + " fields, but column count is "s + std::to_string(t.columns()));
-								} else {
-									col++;
-								}
-							}
-							break;
+							fieldReady(true);
+							continue;
 
 						case '\r':
 							if (stream_i.peek() == '\n') {
@@ -130,7 +147,64 @@ namespace Fs2a {
 								row++;
 							}
 							charOnLine = 0;
-							break;
+							continue;
+
+						default:
+							quoted = false;
+							f.append(c);
+							e = readField;
+							continue;
+					}
+					break;
+
+				case readField:
+					switch (c) {
+						case '"':
+							if (!quoted) {
+								f.append(c);
+								continue;
+							}
+							// Quoted field
+							if (stream_i.peek() == c) {
+								// Quoted quote, extract and add to field
+								stream_i.read(&c, 1);
+								charOnLine++;
+								f.append(c);
+								continue;
+							}
+							// Single quote, end of field
+							if (readingHeader) {
+								h.push_back(f);
+								e = separator;
+								continue;
+							}
+							t.cell(col, row) = f;
+							if (col >= t.columns() - 1) {
+								e = endOfRecord;
+							} else {
+								e = separator;
+							}
+							continue;
+
+						case separator_i:
+							if (!quoted) {
+								if (readingHeader) {
+									h.push_back(f);
+									continue;
+								}
+
+
+
+						default:
+							f.append(c);
+							continue;
+					}
+					continue;
+
+
+
+					}
+					break;
 
 		}
 	}
