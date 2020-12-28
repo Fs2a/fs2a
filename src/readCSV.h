@@ -37,17 +37,11 @@
 #include <Table.h>
 
 namespace Fs2a {
-	/** Reads CSV data into memory from a stream.
-	 * Takes care of unquoting where necessary. */
-	class CsvReader
-	{
-		public:
-		/** Read CSV from given stream.
-		 * @param stream_i Input stream to read CSV from.
-		 * @param separator_i Separator character to use, default is
-		 * semicolon ';'
-		 * @returns Table object with all data. */
-		Table<std::string> read(std::istream & stream_i, const char separator_i = ';');
-	};
+	/** Read and parse CSV data from a given stream into a Table object.
+	 * @param stream_i Input stream to read CSV from.
+	 * @param separator_i Separator character to use, default is
+	 * semicolon ';'
+	 * @returns Table object with all data. */
+	Table<std::string> readCSV(std::istream & stream_i, const char separator_i = ';');
 
 } // Fs2a namespace

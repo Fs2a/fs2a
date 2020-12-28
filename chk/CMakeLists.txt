@@ -53,6 +53,7 @@ add_executable (chk
 	# connpool.cpp
 	logger.cpp
 	observing.cpp
+	readcsv.cpp
 	singleton.cpp
 	table.cpp
 )

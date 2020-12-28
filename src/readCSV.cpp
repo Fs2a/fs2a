@@ -32,13 +32,13 @@
 
 #include <cstdint>
 #include <string>
-#include "CsvReader.h"
+#include "readCSV.h"
 
-#define ERR "Error at line "s + std::to_string(row + 1) + ", character "s + std::to_string(pos) + ": "s
+#define ERR "Error at line "s + std::to_string(line) + ", character "s + std::to_string(pos) + ": "s
 
 namespace Fs2a {
 
-	Table<std::string> CvReader::read(std::istream & stream_i, const char separator_i)
+	Table<std::string> readCSV(std::istream & stream_i, const char separator_i)
 	{
 		using namespace std::string_literals;
 
@@ -56,7 +56,6 @@ namespace Fs2a {
 
 		enum last_e : uint8_t {
 			beginQuote,
-			endOfRecord,
 			endQuote,
 			fieldData,
 			separator,
@@ -65,27 +64,19 @@ namespace Fs2a {
 
 		last_e last = startOfRecord;
 
-		auto fieldReady = [&](const bool nxt) {
+		auto fieldReady = [&]() {
 			if (readingHeader) {
 				h.push_back(f);
-				return;
 			}
-			t.cell(col, row) = f;
-			if (nxt) {
-				if (col >= t.columns()) {
-					throw std::runtime_error(ERR + "More than "s + std::to_string(t.columns()) + " fields found in current record");
-				}
-				if (col == t.columns() - 1) {
-					col = 0; row++;
-				} else {
-					col++;
-				}
+			else {
+				t.cell(col, row) = f;
 			}
+			f.clear();
 		};
 
 		// Disable exceptions for EOF on the stream, because we need to be able to handle EOF properly.
 		// If something bad happens other than EOF, throw exception.
-		stream_i.exceptions(istream::badbit);
+		stream_i.exceptions(std::istream::badbit);
 
 		while (stream_i.good()) {
 			stream_i.read(&c, 1);
@@ -105,13 +96,13 @@ namespace Fs2a {
 
 					case '\r':
 						if (stream_i.peek() == '\n') {
-							f.append(c);
+							f.push_back(c);
 							// Swallow \r\n
 							stream_i.read(&c, 1);
 						}
 						// Fallthrough
 					case '\n':
-						f.append(c);
+						f.push_back(c);
 						line++; pos = 0;
 						last = fieldData;
 						continue;
@@ -121,18 +112,17 @@ namespace Fs2a {
 							// Escaped quote
 							stream_i.read(&c, 1);
 							pos++;
-							f.append(c);
+							f.push_back(c);
 							last = fieldData;
 						} else {
-							// End quote
-							fieldReady(false);
+							// End quote. The field is stored on the next separator or end of record
 							quoted = false;
 							last = endQuote;
 						}
 						continue;
 
 					default:
-						f.append(c);
+						f.push_back(c);
 						last = fieldData;
 						continue;
 				}
@@ -150,22 +140,15 @@ namespace Fs2a {
 					case beginQuote:
 						throw std::runtime_error(ERR + "Found End Of Record just after begin quote");
 
-					case endOfRecord:
-						throw std::logic_error(ERR + "Found EndOfRecord twice");
-
 					case endQuote:
-						break;
-
 					case fieldData:
 					case separator:
-						fieldReady(false);
+						fieldReady();
 						break;
 
 					case startOfRecord:
-						if (stream_i.peek() != EOF) {
-							throw std::runtime_error(ERR + "Found empty line");
-						}
-						break;
+						if (stream_i.peek() != EOF) throw std::runtime_error(ERR + "Found empty line");
+						else return t;
 				}
 
 				if (readingHeader) {
@@ -188,95 +171,60 @@ namespace Fs2a {
 					pos = 0;
 					readingHeader = false;
 				} else {
-					if (col != t.columns()) {
-						throw std::runtime_error("Line "s + std::to_string(row + 1) + " contains "s +
-							std::to_string(col) + " fields, but column count is "s + std::to_string(t.columns()));
+					if (col > 0 && !f.empty() && col != t.columns() - 1) {
+						throw std::runtime_error(ERR + "Found EndOfRecord after "s + std::to_string(col+1) +
+							" column(s), but column count should be "s + std::to_string(t.columns()));
 					}
 					col = 0;
 					if (row == UINT32_MAX) {
-						throw std::runtime_error("Input data has more than "s + std::to_string(UINT32_MAX) + " rows");
+						throw std::runtime_error(ERR + "Input data has more than "s + std::to_string(UINT32_MAX) + " rows");
 					}
 					row++;
 				}
+				line++;
 				pos = 0;
+				last = startOfRecord;
 				continue;
-
 			}
 
-			switch (last) {
-				case startOfRecord:
-					f.clear();
-					if (c == separator_i) {
-						fieldReady(true);
+			// Remember, quoted = false here
+			if (c == '"') {
+				switch (last) {
+					case beginQuote:
+					case endQuote:
+						throw std::runtime_error(ERR + "Found quote character after quote, but not quoted field?");
+
+					case fieldData:
+						// Include sole " in unquoted field
+						f.push_back(c);
 						continue;
-					}
-					if (c == '"') {
+
+					case separator:
+					case startOfRecord:
 						quoted = true;
-						last = beginQuote;
+						f.clear();
 						continue;
-					}
-					quoted = false;
-					f.append(c);
-					continue;
-
-				case startOfField:
-					switch (c) {
-						case '"':
-							quoted = true;
-							e = readField;
-							continue;
-
-						case separator_i:
-							// Empty field
-							fieldReady(true);
-							continue;
-
-						default:
-							quoted = false;
-							f.append(c);
-							e = readField;
-							continue;
-					}
-					break;
-
-				case readField:
-					switch (c) {
-						case '"':
-							if (!quoted) {
-								f.append(c);
-								continue;
-							}
-							// Quoted field
-							if (stream_i.peek() == c) {
-								// Quoted quote, extract and add to field
-								stream_i.read(&c, 1);
-								pos++;
-								f.append(c);
-								continue;
-							}
-							// Single quote, end of field
-							if (readingHeader) {
-								h.push_back(f);
-								e = separator;
-								continue;
-							}
-							t.cell(col, row) = f;
-							if (col >= t.columns() - 1) {
-								e = endOfRecord;
-							} else {
-								e = separator;
-							}
-							continue;
-
-						case separator_i:
-
-						default:
-							f.append(c);
-							continue;
-					}
-					continue;
+				}
+				continue;
 			}
 
+			// Remember, quoted = false here
+			if (c == separator_i) {
+				fieldReady();
+				last = separator;
+				if (!readingHeader) {
+					if (col >= t.columns() - 1) {
+						throw std::runtime_error(ERR + "Field count "s + std::to_string(col+1) +
+							" would exceed column count "s + std::to_string(t.columns()));
+					}
+					col++;
+				}
+				continue;
+			}
+
+			// The default case for c:
+			f.push_back(c);
+			last = fieldData;
 		}
 
 		stream_i.exceptions(oldmsk);

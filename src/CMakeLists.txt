@@ -40,6 +40,7 @@ add_library (fs2a SHARED
 	CsvWriter.cpp
 	IOsvcWrapper.cpp
 	Logger.cpp
+	readCSV.cpp
 	Semaphore.cpp
 	Tracer.cpp
 )
