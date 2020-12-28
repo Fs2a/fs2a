@@ -34,7 +34,7 @@
 #include <string>
 #include "CsvReader.h"
 
-#define ERR "Error at line "s + std::to_string(row + 1) + ", character "s + std::to_string(charOnLine) + ": "s
+#define ERR "Error at line "s + std::to_string(row + 1) + ", character "s + std::to_string(pos) + ": "s
 
 namespace Fs2a {
 
@@ -50,55 +50,176 @@ namespace Fs2a {
 		std::string f; // Field with data
 		uint16_t col = 0;
 		uint32_t row = 0;
-		uint32_t charOnLine = 0;
+		size_t line = 1;
+		size_t pos = 1;
+		std::ios::iostate oldmsk = stream_i.exceptions();
 
-		enum expect_e : uint8_t {
-			startOfField,
-			readField,
+		enum last_e : uint8_t {
+			beginQuote,
 			endOfRecord,
-			separator
+			endQuote,
+			fieldData,
+			separator,
+			startOfRecord
 		};
 
-		expect_e e = startOfField;
+		last_e last = startOfRecord;
 
-		auto fieldReady = [&](const bool foundSep) {
+		auto fieldReady = [&](const bool nxt) {
 			if (readingHeader) {
 				h.push_back(f);
-				if (foundSep) {
-					e = startOfField;
-				} else {
-					e = separator;
-				}
 				return;
-			} else {
-				t.cell(col, row) = f;
+			}
+			t.cell(col, row) = f;
+			if (nxt) {
 				if (col >= t.columns()) {
 					throw std::runtime_error(ERR + "More than "s + std::to_string(t.columns()) + " fields found in current record");
 				}
 				if (col == t.columns() - 1) {
-					e = endOfRecord;
+					col = 0; row++;
 				} else {
-					if (foundSep) {
-						col++;
-						e = startOfField;
-					} else {
-						e = separator;
-					}
+					col++;
 				}
 			}
 		};
 
+		// Disable exceptions for EOF on the stream, because we need to be able to handle EOF properly.
+		// If something bad happens other than EOF, throw exception.
+		stream_i.exceptions(istream::badbit);
+
 		while (stream_i.good()) {
 			stream_i.read(&c, 1);
-			if (!stream_i.good()) break;
-			charOnLine++;
+			if (stream_i.eof()) c = EOF;
+			else pos++;
 
 			// Skip valid but unused 8-bit characters at start of CSV
-			if (readingHeader && e == startOfField && col == 0 && row == 0 && c & 0x80) continue;
+			if (readingHeader && last == startOfRecord && col == 0 && row == 0 && c != EOF && c & 0x80) continue;
 
-			switch (e) {
-				case startOfField:
+			// If a field is quoted, only check for EOF, escaped quotes or end quote.
+			// Store everything else (including separators and newlines) in the field data.
+			// Do check newlines to keep track of character position.
+			if (quoted) {
+				switch (c) {
+					case EOF:
+						throw std::runtime_error(ERR + "Encountered EOF while reading quoted field");
+
+					case '\r':
+						if (stream_i.peek() == '\n') {
+							f.append(c);
+							// Swallow \r\n
+							stream_i.read(&c, 1);
+						}
+						// Fallthrough
+					case '\n':
+						f.append(c);
+						line++; pos = 0;
+						last = fieldData;
+						continue;
+
+					case '"':
+						if (stream_i.peek() == '"') {
+							// Escaped quote
+							stream_i.read(&c, 1);
+							pos++;
+							f.append(c);
+							last = fieldData;
+						} else {
+							// End quote
+							fieldReady(false);
+							quoted = false;
+							last = endQuote;
+						}
+						continue;
+
+					default:
+						f.append(c);
+						last = fieldData;
+						continue;
+				}
+			}
+
+			// From here on, we are not reading a quoted field, so parse normally
+			if (c == '\r' || c == '\n' || c == EOF) {
+				// End of record
+				if (c == '\r' && stream_i.peek() == '\n') {
+					// Swallow \r\n
+					stream_i.read(&c, 1);
+					pos++;
+				}
+				switch (last) {
+					case beginQuote:
+						throw std::runtime_error(ERR + "Found End Of Record just after begin quote");
+
+					case endOfRecord:
+						throw std::logic_error(ERR + "Found EndOfRecord twice");
+
+					case endQuote:
+						break;
+
+					case fieldData:
+					case separator:
+						fieldReady(false);
+						break;
+
+					case startOfRecord:
+						if (stream_i.peek() != EOF) {
+							throw std::runtime_error(ERR + "Found empty line");
+						}
+						break;
+				}
+
+				if (readingHeader) {
+					if (h.empty()) {
+						throw std::runtime_error(ERR + "Empty line at beginning, unable to determine number of columns"s);
+					}
+					// Both column adressing and count are
+					// uint16_t, so max is UINT16_MAX - 1
+					if (h.size() >= UINT16_MAX) {
+						throw std::out_of_range(ERR + "Encountered too many columns "s + std::to_string(h.size()) +
+							", maximum is " + std::to_string(UINT16_MAX-1));
+					}
+					t.columns(static_cast<uint16_t>(h.size()));
+					for (col = 0; col < h.size(); col++) {
+						t.cell(col, 0) = h.at(col);
+					}
+					h.clear();
+					row = 1;
+					col = 0;
+					pos = 0;
+					readingHeader = false;
+				} else {
+					if (col != t.columns()) {
+						throw std::runtime_error("Line "s + std::to_string(row + 1) + " contains "s +
+							std::to_string(col) + " fields, but column count is "s + std::to_string(t.columns()));
+					}
+					col = 0;
+					if (row == UINT32_MAX) {
+						throw std::runtime_error("Input data has more than "s + std::to_string(UINT32_MAX) + " rows");
+					}
+					row++;
+				}
+				pos = 0;
+				continue;
+
+			}
+
+			switch (last) {
+				case startOfRecord:
 					f.clear();
+					if (c == separator_i) {
+						fieldReady(true);
+						continue;
+					}
+					if (c == '"') {
+						quoted = true;
+						last = beginQuote;
+						continue;
+					}
+					quoted = false;
+					f.append(c);
+					continue;
+
+				case startOfField:
 					switch (c) {
 						case '"':
 							quoted = true;
@@ -108,45 +229,6 @@ namespace Fs2a {
 						case separator_i:
 							// Empty field
 							fieldReady(true);
-							continue;
-
-						case '\r':
-							if (stream_i.peek() == '\n') {
-								stream_i.read(&c, 1);
-								charOnLine++;
-							}
-							// Fallthrough
-						case '\n':
-							if (readingHeader) {
-								if (h.empty()) {
-									throw std::runtime_error(ERR + "Empty line at beginning, unable to determine number of columns"s);
-								}
-								// Both column adressing and count are
-								// uint16_t, so max is UINT16_MAX - 1
-								if (h.size() >= UINT16_MAX) {
-									throw std::out_of_range(ERR + "Encountered too many columns "s + std::to_string(h.size()) +
-										", maximum is " + std::to_string(UINT16_MAX-1));
-								}
-								t.columns(static_cast<uint16_t>(h.size()));
-								for (col = 0; col < h.size(); col++) {
-									t.cell(col, 0) = h.at(col);
-								}
-								h.clear();
-								row = 1;
-								col = 0;
-								readingHeader = false;
-							} else {
-								if (col != t.columns()) {
-									throw std::runtime_error("Line "s + std::to_string(row + 1) + " contains "s +
-										std::to_string(col) + " fields, but column count is "s + std::to_string(t.columns()));
-								}
-								col = 0;
-								if (row == UINT32_MAX) {
-									throw std::runtime_error("Input data has more than "s + std::to_string(UINT32_MAX) + " rows");
-								}
-								row++;
-							}
-							charOnLine = 0;
 							continue;
 
 						default:
@@ -168,7 +250,7 @@ namespace Fs2a {
 							if (stream_i.peek() == c) {
 								// Quoted quote, extract and add to field
 								stream_i.read(&c, 1);
-								charOnLine++;
+								pos++;
 								f.append(c);
 								continue;
 							}
@@ -187,26 +269,18 @@ namespace Fs2a {
 							continue;
 
 						case separator_i:
-							if (!quoted) {
-								if (readingHeader) {
-									h.push_back(f);
-									continue;
-								}
-
-
 
 						default:
 							f.append(c);
 							continue;
 					}
 					continue;
-
-
-
-					}
-					break;
+			}
 
 		}
+
+		stream_i.exceptions(oldmsk);
+		return t;
 	}
 
 } // Fs2a namespace
