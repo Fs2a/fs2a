@@ -57,12 +57,9 @@ namespace Fs2a {
 		 * data_[1] = row 0, column 1, data_[2] = row 0, column 2, etc. */
 		std::vector<T> data_;
 
-		/** Number of rows in this table. */
-		uint32_t rows_;
-
 		public:
 		/** Table constructor */
-		Table() : cols_(0), rows_(0)
+		Table() : cols_(0)
 		{}
 
 		/** Table destructor */
@@ -112,14 +109,17 @@ namespace Fs2a {
 				throw std::out_of_range("Requested column "s + std::to_string(column_i) +
 					" should be less than the number of columns, which is "s + std::to_string(cols_));
 			}
-			if (row_i >= rows_) rows(row_i+1);
+			if (row_i >= rows()) rows(row_i+1);
 
 			return data_.at(row_i * cols_ + column_i);
 		}
 
 		/** Get the number of rows in this table.
 		 * @returns Number of allocated rows */
-		inline uint32_t rows() { return rows_; }
+		inline uint32_t rows() {
+			if (cols_ == 0) return 0;
+			else return static_cast<uint32_t>(data_.size() / cols_);
+		}
 
 		/** Set the number of rows, thereby either removing data in rows
 		 * beyond the new rowcount or adding empty rows.
@@ -131,8 +131,7 @@ namespace Fs2a {
 			if (cols_ == 0) {
 				throw std::logic_error("Please set the number of columns first");
 			}
-			rows_ = rows_i;
-			data_.resize(cols_ * rows_);
+			data_.resize(cols_ * rows_i);
 		}
 	};
 
