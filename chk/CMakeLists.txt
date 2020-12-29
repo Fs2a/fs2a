@@ -51,6 +51,7 @@ include_directories (
 add_executable (chk
 	chk.cpp
 	# connpool.cpp
+	functions.cpp
 	logger.cpp
 	observing.cpp
 	readcsv.cpp
