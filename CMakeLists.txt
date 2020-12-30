@@ -38,7 +38,7 @@ if(POLICY CMP0056)
   cmake_policy(SET CMP0056 NEW)
 endif()
 
-list (APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 project (fs2a)
 
