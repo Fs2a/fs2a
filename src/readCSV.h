@@ -34,7 +34,7 @@
 
 #include <istream>
 #include <string>
-#include <Table.h>
+#include "Table.h"
 
 namespace Fs2a {
 	/** Read and parse CSV data from a given stream into a Table object.
