@@ -43,9 +43,10 @@ if (RUN_COVERAGE STREQUAL "ON")
 endif (RUN_COVERAGE STREQUAL "ON")
 
 find_package (CppUnit REQUIRED)
+
 include_directories (
 	${CPPUNIT_INCLUDE_DIR}
-	${CMAKE_SOURCE_DIR}/src
+	${CMAKE_CURRENT_SOURCE_DIR}/../src
 )
 
 add_executable (chk
