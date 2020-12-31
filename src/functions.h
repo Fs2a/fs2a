@@ -53,20 +53,25 @@ namespace Fs2a {
 	 * @param separator_i Separation string to use, default is ", "
 	 * @param extrfunc_i Extraction function to convert item to string,
 	 * default is &std::to_string
+	 * @param lastsep_i Last separator to use. Facilitates "X", "Y" or "Z".
+	 * Default is "", meaning @p separator_i (so last separator can't
+	 * actually be the empty string)
 	 * @returns All items from @p iterable_i concatenated with @p
 	 * separator_i as separator string. */
 	template <typename IterableObjType>
 	std::string join(
 		const IterableObjType & iterable_i,
 		const std::string & separator_i = ", ",
-		std::string (*extrfunc_i)(const typename IterableObjType::value_type) = &std::to_string
+		std::string (*extrfunc_i)(const typename IterableObjType::value_type) = &std::to_string,
+		const std::string & lastsep_i = ""
 	) {
 		std::string rv = ""; // Return Value
 		if (iterable_i.empty()) return rv;
 		auto i = iterable_i.begin();
 		rv = extrfunc_i(*i);
 		for (i++; i != iterable_i.end(); i++) {
-			rv += separator_i;
+			if (i + 1 == iterable_i.end() && lastsep_i != "") rv += lastsep_i;
+			else rv += separator_i;
 			rv += extrfunc_i(*i);
 		}
 		return rv;

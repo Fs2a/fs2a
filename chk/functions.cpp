@@ -81,6 +81,7 @@ class CHECKNAME : public CppUnit::TestFixture {
 		CPPUNIT_ASSERT_EQUAL("4223119"s, Fs2a::join(v, ""s));
 		CPPUNIT_ASSERT_EQUAL("42}{23}{119"s, Fs2a::join(v, "}{"s));
 		CPPUNIT_ASSERT_EQUAL("420 230 1190"s, Fs2a::join(v, " ", [](auto d) { return std::to_string(d * 10); }));
+		CPPUNIT_ASSERT_EQUAL("43, 24 or 120"s, Fs2a::join(v, ", ", [](auto d) { return std::to_string(d + 1); }, " or "));
 	}
 
 };
