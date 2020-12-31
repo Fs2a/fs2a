@@ -37,6 +37,8 @@
 
 #define CHECKNAME functionsCheck
 
+using namespace std::string_literals;
+
 class CHECKNAME;
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CHECKNAME);
@@ -44,12 +46,12 @@ CPPUNIT_TEST_SUITE_REGISTRATION(CHECKNAME);
 class CHECKNAME : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(CHECKNAME);
 	CPPUNIT_TEST(hcerc2ascii);
+	CPPUNIT_TEST(join);
 	CPPUNIT_TEST_SUITE_END();
 
 	public:
 
 	void hcerc2ascii() {
-		using namespace std::string_literals;
 
 		std::string s = "Plain old string without HTML Character Entity Reference Codes";
 
@@ -64,6 +66,21 @@ class CHECKNAME : public CppUnit::TestFixture {
 		CPPUNIT_ASSERT_EQUAL(" "s, Fs2a::htmlCharEntRefCodes2ascii("&nbsp;"));
 		CPPUNIT_ASSERT_EQUAL("?"s, Fs2a::htmlCharEntRefCodes2ascii("&quest;"));
 		CPPUNIT_ASSERT_EQUAL("<"s, Fs2a::htmlCharEntRefCodes2ascii("&lt;"));
+	}
+
+	void join() {
+		std::vector<int> v;
+
+		CPPUNIT_ASSERT_EQUAL(""s, Fs2a::join(v));
+		CPPUNIT_ASSERT_EQUAL(""s, Fs2a::join(v, "sepstr"));
+		CPPUNIT_ASSERT_EQUAL(""s, Fs2a::join(v, "><", [](auto d) { return std::to_string(d); }));
+
+		v.push_back(42); v.push_back(23); v.push_back(119);
+
+		CPPUNIT_ASSERT_EQUAL("42, 23, 119"s, Fs2a::join(v));
+		CPPUNIT_ASSERT_EQUAL("4223119"s, Fs2a::join(v, ""s));
+		CPPUNIT_ASSERT_EQUAL("42}{23}{119"s, Fs2a::join(v, "}{"s));
+		CPPUNIT_ASSERT_EQUAL("420 230 1190"s, Fs2a::join(v, " ", [](auto d) { return std::to_string(d * 10); }));
 	}
 
 };

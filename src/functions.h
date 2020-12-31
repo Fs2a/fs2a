@@ -47,4 +47,29 @@ namespace Fs2a {
 	 * @returns String with HTML character entity reference codes replaced by their ascii counterparts. */
 	std::string htmlCharEntRefCodes2ascii(const std::string & str_i);
 
+	/** Join all items from something iterable into a string, separated by a
+	 * given separator string.
+	 * @param iterable_i Object to iterate over
+	 * @param separator_i Separation string to use, default is ", "
+	 * @param extrfunc_i Extraction function to convert item to string,
+	 * default is &std::to_string
+	 * @returns All items from @p iterable_i concatenated with @p
+	 * separator_i as separator string. */
+	template <typename IterableObjType>
+	std::string join(
+		const IterableObjType & iterable_i,
+		const std::string & separator_i = ", ",
+		std::string (*extrfunc_i)(const typename IterableObjType::value_type) = &std::to_string
+	) {
+		std::string rv = ""; // Return Value
+		if (iterable_i.empty()) return rv;
+		auto i = iterable_i.begin();
+		rv = extrfunc_i(*i);
+		for (i++; i != iterable_i.end(); i++) {
+			rv += separator_i;
+			rv += extrfunc_i(*i);
+		}
+		return rv;
+	}
+
 } // Fs2a namespace
