@@ -70,7 +70,7 @@ namespace Fs2a {
 
 		/** Get the number of columns in this table.
 		 * @returns number of columns, 0 if not yet specified. */
-		virtual inline uint16_t columns() { return cols_; }
+		virtual inline uint16_t columns() const { return cols_; }
 
 		/** Set the number of columns in this table.
 		 * Can only be specified once and should be greater than zero.
@@ -116,7 +116,7 @@ namespace Fs2a {
 
 		/** Get the number of rows in this table.
 		 * @returns Number of allocated rows */
-		virtual inline uint32_t rows() {
+		virtual inline uint32_t rows() const {
 			if (cols_ == 0) return 0;
 			else return static_cast<uint32_t>(data_.size() / cols_);
 		}

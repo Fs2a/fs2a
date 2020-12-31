@@ -38,7 +38,7 @@
 
 namespace Fs2a {
 
-	class HeaderedTable : public Fs2a::Table<std::string>
+	class HeaderedTable : public Table<std::string>
 	{
 		protected:
 		/// Map of strings to column indices to mimic associative columns.
@@ -53,7 +53,11 @@ namespace Fs2a {
 
 		public:
 		/// Constructor
-		HeaderedTable() : Table<std::string>()
+		HeaderedTable() = default;
+
+		/// Copy constructor from superclass
+		HeaderedTable(const Table<std::string> & obj_i)
+		: Table(obj_i)
 		{}
 
 		/// Destructor
