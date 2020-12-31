@@ -70,7 +70,9 @@ namespace Fs2a {
 		auto i = iterable_i.begin();
 		rv = extrfunc_i(*i);
 		for (i++; i != iterable_i.end(); i++) {
-			if (i + 1 == iterable_i.end() && lastsep_i != "") rv += lastsep_i;
+			auto j = i;
+			j++;
+			if (j == iterable_i.end() && lastsep_i != "") rv += lastsep_i;
 			else rv += separator_i;
 			rv += extrfunc_i(*i);
 		}
