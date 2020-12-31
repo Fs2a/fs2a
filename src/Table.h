@@ -63,21 +63,21 @@ namespace Fs2a {
 		{}
 
 		/** Table destructor */
-		~Table()
+		virtual ~Table()
 		{
 			data_.clear();
 		}
 
 		/** Get the number of columns in this table.
 		 * @returns number of columns, 0 if not yet specified. */
-		inline uint16_t columns() { return cols_; }
+		virtual inline uint16_t columns() { return cols_; }
 
 		/** Set the number of columns in this table.
 		 * Can only be specified once and should be greater than zero.
 		 * @param columns_i Number of columns to allocate (>0)
 		 * @throws std::invalid_argument when columns_i == 0
 		 * @throws std::logic_error when number of columns was already set. */
-		void columns(const uint16_t columns_i)
+		virtual void columns(const uint16_t columns_i)
 		{
 			using namespace std::string_literals;
 
@@ -98,7 +98,7 @@ namespace Fs2a {
 		 * @returns Reference to field
 		 * @throws std::out_of_range if requested column is outside of
 		 * column range. */
-		T & cell(const uint16_t column_i, const uint32_t row_i)
+		virtual T & cell(const uint16_t column_i, const uint32_t row_i)
 		{
 			using namespace std::string_literals;
 
@@ -116,7 +116,7 @@ namespace Fs2a {
 
 		/** Get the number of rows in this table.
 		 * @returns Number of allocated rows */
-		inline uint32_t rows() {
+		virtual inline uint32_t rows() {
 			if (cols_ == 0) return 0;
 			else return static_cast<uint32_t>(data_.size() / cols_);
 		}
@@ -126,7 +126,7 @@ namespace Fs2a {
 		 * @param rows_i New rowcount
 		 * @throws std::logic_error when number of columns hasn't been set
 		 * yet. */
-		void rows(const uint32_t rows_i)
+		virtual void rows(const uint32_t rows_i)
 		{
 			if (cols_ == 0) {
 				throw std::logic_error("Please set the number of columns first");
