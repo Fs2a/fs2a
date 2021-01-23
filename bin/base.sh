@@ -30,8 +30,6 @@ fi
 if ! [ -r chk/chk.cpp ]; then
 writeCppLicense ./LICENSE > chk/chk.cpp
 cat >>chk/chk.cpp <<EOF
- *
- * vim:set ts=4 sw=4 noet: */
 
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
@@ -60,9 +58,6 @@ fi
 if ! [ -r ./CMakeLists.txt ]; then
 writeBashLicense ./LICENSE > ./CMakeLists.txt
 cat >>./CMakeLists.txt <<EOF
-#
-# vim:set ts=2 sw=2 noet:
-
 cmake_minimum_required (VERSION 3.4)
 if(POLICY CMP0015)
 	cmake_policy(SET CMP0015 NEW)
@@ -129,8 +124,6 @@ fi
 if ! [ -r src/CMakeLists.txt ]; then
 writeBashLicense ./LICENSE > src/CMakeLists.txt
 cat >>src/CMakeLists.txt <<EOF
-#
-# vim:set ts=4 sw=4 noet:
 
 include_directories (
         \${Boost_INCLUDE_DIRS}
@@ -153,8 +146,6 @@ fi
 if ! [ -r chk/CMakeLists.txt ]; then
 writeBashLicense ./LICENSE > chk/CMakeLists.txt
 cat >>chk/CMakeLists.txt <<EOF
-#
-# vim:set ts=4 sw=4 noet:
 
 # Include stuff for code coverage
 if (RUN_COVERAGE STREQUAL "ON")
