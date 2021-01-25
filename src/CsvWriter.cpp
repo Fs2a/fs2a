@@ -142,6 +142,13 @@ namespace Fs2a {
 		return column_?column_:columns_;
 	}
 
+	const CsvWriter::csvSettings_t CsvWriter::PayPal = {
+		',',    // fieldSep
+		false,  // carriageReturn
+		true,   // forceHeader
+		always  // quoting
+	};
+
 	const CsvWriter::csvSettings_t CsvWriter::TicketMatic = {
 		';',    // fieldSep
 		false,  // carriageReturn

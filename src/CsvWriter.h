@@ -30,6 +30,7 @@ namespace Fs2a
 		} csvSettings_t;
 
 		static const csvSettings_t TicketMatic;
+		static const csvSettings_t PayPal;
 
 		private:
 		/// Assignment construction not allowed
