@@ -58,8 +58,6 @@ setns
 
 writeCppLicense "$lf" > $1.h
 cat >> $1.h << EOF
- *
- * vim:set ts=4 sw=4 noet: */
 
 #pragma once
 
@@ -82,8 +80,6 @@ EOF
 
 writeCppLicense "$lf" > $1.cpp
 cat >> $1.cpp << EOF
- *
- * vim:set ts=4 sw=4 noet: */
 
 #include "$1.h"
 
