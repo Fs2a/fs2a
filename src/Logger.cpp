@@ -23,7 +23,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
-vim:set ts=4 sw=4 noexpandtab: */
+vim:set ts=4 sw=4 noet: */
 
 #include <iostream>
 #include <cstdarg>
@@ -33,22 +33,20 @@ vim:set ts=4 sw=4 noexpandtab: */
 #include <thread>
 #include <stdarg.h>
 #include <time.h>
-#include <fmt/chrono.h>
 #include <fmt/format.h>
 #include <fmt/printf.h>
 #include <sys/time.h>
 #include "Logger.h"
 
-namespace Fs2a {
-
-	Logger::Logger()
-		: maxlevel_(Logger::debug), stream_(nullptr), strip_(0), syslog_(false)
+namespace Fs2a
+{
+	Logger::Logger() : maxlevel_(Logger::debug), stream_(nullptr), strip_(0), syslog_(false)
 	{
-		levels_[error]   = "ERROR";
+		levels_[error] = "ERROR";
 		levels_[warning] = "WARNING";
-		levels_[notice]  = "NOTICE";
-		levels_[info]    = "INFO";
-		levels_[debug]   = "DEBUG";
+		levels_[notice] = "NOTICE";
+		levels_[info] = "INFO";
+		levels_[debug] = "DEBUG";
 	}
 
 	Logger::~Logger()
@@ -58,30 +56,27 @@ namespace Fs2a {
 		if (syslog_) {
 			closelog();
 			syslog_ = false;
-		} else stream_ = nullptr;
+		} else
+			stream_ = nullptr;
 	}
 
 	std::unique_ptr<std::string> Logger::log(
-		const std::string & file_i,
-		const size_t & line_i,
-		const loglevel_t priority_i,
-		const std::string & msg_i
-	)
+	  const std::string& file_i, const size_t& line_i, const loglevel_t priority_i, const std::string& msg_i)
 	{
-		struct timeval tv;      // Time value storage
-		std::string le;         // Log Entry containing final result
+		struct timeval tv;     // Time value storage
+		std::string    le;     // Log Entry containing final result
+		char           ft[16]; // Formatted time
+		struct tm      bdt;    // Broken-Down Time
 
-		if (priority_i > maxlevel_) return std::unique_ptr<std::string>();
+		if (priority_i > maxlevel_)
+			return std::unique_ptr<std::string>();
 
 		gettimeofday(&tv, nullptr);
+		localtime_r(&(tv.tv_sec), &bdt);
+		strftime(ft, 16, "%T", &bdt);
 
-		le = fmt::format("{:%T}.{:06d} [{}] {}:{} ",
-			fmt::localtime(tv.tv_sec),
-			tv.tv_usec,
-			std::this_thread::get_id(),
-			file_i.substr(strip_),
-			line_i
-		);
+		le = fmt::format(
+		  "{}.{:06d} [{}] {}:{} ", ft, tv.tv_usec, std::this_thread::get_id(), file_i.substr(strip_), line_i);
 
 		if (!syslog_) {
 			le += levels_[priority_i];
@@ -92,8 +87,7 @@ namespace Fs2a {
 
 		if (syslog_) {
 			::syslog(priority_i, "%s", le.c_str());
-		}
-		else {
+		} else {
 			if (stream_ == nullptr) {
 				throw std::logic_error("Asked to log to stream, but stream is NULL");
 			}
@@ -103,7 +97,7 @@ namespace Fs2a {
 		return std::unique_ptr<std::string>(new std::string(le));
 	}
 
-	void Logger::stream(std::ostream * stream_i, const size_t strip_i)
+	void Logger::stream(std::ostream* stream_i, const size_t strip_i)
 	{
 		if (stream_i == nullptr) {
 			throw std::invalid_argument("Unable to write log output to NULL stream pointer");
@@ -125,7 +119,8 @@ namespace Fs2a {
 	{
 		GRD(mymux_);
 
-		if (syslog_) return false;
+		if (syslog_)
+			return false;
 
 		ident_ = ident_i;
 		strip_ = strip_i;
@@ -136,4 +131,4 @@ namespace Fs2a {
 		return true;
 	}
 
-} // Fs2a namespace
+} // namespace Fs2a
