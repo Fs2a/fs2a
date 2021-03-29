@@ -36,7 +36,7 @@ if (RUN_COVERAGE STREQUAL "ON")
 	append_coverage_compiler_flags()
 	setup_target_for_coverage_gcovr_html(
 		NAME fs2acoverage
-		EXECUTABLE chk
+		EXECUTABLE fs2achk
 		BASE_DIRECTORY "${PROJECT_SOURCE_DIR}/src"
 		EXCLUDE "${PROJECT_SOURCE_DIR}/chk"
 	)
@@ -49,7 +49,7 @@ include_directories (
 	${CMAKE_CURRENT_SOURCE_DIR}/../src
 )
 
-add_executable (chk
+add_executable (fs2achk
 	chk.cpp
 	# connpool.cpp
 	functions.cpp
@@ -59,7 +59,7 @@ add_executable (chk
 	singleton.cpp
 	table.cpp
 )
-target_link_libraries (chk
+target_link_libraries (fs2achk
 	${CPPUNIT_LIBRARY}
 	fs2a
 )
