@@ -33,6 +33,8 @@
 include_directories (
 	${Boost_INCLUDE_DIRS}
 	${PQXX_INCLUDE_DIRS}
+	/usr/include/utf8cpp
+	/usr/include/utf8cpp/utf8
 )
 
 add_library (fs2a SHARED

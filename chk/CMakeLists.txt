@@ -35,7 +35,7 @@ if (RUN_COVERAGE STREQUAL "ON")
 	include(CodeCoverage)
 	append_coverage_compiler_flags()
 	setup_target_for_coverage_gcovr_html(
-		NAME coverage
+		NAME fs2acoverage
 		EXECUTABLE chk
 		BASE_DIRECTORY "${PROJECT_SOURCE_DIR}/src"
 		EXCLUDE "${PROJECT_SOURCE_DIR}/chk"
