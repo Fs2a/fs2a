@@ -63,6 +63,9 @@ namespace Fs2a {
 		/// Destructor
 		virtual ~HeaderedTable() = default;
 
+		/// Explicitly inherit the Table::cell() method, otherwise it is hidden.
+		using Table<std::string>::cell;
+
 		/** Reference a cell by row number and column name.
 		 * @param colname_i Column name to reference.
 		 * @param row_i Row number to reference, header is row 0. */
