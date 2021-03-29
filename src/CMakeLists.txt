@@ -53,5 +53,4 @@ target_link_libraries (fs2a
 	${Boost_LIBRARIES}
 	fmt::fmt
 	${PQXX_LIBRARIES}
-	utf8cpp
 )
