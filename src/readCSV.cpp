@@ -52,7 +52,6 @@ namespace Fs2a {
 		uint32_t row = 0;
 		size_t line = 1;
 		size_t pos = 1;
-		std::ios::iostate oldmsk = stream_i.exceptions();
 
 		enum last_e : uint8_t {
 			beginQuote,
@@ -227,7 +226,6 @@ namespace Fs2a {
 			last = fieldData;
 		}
 
-		stream_i.exceptions(oldmsk);
 		return t;
 	}
 
