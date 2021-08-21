@@ -1,5 +1,0 @@
-ps auxww | \
-if [ $# -eq 1 ]
-then grep $1 | grep -v grep
-else cat
-fi | sort | less -eXr
