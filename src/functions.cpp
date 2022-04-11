@@ -51,7 +51,7 @@ namespace Fs2a {
 		size_t amp = 0, sc = 0;
 		static size_t maxlen = 0;
 		if (maxlen == 0) {
-			for (const auto p : hcerc2asc) {
+			for (const auto & p : hcerc2asc) {
 				if (p.first.size() > maxlen) maxlen = p.first.size();
 			}
 		}

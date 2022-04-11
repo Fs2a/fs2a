@@ -32,7 +32,7 @@ vim:set ts=4 sw=4 noexpandtab: */
 #include <unistd.h>
 #include <boost/program_options.hpp>
 #include "Application.h"
-#include "IOsvcWrapper.h"
+#include "IOctxtWrapper.h"
 #include "Logger.h"
 
 #define STR(s) XSTR(s)
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	int retval = 0;
 	Fs2a::Logger *logger = nullptr;
 	Fs2a::Application *app = nullptr;
-	Fs2a::IOsvcWrapper * isw = nullptr;
+	Fs2a::IOctxtWrapper * icw = nullptr;
 	size_t strp = strlen(STR(GITREPOROOT))+1;
 
 	try {
@@ -82,13 +82,13 @@ int main(int argc, char *argv[])
 			errno = 0;
 		}
 
-		isw = Fs2a::IOsvcWrapper::instance();
+		icw = Fs2a::IOctxtWrapper::instance();
 		app = Fs2a::Application::instance();
 
 		// Here comes the core code ;-)
-		isw->stopWhenIdle(false);
-		if (!app->init(&(isw->svc()))) throw 1;
-		isw->runHere();
+		icw->stopWhenIdle(false);
+		if (!app->init(&(icw->context()))) throw 1;
+		icw->runHere();
 
 	} catch(const int & i) {
 		retval = i;
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 	if (app != nullptr) app->stop_listening();
 
 	Fs2a::IOsvcWrapper::close();
-	isw = nullptr;
+	icw = nullptr;
 
 	Fs2a::Singleton<Fs2a::Application>::close();
 	app = nullptr;

@@ -31,65 +31,71 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #pragma once
 
 #include <memory>
+#include <mutex>
 #include <thread>
 #include <vector>
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/io_context.hpp>
 #include "Singleton.h"
 
 namespace Fs2a {
 
-	class IOsvcWrapper : public Fs2a::Singleton<IOsvcWrapper>
+	class IOctxtWrapper : public Fs2a::Singleton<IOctxtWrapper>
 	{
 		/// Singleton template as friend for construction
-		friend class Fs2a::Singleton<IOsvcWrapper>;
+		friend class Fs2a::Singleton<IOctxtWrapper>;
 
 		private:
 		/// Default constructor
-		IOsvcWrapper();
+		IOctxtWrapper();
 
 		/// Copy constructor
-		IOsvcWrapper(const IOsvcWrapper & obj_i) = delete;
+		IOctxtWrapper(const IOctxtWrapper & obj_i) = delete;
 
 		/// Assignment constructor
-		IOsvcWrapper & operator=(const IOsvcWrapper & obj_i) = delete;
+		IOctxtWrapper & operator=(const IOctxtWrapper & obj_i) = delete;
 
 		/// Destructor
-		~IOsvcWrapper();
+		~IOctxtWrapper();
 
 		protected:
-		/// Actual Boost I/O service object
-		boost::asio::io_service iosvc_a;
+		/// Actual Boost I/O context object
+		boost::asio::io_context ioctxt_;
 
-		/// Thread to run I/O service in
-		std::unique_ptr<std::thread> thread_a;
+		/// Mutex to prevent race conditions
+		std::recursive_mutex mux_;
 
-		/// Wrapped work object to keep io service running
-		std::unique_ptr<boost::asio::io_service::work> work_a;
+		/// Threads to run I/O context in
+		std::vector<std::thread> threads_;
+
+		/// Wrapped work object to keep io context running
+		std::unique_ptr<boost::asio::io_context::work> work_;
 
 		public:
-		/** Run the I/O service in place, blocking the calling thread. */
+		/** Run the I/O context in place, blocking the calling thread. */
 		void runHere();
 
-		/** Run the I/O service in a separate thread. */
-		void runThread();
+		/** Run the I/O context in separate threads.
+		 * @param numThreads_i Number of simultaneous threads to run I/O
+		 * context in, default 1. Passing 0 as parameter calls stop(). */
+		void runThreads(const uint16_t numThreads_i = 1);
 
-		/** Check whether the I/O service would/will stop when it is idle.
+		/** Check whether the I/O context would/will stop when it is idle.
 		 * @returns True if it would/will stop, false if not. */
-		inline bool stopWhenIdle() { return !work_a; }
+		inline bool stopWhenIdle() { return !work_; }
 
-		/** Define whether the I/O service should/will stop running in case
+		/** Define whether the I/O context should/will stop running in case
 		 * there is no more work available.
 		 * @param stopWhenIdle_i True if it should stop running when idle,
 		 * false if it should keep running forever. */
 		void stopWhenIdle(const bool stopWhenIdle_i);
 
-		/** Stop the I/O service.
-		 * Also terminates the thread if necessary. */
+		/** Stop the I/O context.
+		 * Also terminates the threads if necessary. */
 		void stop();
 
-		/** Retrieve the actual io_service object for use in other objects.
-		 * @returns reference to internal io_service object. */
-		inline boost::asio::io_service & svc() { return this->iosvc_a; }
+		/** Retrieve the actual io_context object for use in other objects.
+		 * @returns reference to internal io_context object. */
+		inline boost::asio::io_context & context() { return this->ioctxt_; }
 
 	};
 

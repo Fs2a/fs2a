@@ -138,7 +138,7 @@ namespace Fs2a {
 			"Current column {} + fields in row ({}) would exceed column count {}",
 			column_, row_i.size(), columns_);
 		}
-		for (const auto fld : row_i) quotedField_(fld);
+		for (const auto & fld : row_i) quotedField_(fld);
 		return column_?column_:columns_;
 	}
 

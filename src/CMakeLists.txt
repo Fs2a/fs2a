@@ -41,7 +41,7 @@ add_library (fs2a SHARED
 	CsvWriter.cpp
 	functions.cpp
 	HeaderedTable.cpp
-	IOsvcWrapper.cpp
+	IOctxtWrapper.cpp
 	Logger.cpp
 	readCSV.cpp
 	Semaphore.cpp

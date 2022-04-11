@@ -28,54 +28,58 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#include "IOsvcWrapper.h"
+#include "IOctxtWrapper.h"
 
 namespace Fs2a {
 
-	IOsvcWrapper::IOsvcWrapper()
-	: Fs2a::Singleton<IOsvcWrapper>::Singleton()
+	IOctxtWrapper::IOctxtWrapper()
+	: Fs2a::Singleton<IOctxtWrapper>::Singleton()
 	{
 	}
 
-	IOsvcWrapper::~IOsvcWrapper()
+	IOctxtWrapper::~IOctxtWrapper()
 	{
 		this->stop();
 	}
 
-	void IOsvcWrapper::runHere()
+	void IOctxtWrapper::runHere()
 	{
+		std::lock_guard<std::recursive_mutex> grd(mux_);
 		this->stop();
-		iosvc_a.run();
+		ioctxt_.run();
 	}
 
-	void IOsvcWrapper::runThread()
+	void IOctxtWrapper::runThreads(const uint16_t numThreads_i)
 	{
+		std::lock_guard<std::recursive_mutex> grd(mux_);
 		this->stop();
-		thread_a.reset(new std::thread([this]() { iosvc_a.run(); }));
+		if (numThreads_i == 0) return;
+		threads_.resize(numThreads_i);
+		// Can't do this inside resize() unfortunately
+		for (auto & t : threads_) t = std::thread([this]() { ioctxt_.run(); });
 	}
 
-	void IOsvcWrapper::stop()
+	void IOctxtWrapper::stop()
 	{
+		std::lock_guard<std::recursive_mutex> grd(mux_);
 		bool oldSWI = stopWhenIdle();
 
 		if (!oldSWI) stopWhenIdle(true);
-		if (!iosvc_a.stopped()) iosvc_a.stop();
-		if (thread_a) {
-			thread_a->join();
-			thread_a.reset();
-		}
-
-		iosvc_a.reset();
+		if (!ioctxt_.stopped()) ioctxt_.stop();
+		for (auto & t : threads_) t.join();
+		threads_.clear();
+		ioctxt_.reset();
 		stopWhenIdle(oldSWI);
 	}
 
-	void IOsvcWrapper::stopWhenIdle(const bool stopWhenIdle_i)
+	void IOctxtWrapper::stopWhenIdle(const bool stopWhenIdle_i)
 	{
+		std::lock_guard<std::recursive_mutex> grd(mux_);
 		if (stopWhenIdle_i) {
-			if (work_a) work_a.reset();
+			if (work_) work_.reset();
 		} else {
-			if (!work_a) work_a.reset(
-				new boost::asio::io_service::work(iosvc_a)
+			if (!work_) work_.reset(
+				new boost::asio::io_context::work(ioctxt_)
 			);
 		}
 	}
