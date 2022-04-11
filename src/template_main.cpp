@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 
 	if (app != nullptr) app->stop_listening();
 
-	Fs2a::IOsvcWrapper::close();
+	Fs2a::IOctxtWrapper::close();
 	icw = nullptr;
 
 	Fs2a::Singleton<Fs2a::Application>::close();

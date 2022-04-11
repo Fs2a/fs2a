@@ -42,16 +42,16 @@ namespace Fs2a {
 	 * callback method. The procedure should be:
 	 *
 	 * 1. Construct and configure the Fs2a Logger
-	 * 2. Construct the IOsvcWrapper
-	 * 3. Set stopWhenIdle() to false in the IOsvcWrapper
+	 * 2. Construct the IOctxtWrapper
+	 * 3. Set stopWhenIdle() to false in the IOctxtWrapper
 	 * 4. Initialize the subclass through the init() method and pass the
-	 * io_service from the IOsvcWrapper
+	 * io_context from the IOctxtWrapper
 	 * 5. Call the listen() method with an IP and a port
-	 * 6. Start the IOsvcWrapper either through runHere() or runThread()
+	 * 6. Start the IOctxtWrapper either through runHere() or runThreads()
 	 * 7. Connections are handled, messages are forwarded to your on_msg()
 	 * method
 	 * 8. When terminating, call stop_listening() on your subclass
-	 * 9. stop the IOsvcWrapper instance
+	 * 9. stop the IOctxtWrapper instance
 	 * 10. Destroy your subclass instance
 	 * 11. Stop the Fs2a Logger */
 	class WsServer : public websocketpp::server<asioNoLog>
