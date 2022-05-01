@@ -48,6 +48,9 @@ add_library (fs2a SHARED
 	Tracer.cpp
 )
 
+# To make sure the Fs2a library compiles under C++20
+target_compile_features (fs2a PUBLIC cxx_std_20)
+
 target_link_libraries (fs2a
 	${CMAKE_THREAD_LIBS_INIT}
 	${Boost_LIBRARIES}
