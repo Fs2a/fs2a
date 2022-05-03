@@ -33,7 +33,7 @@
 #pragma once
 
 #include <mutex>
-#include <unordered_set>
+#include <list>
 #include "Observer.h"
 
 namespace Fs2a {
@@ -49,10 +49,18 @@ namespace Fs2a {
 			std::mutex mux_;
 
 			// Set of observers
-			std::unordered_set<std::weak_ptr<Observer<T>>> observers_;
+			std::list<std::weak_ptr<Observer<T>>> observers_;
 
 			// Keep track of the actual value
 			T value_;
+
+		public:
+			// Constructor to initialize internal value
+			Observable(const T & value_i)
+			: value_(value_i) {}
+
+			// Destructor
+			~Observable() {}
 
 			/** Safety method that gets the weak shared pointer from the
 			 * given observer to prevent segfaults when propagating changes
@@ -70,35 +78,68 @@ namespace Fs2a {
 			 * it was already there or if the given @p observer_i weak
 			 * pointer has expired. */
 			bool addObserver(std::weak_ptr<Observer<T>> observer_i) {
-				if (observer_i.expired()) return false;
-				std::lock_guard<std::mutex> lg(mux_a);
-				auto p = observers_.insert(observer_i);
-				return p.second;
+				// Parameter shared pointer
+				auto psp = observer_i.lock();
+				if (!psp) return false;
+
+				std::lock_guard<std::mutex> lg(mux_);
+				// Have to check for duplicates :-(
+				for (auto i = observers_.begin(); i != observers_.end(); ) {
+					// Iterator shared pointer
+					auto isp = i->lock();
+					if (!isp) {
+						i = observers_.erase(i);
+						continue;
+					}
+					// Do they point to the same object?
+					if (isp.get() == psp.get()) return false;
+					i++;
+				}
+
+				observers_.push_back(observer_i);
+				return true;
 			}
-
-			/** Remove an observer to prevent future updates.
-			 * @param observerI Observer that is to be removed.
-			 * @returns True if @p observerI was removed, false if
-			 * it was not present in the first place. */
-			bool removeObserver(Observer<T> *observerI) {
-				std::lock_guard<std::mutex> lg(mux_a);
-				return observers_a.erase(observerI) > 0;
-			}
-
-		public:
-
-			// Constructor to initialize internal value
-			Observable(const T & value_i)
-				: value_(value_i) {}
-
-			// Destructor
-			~Observable() {}
 
 			// Retrieve the value
 			T get() const { return value_; }
 
 			/** Get the current list of observers. */
-			const std::unordered_set<std::weak_ptr<Observer<T>>> & observers() const { return observers_; }
+			const std::list<std::weak_ptr<Observer<T>>> & observers() const { return observers_; }
+
+			/** Remove an observer to prevent future updates.
+			 * @param observer_i Observer that is to be removed.
+			 * @returns True if @p observer_i was removed, false if
+			 * it was not present in the first place. */
+			bool removeObserver(Observer<T> * observer_i) {
+				if (observer_i == nullptr) return false;
+				return removeObserver(observer_i->weak_from_this());
+			}
+
+			/** Remove an observer to prevent future updates.
+			 * @param observer_i Observer that is to be removed.
+			 * @returns True if @p observer_i was removed, false if
+			 * it was not present in the first place. */
+			bool removeObserver(std::weak_ptr<Observer<T>> observer_i) {
+				auto psp = observer_i.lock();
+				if (!psp) return false;
+
+				std::lock_guard<std::mutex> lg(mux_);
+				for (auto i = observers_.begin(); i != observers_.end(); ) {
+					// Iterator shared pointer
+					auto isp = i->lock();
+					if (!isp) {
+						i = observers_.erase(i);
+						continue;
+					}
+					// Do they point to the same object?
+					if (isp.get() == psp.get()) {
+						i = observers_.erase(i);
+						return true;
+					}
+					i++;
+				}
+				return false;
+			}
 
 			/** Set the value and broadcast it if it actually changed.
 			 * @param value_i The new value to set.
@@ -110,13 +151,13 @@ namespace Fs2a {
 				value_ = value_i;
 
 				/** Make a deep copy of all the Observers To Be Notified so
-				 * we can unlock the mutex to prevent deadlocks. */
-				std::unordered_set<std::weak_ptr<Observer<T>>> otbn = observers_;
+				 * we can unlock the mutex for deadlock prevention. */
+				auto otbn = observers_;
 				lck.unlock();
 				bool foundExpired = false;
-				for (std::weak_ptr<Observer<T>> i: otbn) {
+				for (auto i = otbn.begin(); i != otbn.end(); ) {
 					// Shared Pointer to Observer
-					auto spo = i.lock();
+					auto spo = i->lock();
 					if (!spo) {
 						foundExpired = true;
 						continue;
@@ -126,10 +167,7 @@ namespace Fs2a {
 
 				if (foundExpired) {
 					lck.lock();
-					for (auto it = observers_.begin(); it != observers_.end(); ) {
-						if (it->expired()) it = observers_.erase(it);
-						else it++;
-					}
+					observers_.remove_if([](std::weak_ptr<Observer<T>> wp) { return wp.expired(); });
 				}
 
 				return true;

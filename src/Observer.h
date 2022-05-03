@@ -32,12 +32,14 @@
 
 #pragma once
 
+#include <memory>
+
 namespace Fs2a {
 	/** Class that can observe an Observable object. Just forces the
 	 * implementation of the observableChanged() method. No administration
 	 * of the observed object is done. */
 	template <class T>
-	class Observer : enable_shared_from_this<Observer>
+	class Observer : public std::enable_shared_from_this<Fs2a::Observer<T>>
 	{
 		public:
 			/** Called when the value in the Observable class is changed.

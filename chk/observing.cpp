@@ -55,16 +55,16 @@ class CHECKNAME : public CppUnit::TestFixture {
 					updated(false), value(true)
 				{ }
 
-				void update(const bool & valueI) {
+				void observableChanged(const bool & value_i) {
 					updated = true;
-					value = valueI;
+					value = value_i;
 				}
 		};
 
 		class Topic : public Fs2a::Observable<bool> {
 			public:
-				Topic(bool initI)
-					: Fs2a::Observable<bool>::Observable(initI)
+				Topic(bool init_i)
+					: Fs2a::Observable<bool>::Observable(init_i)
 				{ }
 		};
 
@@ -77,68 +77,84 @@ class CHECKNAME : public CppUnit::TestFixture {
 
 		void all() {
 			Topic t(false);
-			Topic t2(true);
 
 			// Check that the initialization value gets through. We do a
 			// double test to assure that the compiler default value for
 			// booleans does not accidentally make the test succeed.
 			CPPUNIT_ASSERT_EQUAL(false, t.get());
-			CPPUNIT_ASSERT_EQUAL(true,  t2.get());
+			{
+				Topic t2(true);
+				CPPUNIT_ASSERT_EQUAL(true,  t2.get());
+			}
 
-			// Check that observable is not being observed by default
-			CPPUNIT_ASSERT_EQUAL((size_t) 0, t.observers().size());
+			// Check that nothing is being observed by default
+			CPPUNIT_ASSERT_EQUAL(0UL, t.observers().size());
 
 			// Check that setting same and different value without observer works
-			CPPUNIT_ASSERT_NO_THROW(t.set(false));
-			CPPUNIT_ASSERT_NO_THROW(t.set(true));
+			CPPUNIT_ASSERT_EQUAL(false, t.set(false));
+			CPPUNIT_ASSERT_EQUAL(true, t.set(true));
+			CPPUNIT_ASSERT_EQUAL(false, t.set(true));
 
 			// Separate scope for testing observer destructor
 			{
 				Watcher w;
 
-				// Check that observer does not observe anything by
-				// default.
-				CPPUNIT_ASSERT_EQUAL(static_cast<Fs2a::Observable<bool> *>(nullptr), w.observable());
-
-				// Check that an idle observer can ignore even more
-				CPPUNIT_ASSERT_EQUAL(false, w.observe(nullptr));
-
 				// Start observing t
-				CPPUNIT_ASSERT_NO_THROW(w.observe(&t));
+				CPPUNIT_ASSERT(t.addObserver(w.weak_from_this()));
 
-				// Check that watcher is observing t
-				CPPUNIT_ASSERT_EQUAL(dynamic_cast<Fs2a::Observable<bool> *>(&t), w.observable());
+				// Check that t is being watched by w
+				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
+				CPPUNIT_ASSERT_EQUAL(w.weak_from_this(), *(t.observers().begin()));
 
-				// Check that t is being observed by watcher
-				CPPUNIT_ASSERT_EQUAL((size_t) 1, t.observers().size());
-				CPPUNIT_ASSERT_EQUAL((size_t) 1, t.observers().count(&w));
+				// Can't add empty observers
+				CPPUNIT_ASSERT_EQUAL(false, t.addObserver(nullptr));
+				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
+				// (Empty Weak Pointer)
+				std::weak_ptr<Fs2a::Observer<bool>> ewp;
+				CPPUNIT_ASSERT_EQUAL(false, t.addObserver(ewp));
+				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
+
+				// Verify that observer won't be added twice
+				CPPUNIT_ASSERT_EQUAL(false, t.addObserver(w.weak_from_this()));
+				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
+				CPPUNIT_ASSERT_EQUAL(false, t.addObserver(&w));
+				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
 
 				// Check that watcher has not been updated yet
 				CPPUNIT_ASSERT_EQUAL(false, w.updated);
 
 				// Check that setting same value does not trigger update
-				CPPUNIT_ASSERT_NO_THROW(t.set(true));
+				CPPUNIT_ASSERT_EQUAL(false, t.set(true));
 				CPPUNIT_ASSERT_EQUAL(false, w.updated);
 
 				// Check that setting different value does trigger update
-				CPPUNIT_ASSERT_NO_THROW(t.set(false));
+				CPPUNIT_ASSERT_EQUAL(true, t.set(false));
 				CPPUNIT_ASSERT_EQUAL(true, w.updated);
 				CPPUNIT_ASSERT_EQUAL(false, w.value);
 				w.updated = false;
 
-				// Check that ignoring (unobserving) works
-				CPPUNIT_ASSERT_EQUAL(true, w.observe(nullptr));
-				CPPUNIT_ASSERT_EQUAL((size_t) 0, t.observers().size());
-				CPPUNIT_ASSERT_EQUAL(false, w.observe(nullptr));
-				CPPUNIT_ASSERT_NO_THROW(t.set(true));
+				// Can't remove empty observers
+				CPPUNIT_ASSERT_EQUAL(false, t.removeObserver(nullptr));
+				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
+				CPPUNIT_ASSERT_EQUAL(false, t.removeObserver(ewp));
+				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
+
+				// Check that removing an observer works
+				CPPUNIT_ASSERT_EQUAL(true, t.removeObserver(w.weak_from_this()));
+				CPPUNIT_ASSERT_EQUAL(0UL, t.observers().size());
+				CPPUNIT_ASSERT_EQUAL(true, t.set(true));
 				CPPUNIT_ASSERT_EQUAL(false, w.updated);
 
 				// Observe again for destructor
-				CPPUNIT_ASSERT_NO_THROW(w.observe(&t));
+				CPPUNIT_ASSERT_EQUAL(true, t.addObserver(w.weak_from_this()));
 			}
 
-			// Watcher destructed, check that it is ignoring t
-			CPPUNIT_ASSERT_EQUAL((size_t) 0, t.observers().size());
+			// Watcher destructed, check that t still works
+			CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size()); // Empty Observer
+			CPPUNIT_ASSERT_EQUAL(false, t.set(true));
+			CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size()); // Empty Observer
+			CPPUNIT_ASSERT_EQUAL(true, t.set(false));
+			CPPUNIT_ASSERT_EQUAL(0UL, t.observers().size()); // Empty Observer cleaned up
 		}
 
 };
