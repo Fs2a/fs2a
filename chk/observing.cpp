@@ -25,6 +25,8 @@ POSSIBILITY OF SUCH DAMAGE.
 
 vim:set ts=4 sw=4 noexpandtab: */
 
+#include <iostream>
+#include <sstream>
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <Observer.h>
@@ -35,6 +37,25 @@ vim:set ts=4 sw=4 noexpandtab: */
 class CHECKNAME;
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CHECKNAME);
+
+bool operator==(const std::weak_ptr<Fs2a::Observer<bool>> lhs, const std::weak_ptr<Fs2a::Observer<bool>> rhs)
+{
+	// Left and right shared pointer
+	auto lsp = lhs.lock();
+	auto rsp = rhs.lock();
+
+	if (!lsp && !rsp) return true;
+	if (lsp && rsp) return lsp.get() == rsp.get();
+	return false;
+}
+
+std::ostringstream & operator<<(std::ostringstream & oss_i, const std::weak_ptr<Fs2a::Observer<bool>> & wp_i)
+{
+	auto sp = wp_i.lock();
+	if (!sp) oss_i << "(expired weak ptr)";
+	else oss_i << static_cast<void *>(sp.get());
+	return oss_i;
+}
 
 class CHECKNAME : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(CHECKNAME);
@@ -50,10 +71,7 @@ class CHECKNAME : public CppUnit::TestFixture {
 				// Received value on update
 				bool value;
 
-				Watcher()
-					: Fs2a::Observer<bool>::Observer(),
-					updated(false), value(true)
-				{ }
+				Watcher() : updated(false), value(true) { }
 
 				void observableChanged(const bool & value_i) {
 					updated = true;
@@ -97,14 +115,14 @@ class CHECKNAME : public CppUnit::TestFixture {
 
 			// Separate scope for testing observer destructor
 			{
-				Watcher w;
+				auto w = std::make_shared<Watcher>();
 
 				// Start observing t
-				CPPUNIT_ASSERT(t.addObserver(w.weak_from_this()));
+				CPPUNIT_ASSERT(t.addObserver(w->weak_from_this()));
 
 				// Check that t is being watched by w
 				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
-				CPPUNIT_ASSERT_EQUAL(w.weak_from_this(), *(t.observers().begin()));
+				CPPUNIT_ASSERT_EQUAL(w->weak_from_this(), *(t.observers().begin()));
 
 				// Can't add empty observers
 				CPPUNIT_ASSERT_EQUAL(false, t.addObserver(nullptr));
@@ -115,23 +133,23 @@ class CHECKNAME : public CppUnit::TestFixture {
 				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
 
 				// Verify that observer won't be added twice
-				CPPUNIT_ASSERT_EQUAL(false, t.addObserver(w.weak_from_this()));
+				CPPUNIT_ASSERT_EQUAL(false, t.addObserver(w->weak_from_this()));
 				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
-				CPPUNIT_ASSERT_EQUAL(false, t.addObserver(&w));
+				CPPUNIT_ASSERT_EQUAL(false, t.addObserver(w->weak_from_this()));
 				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
 
 				// Check that watcher has not been updated yet
-				CPPUNIT_ASSERT_EQUAL(false, w.updated);
+				CPPUNIT_ASSERT_EQUAL(false, w->updated);
 
 				// Check that setting same value does not trigger update
 				CPPUNIT_ASSERT_EQUAL(false, t.set(true));
-				CPPUNIT_ASSERT_EQUAL(false, w.updated);
+				CPPUNIT_ASSERT_EQUAL(false, w->updated);
 
 				// Check that setting different value does trigger update
 				CPPUNIT_ASSERT_EQUAL(true, t.set(false));
-				CPPUNIT_ASSERT_EQUAL(true, w.updated);
-				CPPUNIT_ASSERT_EQUAL(false, w.value);
-				w.updated = false;
+				CPPUNIT_ASSERT_EQUAL(true, w->updated);
+				CPPUNIT_ASSERT_EQUAL(false, w->value);
+				w->updated = false;
 
 				// Can't remove empty observers
 				CPPUNIT_ASSERT_EQUAL(false, t.removeObserver(nullptr));
@@ -140,13 +158,13 @@ class CHECKNAME : public CppUnit::TestFixture {
 				CPPUNIT_ASSERT_EQUAL(1UL, t.observers().size());
 
 				// Check that removing an observer works
-				CPPUNIT_ASSERT_EQUAL(true, t.removeObserver(w.weak_from_this()));
+				CPPUNIT_ASSERT_EQUAL(true, t.removeObserver(w->weak_from_this()));
 				CPPUNIT_ASSERT_EQUAL(0UL, t.observers().size());
 				CPPUNIT_ASSERT_EQUAL(true, t.set(true));
-				CPPUNIT_ASSERT_EQUAL(false, w.updated);
+				CPPUNIT_ASSERT_EQUAL(false, w->updated);
 
 				// Observe again for destructor
-				CPPUNIT_ASSERT_EQUAL(true, t.addObserver(w.weak_from_this()));
+				CPPUNIT_ASSERT_EQUAL(true, t.addObserver(w->weak_from_this()));
 			}
 
 			// Watcher destructed, check that t still works

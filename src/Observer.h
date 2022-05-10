@@ -37,7 +37,9 @@
 namespace Fs2a {
 	/** Class that can observe an Observable object. Just forces the
 	 * implementation of the observableChanged() method. No administration
-	 * of the observed object is done. */
+	 * of the observed object is done.
+	 * Instantiate the subclass with std::make_shared! Otherwise the weak_from_this()
+	 * method will return an expired pointer. */
 	template <class T>
 	class Observer : public std::enable_shared_from_this<Fs2a::Observer<T>>
 	{

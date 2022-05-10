@@ -155,7 +155,7 @@ namespace Fs2a {
 				auto otbn = observers_;
 				lck.unlock();
 				bool foundExpired = false;
-				for (auto i = otbn.begin(); i != otbn.end(); ) {
+				for (auto i = otbn.begin(); i != otbn.end(); i++) {
 					// Shared Pointer to Observer
 					auto spo = i->lock();
 					if (!spo) {
