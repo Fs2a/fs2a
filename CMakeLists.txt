@@ -42,11 +42,6 @@ list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 project (fs2a)
 
-# Offer option to do code coverage when build type is Debug
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-	option (RUN_COVERAGE "Analyze the code coverage of the unitchecks" ON)
-endif (CMAKE_BUILD_TYPE STREQUAL "Debug")
-
 # Custom C/C++ flags
 set (CUSTOM_FLAGS   "-Wall -Werror -Wextra -Wno-varargs")
 set (CUSTOM_DEBUG   "-O0 -g3 -ggdb")
@@ -62,7 +57,7 @@ set (CMAKE_C_FLAGS_DEBUG   "${CUSTOM_DEBUG}")
 set (CMAKE_C_FLAGS_RELEASE "${CUSTOM_RELEASE}")
 
 # C++ flags, mostly the same as C
-set (CMAKE_CXX_FLAGS         "${CUSTOM_FLAGS} -std=gnu++17")
+set (CMAKE_CXX_FLAGS         "${CUSTOM_FLAGS}")
 set (CMAKE_CXX_FLAGS_DEBUG   "${CUSTOM_DEBUG}")
 set (CMAKE_CXX_FLAGS_RELEASE "${CUSTOM_RELEASE}")
 
@@ -70,6 +65,7 @@ set (CMAKE_CXX_FLAGS_RELEASE "${CUSTOM_RELEASE}")
 find_package (Boost REQUIRED COMPONENTS system)
 find_package (fmt REQUIRED)
 find_package (Threads REQUIRED)
+find_package (utf8cpp REQUIRED)
 
 add_subdirectory (chk)
 add_subdirectory (src)

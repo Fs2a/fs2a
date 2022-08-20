@@ -1,6 +1,8 @@
+# vim:set ts=4 sw=4 noet tw=80:
+#
 # BSD 3-Clause License
 #
-# Copyright (c) 2020, Fs2a, Simon de Hartog <simon@fs2a.pro>
+# Copyright (c) 2022, Fs2a, Bren de Hartog <bren@fs2a.pro>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,31 +29,11 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# vim:set ts=4 sw=4 noexpandtab:
-
-# Include stuff for code coverage
-if (RUN_COVERAGE STREQUAL "ON")
-	include(CodeCoverage)
-	append_coverage_compiler_flags()
-	setup_target_for_coverage_gcovr_html(
-		NAME fs2acoverage
-		EXECUTABLE fs2achk
-		BASE_DIRECTORY "${PROJECT_SOURCE_DIR}/src"
-		EXCLUDE "${PROJECT_SOURCE_DIR}/chk"
-	)
-endif (RUN_COVERAGE STREQUAL "ON")
 
 find_package (CppUnit REQUIRED)
 
-include_directories (
-	${CPPUNIT_INCLUDE_DIR}
-	${CMAKE_CURRENT_SOURCE_DIR}/../src
-)
-
 add_executable (fs2achk
 	chk.cpp
-	# connpool.cpp
 	functions.cpp
 	logger.cpp
 	observing.cpp
@@ -59,6 +41,13 @@ add_executable (fs2achk
 	singleton.cpp
 	table.cpp
 )
+
+target_include_directories (fs2achk
+	PUBLIC
+		${CPPUNIT_INCLUDE_DIR}
+		${CMAKE_CURRENT_SOURCE_DIR}/../src
+)
+
 target_link_libraries (fs2achk
 	${CPPUNIT_LIBRARY}
 	fs2a

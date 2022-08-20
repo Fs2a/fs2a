@@ -1,6 +1,8 @@
+# vim:set ts=4 sw=4 noet:
+#
 # BSD 3-Clause License
 #
-# Copyright (c) 2020, Fs2a, Simon de Hartog <simon@fs2a.pro>
+# Copyright (c) 2022, Fs2a, Bren de Hartog <bren@fs2a.pro>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,15 +29,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-# vim:set ts=4 sw=4 noet:
-
-include_directories (
-	${Boost_INCLUDE_DIRS}
-	${PQXX_INCLUDE_DIRS}
-	/usr/include/utf8cpp
-	/usr/include/utf8cpp/utf8
-)
 
 add_library (fs2a SHARED
 	CsvWriter.cpp
@@ -48,12 +41,21 @@ add_library (fs2a SHARED
 	Tracer.cpp
 )
 
+target_include_directories (fs2a
+	PRIVATE
+		${Boost_INCLUDE_DIRS}
+		${PQXX_INCLUDE_DIRS}
+)
+
 # To make sure the Fs2a library compiles under C++20
 target_compile_features (fs2a PUBLIC cxx_std_20)
+
+target_compile_options (fs2a PUBLIC -DFMT_ENFORCE_COMPILE_STRING=1)
 
 target_link_libraries (fs2a
 	${CMAKE_THREAD_LIBS_INIT}
 	${Boost_LIBRARIES}
 	fmt::fmt
 	${PQXX_LIBRARIES}
+	utf8cpp
 )
