@@ -1,4 +1,5 @@
 #!/bin/bash
+# vim:set ts=4 sw=4 noet tw=80:
 
 # BSD 3-Clause License
 #
@@ -30,7 +31,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-# vim:set ts=4 sw=4 noet:
 
 if [ $# -ne 1 ]
 then
@@ -81,7 +81,7 @@ EOF
 writeCppLicense "$lf" > $1.cpp
 cat >> $1.cpp << EOF
 
-#include "$1.h"
+#include <$1.h>
 
 namespace $namespace {
 

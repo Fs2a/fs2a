@@ -62,7 +62,7 @@ function writeBashLicense() {
 		exit 1
 	fi
 
-	echo "# vim:set ts=4 sw=4 noet tw=120:"
+	echo "# vim:set ts=4 sw=4 noet tw=80:"
 	echo "#"
 	sed -E \
 	-e "s/[0-9][0-9][0-9][0-9]/$(date +%Y)/g" \
@@ -77,7 +77,7 @@ function writeCppLicense() {
 		exit 1
 	fi
 
-	echo -e -n "/* vim:set ts=4 sw=4 noet tw=120:\n *\n * "
+	echo -e -n "/* vim:set ts=4 sw=4 noet tw=80:\n *\n * "
 	head -n 1 "$1" | sed -E -e "s/[0-9][0-9][0-9][0-9]/$(date +%Y)/g"
 	tail -n +2 "$1" | sed -E \
 		-e "s/[0-9][0-9][0-9][0-9]/$(date +%Y)/g" \
