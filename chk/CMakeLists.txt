@@ -42,6 +42,9 @@ add_executable (fs2achk
 	table.cpp
 )
 
+# Also ensure unitchecks are C++20 compliant
+target_compile_features (fs2achk PUBLIC cxx_std_20)
+
 target_include_directories (fs2achk
 	PUBLIC
 		${CPPUNIT_INCLUDE_DIR}

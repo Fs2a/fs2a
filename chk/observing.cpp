@@ -43,24 +43,28 @@ class CHECKNAME;
 
 CPPUNIT_TEST_SUITE_REGISTRATION(CHECKNAME);
 
-bool operator==(const std::weak_ptr<Fs2a::Observer<bool>> lhs, const std::weak_ptr<Fs2a::Observer<bool>> rhs)
+namespace Fs2a
 {
-	// Left and right shared pointer
-	auto lsp = lhs.lock();
-	auto rsp = rhs.lock();
+	bool operator==(const std::weak_ptr<Fs2a::Observer<bool>> lhs, const std::weak_ptr<Fs2a::Observer<bool>> rhs)
+	{
+		// Left and right shared pointer
+		auto lsp = lhs.lock();
+		auto rsp = rhs.lock();
 
-	if (!lsp && !rsp) return true;
-	if (lsp && rsp) return lsp.get() == rsp.get();
-	return false;
-}
+		if (!lsp && !rsp) return true;
+		if (lsp && rsp) return lsp.get() == rsp.get();
+		return false;
+	}
 
-std::ostringstream & operator<<(std::ostringstream & oss_i, const std::weak_ptr<Fs2a::Observer<bool>> & wp_i)
-{
-	auto sp = wp_i.lock();
-	if (!sp) oss_i << "(expired weak ptr)";
-	else oss_i << static_cast<void *>(sp.get());
-	return oss_i;
-}
+	std::ostringstream & operator<<(std::ostringstream & oss_i, const std::weak_ptr<Fs2a::Observer<bool>> & wp_i)
+	{
+		auto sp = wp_i.lock();
+		if (!sp) oss_i << "(expired weak ptr)";
+		else oss_i << static_cast<void *>(sp.get());
+		return oss_i;
+	}
+
+} // Fs2a namespace
 
 class CHECKNAME : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(CHECKNAME);
