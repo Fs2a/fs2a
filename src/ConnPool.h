@@ -1,4 +1,4 @@
-/* Copyright (c) 2020 Simon de Hartog <simon@dehartog.name>
+/* Copyright (c) 2020-2023 Simon de Hartog <simon@dehartog.name>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -31,6 +31,7 @@ vim:set ts=4 sw=4 noexpandtab: */
 #include <memory>
 #include <mutex>
 #include <set>
+#include <sstream>
 #include <string>
 #include <thread>
 #include <signal.h>
