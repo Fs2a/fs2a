@@ -81,7 +81,9 @@ namespace Fs2a
 		strftime(ft, 16, "%T", &bdt);
 
 		le = fmt::format(
-		  "{}.{:06d} [{}] {}:{} ", ft, tv.tv_usec, std::this_thread::get_id(), file_i.substr(strip_), line_i);
+			FMT_STRING("{}.{:06d} [{}] {}:{} "), ft, tv.tv_usec,
+			std::this_thread::get_id(), file_i.substr(strip_), line_i
+		);
 
 		if (!syslog_) {
 			le += levels_[priority_i];
