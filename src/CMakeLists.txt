@@ -45,6 +45,7 @@ target_include_directories (fs2a
 	PRIVATE
 		${Boost_INCLUDE_DIRS}
 		${PQXX_INCLUDE_DIRS}
+		/usr/include/utf8cpp
 )
 
 # To make sure the Fs2a library compiles under C++20
@@ -57,5 +58,4 @@ target_link_libraries (fs2a
 	${Boost_LIBRARIES}
 	fmt::fmt
 	${PQXX_LIBRARIES}
-	utf8cpp
 )

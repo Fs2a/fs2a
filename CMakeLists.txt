@@ -65,7 +65,6 @@ set (CMAKE_CXX_FLAGS_RELEASE "${CUSTOM_RELEASE}")
 find_package (Boost REQUIRED COMPONENTS system)
 find_package (fmt REQUIRED)
 find_package (Threads REQUIRED)
-find_package (utf8cpp REQUIRED)
 
 add_subdirectory (chk)
 add_subdirectory (src)
