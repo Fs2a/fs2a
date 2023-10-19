@@ -283,7 +283,7 @@ namespace Fs2a {
 
 template <> struct fmt::formatter<std::thread::id> : formatter<string_view> {
 	template <typename FormatContext>
-	auto format(std::thread::id tid, FormatContext & ctx) const {
+	auto format(std::thread::id tid, FormatContext & ctx) {
 		std::ostringstream oss;
 		oss << tid;
 		return formatter<string_view>::format(oss.str(), ctx);
