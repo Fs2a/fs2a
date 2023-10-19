@@ -51,8 +51,6 @@ target_include_directories (fs2a
 # To make sure the Fs2a library compiles under C++20
 target_compile_features (fs2a PUBLIC cxx_std_20)
 
-target_compile_options (fs2a PUBLIC -DFMT_ENFORCE_COMPILE_STRING=1)
-
 target_link_libraries (fs2a
 	${CMAKE_THREAD_LIBS_INIT}
 	${Boost_LIBRARIES}
