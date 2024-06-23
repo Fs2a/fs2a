@@ -1,8 +1,6 @@
-# vim:set ts=4 sw=4 noet:
-#
 # BSD 3-Clause License
 #
-# Copyright (c) 2022, Fs2a, Bren de Hartog <bren@fs2a.pro>
+# Copyright (c) 2024, Fs2a, Bren de Hartog <bren@fs2a.pro>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,6 +36,7 @@ add_library (fs2a SHARED
 	Logger.cpp
 	readCSV.cpp
 	Semaphore.cpp
+	ThreadedTasker.cpp
 	Tracer.cpp
 )
 
