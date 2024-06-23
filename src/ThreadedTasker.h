@@ -30,11 +30,48 @@
 
 #pragma once
 
+#include <condition_variable>
+#include <deque>
+#include <future>
+#include <mutex>
+#include <thread>
+
 namespace Fs2a {
 
+	template <typename ReturnType = void, typename AuxData = std::nullptr_t>
 	class ThreadedTasker
 	{
 		protected:
+		/** Structure to hold tasks. */
+		struct task {
+			// Future where task's result is stored
+			std::future<ReturnType> result;
+
+			// Auxiliary data to keep track of when running callback function
+			std::shared_ptr<AuxData> aux;
+
+			// Default constructor
+			task() = default;
+
+			// Move constructor
+			task(task && other) {
+				result = std::move(other.result);
+				aux = other.aux;
+			}
+
+			// Parameterized constructor
+			task(std::future<ReturnType> && result_i, std::shared_ptr<AuxData> aux_i) {
+				result = std::move(result_i);
+				aux = std::move(aux_i);
+			}
+
+		};
+
+		/** Deque with the actual tasks. */
+		std::deque<task> tasks_;
+
+		/** Thread that actually monitors the tasks and calls the callbacks. */
+		std::thread thr_;
 
 		public:
 		/// Constructor
