@@ -36,7 +36,6 @@ add_library (fs2a SHARED
 	Logger.cpp
 	readCSV.cpp
 	Semaphore.cpp
-	ThreadedTasker.cpp
 	Tracer.cpp
 )
 
