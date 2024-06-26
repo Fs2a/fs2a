@@ -32,7 +32,7 @@
 
 #include <cstdint>
 #include <condition_variable>
-#include <deque>
+#include <list>
 #include <future>
 #include <mutex>
 #include <stdexcept>
@@ -91,8 +91,8 @@ namespace Fs2a {
 		/** Internal state */
 		states state_;
 
-		/** Deque with the actual tasks. */
-		std::deque<stip> stips_;
+		/** List with the actual tasks. */
+		std::list<stip> stips_;
 
 		/** Thread that actually monitors the tasks and calls the callbacks. */
 		std::thread thr_;
@@ -128,6 +128,10 @@ namespace Fs2a {
 					}
 
 					if (state_ == states::terminated) break;
+
+					for (auto & item : stips_) {
+
+					}
 				} // unique_lock scope
 			} // while (true)
 		}
