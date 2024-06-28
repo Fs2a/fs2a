@@ -1,0 +1,13 @@
+[*]
+charset = utf-8
+end_of_line = lf
+trim_trailing_whitespace = true
+
+[{CMakeLists.txt,*.ad,*.c,*.cpp,*.h,*.md,*.py,*.sh}]
+indent_style = tab
+indent_size = 4
+max_line_length = 100
+
+[*.{yaml,yml}]
+indent_style = space
+indent_size = 2
