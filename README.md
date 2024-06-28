@@ -3,6 +3,23 @@
 This repository includes some utilities the author uses for easier and faster development of
 C++ projects.
 
+## Classes documentation
+
+### ThreadedTasker
+
+This is a template class with two parameters. It follows the following state diagram:
+
+```mermaid
+---
+title: ThreadedTasker State Diagram
+---
+stateDiagram-v2
+[*] --> Pristine
+Pristine --> Terminated: stop()
+Terminated --> Pristine: reset()
+Terminated --> [*]
+```
+
 ## Followed standards
 
 The author of this project does his best to adhere to the following standards:
