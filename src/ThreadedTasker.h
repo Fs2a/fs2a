@@ -49,7 +49,7 @@ namespace Fs2a {
 			pristine, /// Pristine startup state. Watches are accepted, but not monitored.
 			running, /// Running. Watches are accepted and callbacks are called upon completion.
 			graceful, /// Graceful shutdown. No new watches accepted, but still call callbacks.
-			terminated /// No watches accepted, watcher thread terminated. Pending stuff is lost.
+			stopped /// No watches accepted, watcher thread stopped. Pending stuff is lost.
 		};
 
 		protected:
@@ -94,11 +94,11 @@ namespace Fs2a {
 		/** List with the actual tasks. */
 		std::list<stip> stips_;
 
+		/** Condition for inter-thread synchronization. */
+		std::condition_variable sync_;
+
 		/** Thread that actually monitors the tasks and calls the callbacks. */
 		std::thread thr_;
-
-		/** Condition to signal there is stuff to do. */
-		std::condition_variable todo_;
 
 		/** Watcher code to run in thread. */
 		void watcher_() {
@@ -115,7 +115,7 @@ namespace Fs2a {
 
 						case states::running:
 							if (stips_.empty()) {
-								todo_.wait(lck,[&]() { return stips_.size() > 0; });
+								sync_.wait(lck,[&]() { return stips_.size() > 0; });
 							}
 							break;
 
@@ -140,24 +140,66 @@ namespace Fs2a {
 		/// Constructor
 		ThreadedTasker() : state_(states::pristine) { }
 
-		/** Default destructor terminates in progress stuff abruptly. */
+		/** Default destructor calls stop() for cleanup */
 		~ThreadedTasker() {
-			terminate();
+			stop();
 		}
 
 		/** Graceful ending, wait for stuff in progress to finish. Doesn't accept new watches. */
 		void graceful() {
 			{
-				std::unique_lock<std::mutex> lg(mux_);
-				if (state_ != states::running) return; // No more need for graceful shutdown
-				state_ = states::graceful;
+				std::unique_lock<std::mutex> lck(mux_);
+				switch (state_) {
+					case states::pristine:
+						state_ = states::terminated;
+						// Fall-through
+
+					case states::graceful:
+					case states::terminated:
+						// Nothing left to do
+						return;
+
+					case states::running:
+						state_ = states::graceful;
+						break;
+				}
 			}
+			// Only reachable if state was changed from running to graceful
 			if (thr_.joinable()) thr_.join();
+		}
+
+		/** Reset object to pristine state, if possible. */
+		void reset() {
+			std::unique_lock<std::mutex> lck(mux_);
+			if (thr_.joinable()) throw std::runtime_error(
+				"Unable to reset ThreadedTasker when thread is running");
+			switch (state_) {
+				case states::terminated:
+					// Reset back to pristine
+					state_ = states::pristine;
+					// Fall-through for cleanup
+
+				case states::pristine:
+					// Already in pristine state, clear list to be sure
+					stips_.clear();
+					return;
+
+				default:
+					throw std::runtime_error(
+						"Unable to reset ThreadedTasker when running");
+			}
+			return;
+		}
+
+		/** Return the number of things currently in progress. */
+		size_t size() {
+			std::unique_lock<std::mutex> lck(mux_);
+			return stips_.size();
 		}
 
 		/** Start the thread to watch tasks and run callbacks upon completion. */
 		void start() {
-			std::unique_lock<std::mutex> lg(mux_);
+			std::unique_lock<std::mutex> lck(mux_);
 			if (state_ != states::pristine) {
 				throw std::logic_error(
 					"Unable to start ThreadedTasker thread when not in pristine state"
@@ -175,9 +217,16 @@ namespace Fs2a {
 		/** Get the current state the object is in. */
 		states state() const { return state_; }
 
-		/** Terminate immediately, not waiting for stuff that's in progress. Not recommended. */
-		void terminate() {
+		/** Stop immediately. No callbacks are called. The watched tasks may still be waited for
+		 * though. C++ does not allow us to simply ignore and forget an async task. */
+		void stop() {
 			std::unique_lock<std::mutex> lck(mux_);
+			switch (state_) {
+				case states::graceful:
+					// There is a graceful shutdown in progress, can't stop that
+					sync_.wait(lck, [&]() { return !(thr_.joinable()); });
+					return;
+
 			state_ = states::terminated;
 			if (thr_.joinable()) thr_.join();
 		}
