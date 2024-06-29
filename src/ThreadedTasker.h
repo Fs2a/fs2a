@@ -30,13 +30,19 @@
 
 #pragma once
 
+#include <atomic>
+#include <chrono>
 #include <cstdint>
 #include <condition_variable>
-#include <list>
+#include <functional>
 #include <future>
+#include <list>
 #include <mutex>
 #include <stdexcept>
 #include <thread>
+#include <Logger.h>
+
+using namespace std::chrono_literals;
 
 namespace Fs2a {
 
@@ -55,31 +61,41 @@ namespace Fs2a {
 		protected:
 		/** Structure to hold STuff In Progress, i.e., stips. */
 		struct stip {
-			// Future where stip's result is stored
-			std::future<ReturnType> result;
-
 			// Auxiliary data to keep track of when running callback function
 			std::shared_ptr<AuxData> aux;
+
+			// Callback function
+			std::function<void(std::future<ReturnType>, std::shared_ptr<AuxData>)> callback;
+
+			// Future where stip's result is stored
+			std::future<ReturnType> result;
 
 			// Default constructor
 			stip() = default;
 
 			// Move constructor
 			stip(stip && other) {
-				result = std::move(other.result);
 				aux = other.aux;
+				callback = other.callback;
+				result = std::move(other.result);
 			}
 
 			// Parameterized constructor
-			stip(std::future<ReturnType> && result_i, std::shared_ptr<AuxData> aux_i) {
-				result = std::move(result_i);
+			stip(
+				std::future<ReturnType> && result_i,
+				std::function<void(std::future<ReturnType>, std::shared_ptr<AuxData>)> callback_i,
+				std::shared_ptr<AuxData> aux_i
+			) {
 				aux = aux_i;
+				callback = callback_i;
+				result = std::move(result_i);
 			}
 
 			// Assignment operator
 			stip & operator=(stip & other) {
-				result = std::move(other.result);
 				aux = other.aux;
+				callback = other.callback;
+				result = std::move(other.result);
 				return *this;
 			}
 
@@ -89,7 +105,7 @@ namespace Fs2a {
 		mutable std::mutex mux_;
 
 		/** Internal state */
-		states state_;
+		std::atomic<states> state_;
 
 		/** List with the actual tasks. */
 		std::list<stip> stips_;
@@ -102,11 +118,11 @@ namespace Fs2a {
 
 		/** Watcher code to run in thread. */
 		void watcher_() {
-			while (true) {
+			while (state_.load() != states::terminated) {
 				// Separate scope to make sure the unique lock releases every cycle
 				{
 					std::unique_lock<std::mutex> lck(mux_);
-					switch (state_) {
+					switch (state_.load()) {
 						case states::pristine:
 							throw std::logic_error(
 								"Still in state pristine while watcher thread is running?"
@@ -115,26 +131,67 @@ namespace Fs2a {
 
 						case states::running:
 							if (stips_.empty()) {
-								sync_.wait(lck,[&]() { return stips_.size() > 0; });
+								sync_.wait(lck,[&]() {
+									return state_.load() != states::running || !stips_.empty();
+								});
 							}
 							break;
 
 						case states::graceful:
-							if (stips_.empty()) state_ = states::terminated;
+							if (stips_.empty()) state_.store(states::terminated);
 							break;
 
 						case states::terminated:
 							break;
 					}
 
-					if (state_ == states::terminated) break;
+					// Iterator to delete once moved on in the loop
+					auto todel = stips_.end();
 
-					for (auto & item : stips_) {
+					for (auto i = stips_.begin(); i != stips_.end(); i++) {
+						// Do this after continuing the loop, otherwise we would
+						// invalidate the loop iterator.
+						if (todel != stips_.end()) {
+							stips_.erase(todel);
+							todel = stips_.end():
+						}
+						if (state_.load() == states::terminated) break;
+						if (!i->result.valid()) {
+							todel = i;
+							continue;
+						}
+						switch (i->result.wait_for(0s)) {
+							case std::future_status::deferred:
+								// Deferred tasks should never have entered the list
+								todel = i;
+								continue;
 
-					}
+							case std::future_status::timeout:
+								// Simply not done yet
+								break;
+
+							case std::future_status::ready:
+								// Task is finally done, call callback with lock released
+								lck.unlock();
+								try {
+									// Don't let callback mess up our thread
+									i->callback(i->result, i->aux);
+								} catch (...) {
+									// Ignore callback exceptions
+								}
+
+								// Lock released and callback ran, yield a bit
+								std::this_thread::yield();
+
+								lck.lock();
+								todel = i;
+								continue;
+						} // switch result.wait_for(0s)
+					} // for
 				} // unique_lock scope
-			} // while (true)
-		}
+				std::this_thread::yield();
+			} // while
+		} // watcher_()
 
 		public:
 		/// Constructor
@@ -152,9 +209,14 @@ namespace Fs2a {
 				switch (state_) {
 					case states::pristine:
 						state_ = states::terminated;
-						// Fall-through
+						return;
 
 					case states::graceful:
+						/** This indicates another thread decided to wait on our graceful
+						 * termination, so do that here. */
+						sync_.wait(lck, [&]() { state_.load() != states::graceful; });
+						return;
+
 					case states::terminated:
 						// Nothing left to do
 						return;
