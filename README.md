@@ -14,11 +14,12 @@ stateDiagram-v2
 [*] --> Pristine
 Pristine --> Pristine: watch /\nreset
 Pristine --> Running: start
+Pristine --> Graceful: graceful &\ntasks
 Running --> Running: watch
 Running --> Graceful: graceful
 Running --> Terminated: stop
 Graceful --> Terminated: ¬tasks
-Pristine --> Terminated: stop /\ngraceful
+Pristine --> Terminated: stop /\ngraceful & ¬tasks
 Terminated --> Pristine: reset
 Terminated --> Terminated: stop /\ngraceful
 Terminated --> [*]
