@@ -10,13 +10,17 @@ C++ projects.
 This is a template class with two parameters. It follows the following state diagram:
 
 ```mermaid
----
-title: ThreadedTasker State Diagram
----
 stateDiagram-v2
 [*] --> Pristine
-Pristine --> Terminated: stop()
-Terminated --> Pristine: reset()
+Pristine --> Pristine: watch /\nreset
+Pristine --> Running: start
+Running --> Running: watch
+Running --> Graceful: graceful
+Running --> Terminated: stop
+Graceful --> Terminated: ¬tasks
+Pristine --> Terminated: stop /\ngraceful
+Terminated --> Pristine: reset
+Terminated --> Terminated: stop /\ngraceful
 Terminated --> [*]
 ```
 
