@@ -40,6 +40,7 @@ add_executable (fs2achk
 	readcsv.cpp
 	singleton.cpp
 	table.cpp
+	threadedtasker.cpp
 )
 
 # Also ensure unitchecks are C++20 compliant

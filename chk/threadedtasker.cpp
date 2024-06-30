@@ -41,7 +41,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION(CHECKNAME);
 
 class CHECKNAME : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(CHECKNAME);
-	CPPUNIT_TEST(validcsv);
+	CPPUNIT_TEST(testIdempotence);
 	CPPUNIT_TEST_SUITE_END();
 
 	public:
@@ -53,16 +53,19 @@ class CHECKNAME : public CppUnit::TestFixture {
 		CPPUNIT_ASSERT_EQUAL(0UL, tt.size());
 
 		/// Reset should not fail
-		CPPUNIT_ASSERT_NOTHROW(tt.reset());
+		CPPUNIT_ASSERT_NO_THROW(tt.reset());
 		CPPUNIT_ASSERT_EQUAL(Fs2a::ThreadedTasker<>::states::pristine, tt.state());
 		CPPUNIT_ASSERT_EQUAL(0UL, tt.size());
 
 		/// Abrupt termination should be OK
-		CPPUNIT_ASSERT_NOTHROW(tt.terminate());
-		CPPUNIT_ASSERT_EQUAL(Fs2a::ThreadedTasker<>::states::terminated, tt.state());
+		CPPUNIT_ASSERT_NO_THROW(tt.stop());
+		CPPUNIT_ASSERT_EQUAL(Fs2a::ThreadedTasker<>::states::stopped, tt.state());
 		CPPUNIT_ASSERT_EQUAL(0UL, tt.size());
 
 		/// Reset after terminate should work
-		CPPUNIT_ASSERT_NOTHROW(tt.reset());
+		CPPUNIT_ASSERT_NO_THROW(tt.reset());
 		CPPUNIT_ASSERT_EQUAL(Fs2a::ThreadedTasker<>::states::pristine, tt.state());
 		CPPUNIT_ASSERT_EQUAL(0UL, tt.size());
+	}
+
+};

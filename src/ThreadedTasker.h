@@ -118,7 +118,7 @@ namespace Fs2a {
 
 		/** Watcher code to run in thread. */
 		void watcher_() {
-			while (state_.load() != states::terminated) {
+			while (state_.load() != states::stopped) {
 				// Separate scope to make sure the unique lock releases every cycle
 				{
 					std::unique_lock<std::mutex> lck(mux_);
@@ -138,12 +138,14 @@ namespace Fs2a {
 							break;
 
 						case states::graceful:
-							if (stips_.empty()) state_.store(states::terminated);
+							if (stips_.empty()) state_.store(states::stopped);
 							break;
 
-						case states::terminated:
+						case states::stopped:
 							break;
 					}
+
+					if (state_.load() == states::stopped) break;
 
 					// Iterator to delete once moved on in the loop
 					auto todel = stips_.end();
@@ -153,9 +155,9 @@ namespace Fs2a {
 						// invalidate the loop iterator.
 						if (todel != stips_.end()) {
 							stips_.erase(todel);
-							todel = stips_.end():
+							todel = stips_.end();
 						}
-						if (state_.load() == states::terminated) break;
+						if (state_.load() == states::stopped) break;
 						if (!i->result.valid()) {
 							todel = i;
 							continue;
@@ -191,6 +193,13 @@ namespace Fs2a {
 				} // unique_lock scope
 				std::this_thread::yield();
 			} // while
+
+			// State is terminated, clean up
+			{
+				std::unique_lock<std::mutex> lck(mux_);
+				stips_.clear(); // Will likely block until tasks are done
+			}
+
 		} // watcher_()
 
 		public:
@@ -208,8 +217,17 @@ namespace Fs2a {
 				std::unique_lock<std::mutex> lck(mux_);
 				switch (state_) {
 					case states::pristine:
-						state_ = states::terminated;
-						return;
+						if (stips_.empty()) {
+							state_.store(states::stopped);
+							return;
+						} else {
+							lck.unlock();
+							start(); // To actually handle pending tasks
+							lck.lock();
+							state_.store(states::graceful);
+						}
+						// Fall-through to wait for termination
+						[[fallthrough]];
 
 					case states::graceful:
 						/** This indicates another thread decided to wait on our graceful
@@ -217,16 +235,17 @@ namespace Fs2a {
 						sync_.wait(lck, [&]() { state_.load() != states::graceful; });
 						return;
 
-					case states::terminated:
+					case states::stopped:
 						// Nothing left to do
 						return;
 
 					case states::running:
-						state_ = states::graceful;
+						state_.store(states::graceful);
 						break;
 				}
 			}
-			// Only reachable if state was changed from running to graceful
+			/** Only reachable if state was changed from running to graceful, in which case
+			 * *we* should wait for the thread to finish and clean it up. */
 			if (thr_.joinable()) thr_.join();
 		}
 
@@ -236,10 +255,11 @@ namespace Fs2a {
 			if (thr_.joinable()) throw std::runtime_error(
 				"Unable to reset ThreadedTasker when thread is running");
 			switch (state_) {
-				case states::terminated:
+				case states::stopped:
 					// Reset back to pristine
-					state_ = states::pristine;
+					state_.store(states::pristine);
 					// Fall-through for cleanup
+					[[fallthrough]];
 
 				case states::pristine:
 					// Already in pristine state, clear list to be sure
@@ -250,11 +270,12 @@ namespace Fs2a {
 					throw std::runtime_error(
 						"Unable to reset ThreadedTasker when running");
 			}
+			// Should never get here
 			return;
 		}
 
 		/** Return the number of things currently in progress. */
-		size_t size() {
+		size_t size() const {
 			std::unique_lock<std::mutex> lck(mux_);
 			return stips_.size();
 		}
@@ -262,7 +283,7 @@ namespace Fs2a {
 		/** Start the thread to watch tasks and run callbacks upon completion. */
 		void start() {
 			std::unique_lock<std::mutex> lck(mux_);
-			if (state_ != states::pristine) {
+			if (state_.load() != states::pristine) {
 				throw std::logic_error(
 					"Unable to start ThreadedTasker thread when not in pristine state"
 				);
@@ -270,36 +291,61 @@ namespace Fs2a {
 			if (thr_.joinable()) {
 				throw std::runtime_error(
 					"ThreadedTasker in pristine state, but thread is joinable?"
-				)
+				);
 			}
-			state_ = state::running;
+			state_.store(states::running);
 			thr_ = std::thread(&ThreadedTasker::watcher_, this);
 		}
 
 		/** Get the current state the object is in. */
-		states state() const { return state_; }
+		states state() const { return state_.load(); }
 
 		/** Stop immediately. No callbacks are called. The watched tasks may still be waited for
 		 * though. C++ does not allow us to simply ignore and forget an async task. */
 		void stop() {
 			std::unique_lock<std::mutex> lck(mux_);
-			switch (state_) {
-				case states::graceful:
-					// There is a graceful shutdown in progress, can't stop that
-					sync_.wait(lck, [&]() { return !(thr_.joinable()); });
-					return;
+			if (state_.load() == states::graceful) {
+				// There is a graceful shutdown in progress, can't stop that
+				sync_.wait(lck, [&]() { return !(thr_.joinable()); });
+				return;
+			}
 
-			state_ = states::terminated;
-			if (thr_.joinable()) thr_.join();
+			// Otherwise, just stop it!
+			state_.store(states::stopped);
+			sync_.notify_all();
+			if (thr_.joinable()) {
+				lck.unlock();
+				thr_.join();
+				lck.lock();
+			}
+			stips_.clear();
 		}
 
 		/** Watch a new future for completion.
 		 * @param future_i Future to watch
-		 * @param callback_i Callback function to call when future is done. */
+		 * @param callback_i Callback function to call when @p future_i is done.
+		 * @param auxdata_i Shared pointer to auxiliary data to pass to callback when given
+		 * @p future_i becomes ready. */
 		void watch(
 			std::future<ReturnType> future_i,
-			std::function<void(std::future<ReturnType>, std::shared_ptr<AuxData>)> callback_i
-		);
+			std::function<void(std::future<ReturnType>, std::shared_ptr<AuxData>)> callback_i,
+			std::shared_ptr<AuxData> auxdata_i
+		) {
+			if (!future_i.valid()) throw std::invalid_argument("Passed future is not valid");
+			if (!callback_i) throw std::invalid_argument("Passed function is not callable");
+
+			std::unique_lock<std::mutex> lck(mux_);
+			switch (state_.load()) {
+				case states::graceful:
+				case states::stopped:
+					throw std::runtime_error("Unable to watch more tasks when shut(ting) down");
+
+				default:
+					break;
+			}
+			stips_.emplace_back(future_i, callback_i, auxdata_i);
+		}
+
 	};
 
 } // Fs2a namespace
