@@ -1,8 +1,6 @@
-/* vim:set ts=4 sw=4 noet tw=90:
+/* BSD 3-Clause License
  *
- * BSD 3-Clause License
- *
- * Copyright © 2022, Bren de Hartog <bren@fs2a.pro>
+ * Copyright © 2025, Bren de Hartog <bren@fs2a.pro>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -82,6 +80,13 @@
 	Fs2a::Logger::instance()->log(__FILE__, __LINE__, \
 		Fs2a::Logger::info, fmt::format(FMT_STRING(str), ##__VA_ARGS__)); \
 	action; \
+}
+
+/** log a Conditional libFmt formatted Informational string and Return when condition does not hold */
+#define FCIR(cond, ret, str, ...) if (!(cond)) { \
+	Fs2a::Logger::instance()->log(__FILE__, __LINE__, \
+		Fs2a::Logger::info, fmt::format(FMT_STRING(str), ##__VA_ARGS__)); \
+	return ret; \
 }
 
 /** log a libFmt formatted Notification string */
