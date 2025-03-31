@@ -1,8 +1,6 @@
 #!/bin/bash
 #
-# vim:set ts=4 sw=4 noet tw=120:
-#
-# Copyright (c) 2021, Simon de Hartog <simon@dehartog.name>
+# Copyright (c) 2025, Bren de Hartog <bren@dehartog.name>
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -62,8 +60,6 @@ function writeBashLicense() {
 		exit 1
 	fi
 
-	echo "# vim:set ts=4 sw=4 noet tw=80:"
-	echo "#"
 	sed -E \
 	-e "s/[0-9][0-9][0-9][0-9]/$(date +%Y)/g" \
 	-e 's/^./# &/g' \
@@ -77,7 +73,7 @@ function writeCppLicense() {
 		exit 1
 	fi
 
-	echo -e -n "/* vim:set ts=4 sw=4 noet tw=80:\n *\n * "
+	echo -e -n "/* "
 	head -n 1 "$1" | sed -E -e "s/[0-9][0-9][0-9][0-9]/$(date +%Y)/g"
 	tail -n +2 "$1" | sed -E \
 		-e "s/[0-9][0-9][0-9][0-9]/$(date +%Y)/g" \

@@ -1,9 +1,8 @@
 #!/bin/bash
-# vim:set ts=4 sw=4 noet tw=80:
 
 # BSD 3-Clause License
 #
-# Copyright (c) 2020, Fs2a, Simon de Hartog <simon@fs2a.pro>
+# Copyright (c) 2025, Fs2a, Bren de Hartog <bren@fs2a.pro>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,7 +29,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
 
 if [ $# -ne 1 ]
 then
