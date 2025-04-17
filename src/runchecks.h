@@ -28,16 +28,16 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#include <cstring>
-#include <Logger.h>
-#include <runchecks.h>
+#pragma once
 
-int main(int argc, char *argv[])
-{
-	// Determine string length to strip off filenames when logging
-	size_t strp = strlen(STR(REPOROOT)) + 1;
-	// Log to syslog
-	Fs2a::Logger::instance()->syslog("Fs2aChecker", LOG_USER, strp);
+#include <string>
 
-	return Fs2a::runchecks(argc, argv, "Fs2a Unitchecker");
-}
+namespace Fs2a {
+	/** Selectively run the Cppunit checks compiled within this executable.
+	 * @param argc_i Argc as received from main()
+	 * @param argv_i Argv as received from main()
+	 * @param appname_i Application name to print in the help message
+	 * @returns The code to exit with. 0 means all went well, 1 indicates failed checks. */
+	int runchecks(int argc_i, char *argv_i[], const std::string & appname_i);
+
+} // Fs2a namespace

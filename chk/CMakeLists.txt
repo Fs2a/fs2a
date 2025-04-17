@@ -48,7 +48,8 @@ target_compile_features (fs2achk PUBLIC cxx_std_20)
 target_include_directories (fs2achk
 	PUBLIC
 		${CPPUNIT_INCLUDE_DIR}
-		${CMAKE_CURRENT_SOURCE_DIR}/../src
+		${CMAKE_SOURCE_DIR}/src
+		${Boost_INCLUDE_DIRS}
 )
 
 target_link_libraries (fs2achk

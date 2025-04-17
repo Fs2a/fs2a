@@ -35,15 +35,17 @@ add_library (fs2a SHARED
 	IOctxtWrapper.cpp
 	Logger.cpp
 	readCSV.cpp
+	runchecks.cpp
 	Semaphore.cpp
 	Tracer.cpp
 )
 
 target_include_directories (fs2a
 	PRIVATE
-		${Boost_INCLUDE_DIRS}
 		${PQXX_INCLUDE_DIRS}
 		/usr/include/utf8cpp
+	PUBLIC
+		${Boost_INCLUDE_DIRS}
 )
 
 # To make sure the Fs2a library compiles under C++20
