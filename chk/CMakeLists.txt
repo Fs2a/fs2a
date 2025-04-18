@@ -54,6 +54,5 @@ target_include_directories (fs2achk
 
 target_link_libraries (fs2achk
 	${Boost_LIBRARIES}
-	${CPPUNIT_LIBRARY}
 	fs2a
 )

@@ -57,5 +57,6 @@ target_link_libraries (fs2a
 		${CMAKE_THREAD_LIBS_INIT}
 	PUBLIC
 		${Boost_LIBRARIES}
+		${CPPUNIT_LIBRARY}
 		fmt::fmt
 )
