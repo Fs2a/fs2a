@@ -1,4 +1,4 @@
-/* Copyright (c) 2020 Simon de Hartog <simon@dehartog.name>
+/* Copyright (c) 2025 Bren de Hartog <bren@fs2a.pro>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -21,11 +21,9 @@ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
 INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-POSSIBILITY OF SUCH DAMAGE.
+POSSIBILITY OF SUCH DAMAGE. */
 
-vim:set ts=4 sw=4 noexpandtab: */
-
-#include "Semaphore.h"
+#include <fs2a/Semaphore.h>
 
 namespace Fs2a {
 

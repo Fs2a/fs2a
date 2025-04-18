@@ -1,8 +1,6 @@
-/* vim:set ts=4 sw=4 noet tw=90:
+/* BSD 3-Clause License
  *
- * BSD 3-Clause License
- *
- * Copyright © 2022, Bren de Hartog <bren@fs2a.pro>
+ * Copyright © 2025, Bren de Hartog <bren@fs2a.pro>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +39,7 @@
 #include <fmt/format.h>
 #include <fmt/printf.h>
 #include <sys/time.h>
-#include "Logger.h"
+#include <fs2a/Logger.h>
 
 namespace Fs2a
 {
