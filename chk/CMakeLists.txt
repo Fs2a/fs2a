@@ -46,13 +46,14 @@ add_executable (fs2achk
 target_compile_features (fs2achk PUBLIC cxx_std_20)
 
 target_include_directories (fs2achk
-	PUBLIC
-		${CPPUNIT_INCLUDE_DIR}
-		${CMAKE_SOURCE_DIR}/src
+	PRIVATE
 		${Boost_INCLUDE_DIRS}
+		${CMAKE_SOURCE_DIR}/src
+		${CPPUNIT_INCLUDE_DIR}
 )
 
 target_link_libraries (fs2achk
+	${Boost_LIBRARIES}
 	${CPPUNIT_LIBRARY}
 	fs2a
 )

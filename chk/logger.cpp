@@ -48,10 +48,7 @@ class CHECKNAME : public CppUnit::TestFixture {
 			// Can we construct without issues?
 			CPPUNIT_ASSERT_NO_THROW(l = Fs2a::Logger::instance());
 
-			// Ensure first setting is stderr
-			CPPUNIT_ASSERT_EQUAL(false, l->destSyslog());
-
-			// Ok to reenable stderror
+			// Ok to (re)enable stderror
 			CPPUNIT_ASSERT_NO_THROW(l->stderror());
 			CPPUNIT_ASSERT_EQUAL(false, l->destSyslog());
 

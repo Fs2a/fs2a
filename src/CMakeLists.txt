@@ -52,8 +52,10 @@ target_include_directories (fs2a
 target_compile_features (fs2a PUBLIC cxx_std_20)
 
 target_link_libraries (fs2a
-	${CMAKE_THREAD_LIBS_INIT}
-	${Boost_LIBRARIES}
-	fmt::fmt
-	${PQXX_LIBRARIES}
+	PRIVATE
+		${PQXX_LIBRARIES}
+		${CMAKE_THREAD_LIBS_INIT}
+	PUBLIC
+		${Boost_LIBRARIES}
+		fmt::fmt
 )
