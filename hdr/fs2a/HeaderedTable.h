@@ -32,7 +32,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <fs2a/Table.h>
+#include "Table.h"
 
 namespace Fs2a {
 

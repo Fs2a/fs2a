@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 #include <thread>
 #include <vector>
 #include <boost/asio/io_context.hpp>
-#include <fs2a/Singleton.h>
+#include "Singleton.h"
 
 namespace Fs2a {
 
