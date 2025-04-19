@@ -46,7 +46,7 @@ target_include_directories (fs2a
 		/usr/include/utf8cpp
 	PUBLIC
 		${Boost_INCLUDE_DIRS}
-		${CMAKE_SOURCE_DIR}/hdr
+		${CMAKE_CURRENT_SOURCE_DIR}/../hdr
 )
 
 # To make sure the Fs2a library compiles under C++20
