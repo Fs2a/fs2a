@@ -1,6 +1,6 @@
 /* BSD 3-Clause License
  *
- * Copyright (c) 2020, Fs2a, Simon de Hartog <simon@fs2a.pro>
+ * Copyright (c) 2025, Fs2a, Bren de Hartog <bren@fs2a.pro>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,13 @@
  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * vim:set ts=4 sw=4 noet tw=120: */
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
+#include <cstdint>
 #include <iostream>
 #include <map>
-#include "roman.h"
+#include <string>
+#include <fs2a/roman.h>
 
 namespace Fs2a {
 
@@ -52,9 +52,9 @@ namespace Fs2a {
 		rn[1] = 'I';
 
 		/* An important discovery I made:
-		 * The 5* number (V, L and D) are never used as a prefix to substract
+		 * The 5* numbers (V, L and D) are never used as a prefix to substract
 		 * it from the following character. So only the 1* numbers (I, X and
-		 * C) are * substracted from the following character. Also, at most
+		 * C) are substracted from the following character. Also, at most
 		 * one substraction is done. */
 
 		// Walk the map in reverse order

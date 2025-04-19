@@ -1,8 +1,6 @@
-/* vim:set ts=4 sw=4 noet tw=90:
+/* BSD 3-Clause License
  *
- * BSD 3-Clause License
- *
- * Copyright (c) 2020-2022, Fs2a, Simon de Hartog <simon@fs2a.pro>
+ * Copyright (c) 2025, Fs2a, Bren de Hartog <bren@fs2a.pro>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +32,7 @@
 
 #include <mutex>
 #include <list>
-#include "Observer.h"
+#include <fs2a/Observer.h>
 
 namespace Fs2a {
 	/** Keep track of observers that are observing us and notify them when

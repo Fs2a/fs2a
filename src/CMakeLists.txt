@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2022-2024, Fs2a, Bren de Hartog <bren@fs2a.pro>
+# Copyright (c) 2025, Fs2a, Bren de Hartog <bren@fs2a.pro>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ target_include_directories (fs2a
 		/usr/include/utf8cpp
 	PUBLIC
 		${Boost_INCLUDE_DIRS}
-		${CMAKE_SOURCE_DIR}/inc
+		${CMAKE_SOURCE_DIR}/hdr
 )
 
 # To make sure the Fs2a library compiles under C++20

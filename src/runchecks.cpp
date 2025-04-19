@@ -35,8 +35,8 @@
 #include <unordered_map>
 #include <vector>
 #include <boost/program_options.hpp>
-#include "Logger.h"
-#include "runchecks.h"
+#include <fs2a/Logger.h>
+#include <fs2a/runchecks.h>
 #include <cppunit/TestSuite.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>

@@ -1,8 +1,6 @@
-/* vim:set ts=4 sw=4 noet:
+/* BSD 3-Clause License
  *
- * BSD 3-Clause License
- *
- * Copyright (c) 2022, Fs2a, Bren de Hartog <bren@fs2a.pro>
+ * Copyright (c) 2025, Fs2a, Bren de Hartog <bren@fs2a.pro>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,8 +32,8 @@
 #include <sstream>
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <Observer.h>
-#include <Observable.h>
+#include <fs2a/Observer.h>
+#include <fs2a/Observable.h>
 
 #define CHECKNAME ObservingCheck
 

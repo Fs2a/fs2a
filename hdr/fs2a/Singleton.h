@@ -1,8 +1,6 @@
-/* vim:set ts=4 sw=4 noet tw=90:
+/* BSD 3-Clause License
  *
- * BSD 3-Clause License
- *
- * Copyright (c) 2022 Simon de Hartog <simon@dehartog.name>
+ * Copyright (c) 2025 Bren de Hartog <bren@fs2a.pro>
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -34,7 +32,7 @@
 
 #include <stdlib.h>
 #include <memory>
-#include "commondefs.h"
+#include <fs2a/commondefs.h>
 
 namespace Fs2a {
 

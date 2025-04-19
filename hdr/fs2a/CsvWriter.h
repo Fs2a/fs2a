@@ -1,12 +1,10 @@
-// vim:set ts=4 sw=4 noet tw=120:
-
 #pragma once
 
 #include <cstdint>
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Logger.h"
+#include <fs2a/Logger.h>
 
 namespace Fs2a
 {

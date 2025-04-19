@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (c) 2020 Simon de Hartog <simon@dehartog.name>
+# Copyright (c) 2025 Bren de Hartog <bren@fs2a.pro>
 # 
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -38,7 +38,7 @@ source $(readlink -f $(dirname ${BASH_SOURCE[0]}))/lib.sh
 setns
 
 cat > $1.h << EOF
-/* Copyright (c) $(date +%Y) Simon de Hartog <simon@dehartog.name>
+/* Copyright (c) $(date +%Y) Bren de Hartog <bren@fs2a.pro>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -99,7 +99,7 @@ namespace $namespace {
 EOF
 
 cat > $1.cpp << EOF
-/* Copyright (c) $(date +%Y) Simon de Hartog <simon@dehartog.name>
+/* Copyright (c) $(date +%Y) Bren de Hartog <bren@fs2a.pro>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:

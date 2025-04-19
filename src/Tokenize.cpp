@@ -1,7 +1,8 @@
 /* Shamelessly copied from:
  * http://www.sbin.org/doc/HOWTO/C++Programming-HOWTO-7.html */
 
-#include "Tokenize.h"
+#include <string>
+#include <fs2a/Tokenize.h>
 
 void Tokenize(
 	const std::string & str,

@@ -1,6 +1,6 @@
 /* BSD 3-Clause License
  *
- * Copyright (c) 2020, Fs2a, Simon de Hartog <simon@fs2a.pro>
+ * Copyright (c) 2025, Fs2a, Bren de Hartog <bren@fs2a.pro>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,11 +26,11 @@
  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * vim:set ts=4 sw=4 noet tw=120: */
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#include "functions.h"
+#include <string>
+#include <unordered_map>
+#include <fs2a/functions.h>
 
 namespace Fs2a {
 
@@ -60,7 +60,7 @@ namespace Fs2a {
 			sc = rv.find(';', amp);
 			if (sc == std::string::npos) break; // We're done here
 			if (sc - amp - 1 > maxlen) {
-				// HTMl Character Entity Reference Code to big, continue
+				// HTMl Character Entity Reference Code too big, continue
 				amp++;
 				continue;
 			}

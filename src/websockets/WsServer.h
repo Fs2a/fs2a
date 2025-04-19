@@ -1,4 +1,4 @@
-/* Copyright (c) 2020 Simon de Hartog <simon@dehartog.name>
+/* Copyright (c) 2025 Bren de Hartog <bren@fs2a.pro>
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
