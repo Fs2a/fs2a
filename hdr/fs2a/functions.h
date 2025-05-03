@@ -44,7 +44,7 @@ namespace Fs2a {
 	 * and no UTC offset is appended. The format is: YYYY-MM-DD hh:mm:ss
 	 * @param timestamp_i Epoch timestamp, default is 0, meaning current time.
 	 * @returns ISO8601-formatted time string. */
-	std::string epoch2iso8601(const time_t & timestamp_i = 0);
+	std::string epoch2iso8601(const time_t timestamp_i = 0);
 
 	/** Unordered map with HTML Character Entity Reference Codes to ASCII characters. */
 	extern const std::unordered_map<std::string, const char> hcerc2asc;

@@ -35,7 +35,7 @@
 
 namespace Fs2a {
 
-	std::string epoch2iso8601(const time_t timestamp_i = 0)
+	std::string epoch2iso8601(const time_t timestamp_i)
 	{
 		char str[20];
 		time_t ts = timestamp_i;
