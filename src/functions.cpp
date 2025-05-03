@@ -37,10 +37,7 @@ namespace Fs2a {
 
 	std::string epoch2iso8601(const time_t timestamp_i = 0)
 	{
-		// YYYY-MM-DDTHH:MM:SS+hh:mm\0
-		// 012345    0    5    0 2  5 <- character index (max. 25)
-		// 12345    0    5    0    56 <- string length (26)
-		char str[32];
+		char str[20];
 		time_t ts = timestamp_i;
 
 		if (ts == 0) time(&ts);
@@ -48,10 +45,7 @@ namespace Fs2a {
 
 		localtime_r(&ts, &bdt);
 
-		strftime(str, 32, "%FT%T%z", &bdt);
-		str[24] = str[23];
-		str[23] = str[22];
-		str[22] = ':';
+		strftime(str, 20, "%F %T", &bdt);
 		return std::string(str);
 	}
 

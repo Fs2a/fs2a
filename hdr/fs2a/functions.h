@@ -39,7 +39,9 @@
 namespace Fs2a {
 
 	/** Convert an epoch timestamp (number of seconds since January 1st, 1970)
-	 * to an ISO8601-formatted time string in the current timezone.
+	 * to an ISO8601-formatted date time string in the current timezone.
+	 * The format is not completely standard, a space is used as a separator
+	 * and no UTC offset is appended. The format is: YYYY-MM-DD hh:mm:ss
 	 * @param timestamp_i Epoch timestamp, default is 0, meaning current time.
 	 * @returns ISO8601-formatted time string. */
 	std::string epoch2iso8601(const time_t & timestamp_i = 0);
