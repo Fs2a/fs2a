@@ -26,18 +26,23 @@
  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * vim:set ts=4 sw=4 noet tw=120: */
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 /** @file Miscellaneous convenience functions */
 
 #pragma once
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
+#include <time.h>
 
 namespace Fs2a {
+
+	/** Convert an epoch timestamp (number of seconds since January 1st, 1970)
+	 * to an ISO8601-formatted time string in the current timezone.
+	 * @param timestamp_i Epoch timestamp, default is 0, meaning current time.
+	 * @returns ISO8601-formatted time string. */
+	std::string epoch2iso8601(const time_t & timestamp_i = 0);
 
 	/** Unordered map with HTML Character Entity Reference Codes to ASCII characters. */
 	extern const std::unordered_map<std::string, const char> hcerc2asc;
