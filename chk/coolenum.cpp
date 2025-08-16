@@ -27,6 +27,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
+#include <stdexcept>
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -44,14 +45,27 @@ CPPUNIT_TEST_SUITE_REGISTRATION(CHECKNAME);
 class CHECKNAME : public CppUnit::TestFixture {
 	CPPUNIT_TEST_SUITE(CHECKNAME);
 	CPPUNIT_TEST(basics);
+	CPPUNIT_TEST(notfound);
 	CPPUNIT_TEST_SUITE_END();
 
 	public:
 	void basics()
 	{
-		CPPUNIT_ASSERT_EQUAL(0, plain_k2s.size());
-		CPPUNIT_ASSERT_EQUAL(0, plain_s2k.size());
+		CPPUNIT_ASSERT_EQUAL(0UL, plain_k2s.size());
+		CPPUNIT_ASSERT_EQUAL(0UL, plain_s2k.size());
 
+		/// Calls fillenummaps()
+		CPPUNIT_ASSERT_EQUAL(PLAIN_TWO, plain_("PLAIN_TWO"));
+
+		CPPUNIT_ASSERT_EQUAL(3UL, plain_k2s.size());
+		CPPUNIT_ASSERT_EQUAL(3UL, plain_s2k.size());
+		CPPUNIT_ASSERT_EQUAL(std::string("PLAIN_TWO"), plain_(PLAIN_TWO));
+	}
+
+	void notfound()
+	{
+		CPPUNIT_ASSERT_THROW(plain_(0xFF), std::out_of_range);
+		CPPUNIT_ASSERT_THROW(plain_("PLAIN_NONE"), std::out_of_range);
 	}
 
 };

@@ -1,9 +1,6 @@
-# vim:set ts=4 sw=4 noet tw=80:
-#
-# BSD 3-Clause License
-#
-# Copyright (c) 2025, Fs2a, Bren de Hartog <bren@fs2a.pro>
-# All rights reserved.
+# @author    Bren de Hartog <bren@fs2a.pro>
+# @copyright Copyright (c) 2025, Bren de Hartog. All rights reserved.
+# @license   This project is licensed under 3-clause BSD license:
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -34,6 +31,7 @@ find_package (CppUnit REQUIRED)
 
 add_executable (fs2achk
 	chk.cpp
+	coolenum.cpp
 	functions.cpp
 	logger.cpp
 	observing.cpp
