@@ -27,44 +27,35 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#pragma once
-
-#include <cstdint>
-#include <string>
+#include <stdexcept>
+#include <fs2a/Logger.h>
+#include <fs2a/NaiveDate.h>
 
 namespace Fs2a {
 
-	/** Class that contains a naive date.
-	 * It doesn't take timezones into account. Can be used for one-to-one transfer of dates in
-	 * the case conversion to or from epoch timestamps is not required or can be assumed to be all
-	 * in the same timezone. */
-	class NaiveDate {
-		protected:
-		/// Day of the month, sentinel value is 0
-		uint8_t day_;
-
-		/// Month, sentinel value is 0
-		uint8_t month_;
-
-		/// Year of the date, sentinel value is 0
-		uint16_t year_;
-
-		public:
-		/// Basic constructor
-		NaiveDate();
-
-		/// Default destructor
-		~NaiveDate() = default;
+	NaiveDate::NaiveDate()
+	: day_(0), month_(0), year_(0)
+	{ }
 
 		/** Get the day of the month.
 		 * @returns Internally stored day of the month in the range between 1 and 31.
 		 * @throws std::range_error If the internal day of the month is not valid. */
-		uint8_t day() const;
+	uint8_t NaiveDate::day() const
+	{
+		FCET(day_ >= 1 && day_ <= 31, std::range_error,
+			"Day of month not im the range between 1 and 31");
+		return day_;
+	}
 
 		/** Set the day of the month in the range 1-31.
 		 * @param day_i Day of the month to set.
 		 * @throws std::invalid_argument If the given day is not valid. */
-		void day(const uint8_t day_i);
+	void NaiveDate::day(const uint8_t day_i)
+	{
+		FCET(day_i >= 1 && day_i <= 31, std::invalid_argument,
+			"Given day of month '{:d}' not in the range between 1 and 31", day_i);
+		day_ = day_i;
+	}
 
 		/** Parse a date from ISO8601 format, i.e., YYYY-MM-DD.
 		 * @param date_i Date in ISO8601 format, meaning YYYY-MM-DD.
@@ -76,21 +67,27 @@ namespace Fs2a {
 		std::string iso8601() const;
 
 		/** Is the internally stored year a leap year?
-		 * @returns True if leap year, false if not. */
+		 * @returns True if leap year, false if not.
+		 * @throws std::range_error if year is invalid, i.e/, 0. */
 		bool leap() const;
 
 		/** Get the month.
 		 * @throws std::range_error If the internal month is not valid. */
-		uint8_t month() const;
+		uint8_t NaiveDate::month() const
+		{
+			FCET(month_ >= 1 && month_ <= 12, std::range_error,
+				"Month not in the range between 1 and 12");
+			return month_;
+		}
 
 		/** Set the month.
 		 * @param month_i Month to set.
 		 * @throws std::invalid_argument If the given month is not valid. */
-		void month(const uint8_t month_i);
-
-		/** Reset internal date to unset.
-		 * After this metgod, the object has the same state as if it was just comstructed. */
-		void reset();
+		void NaiveDate::month(const uint8_t month_i)
+			FCET(month_i >= 1 && month_i <= 12, std::invalid_argument,
+				"Given month '{:d}' not in the range between 1 and 12", month_i);
+			month_ = month_i;
+		}
 
 		/** Check whether the internally stored date is valid.
 		 * This method takes leap years into account. */
