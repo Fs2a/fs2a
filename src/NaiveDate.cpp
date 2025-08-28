@@ -27,7 +27,9 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
+#include <limits>
 #include <stdexcept>
+#include <string>
 #include <fs2a/Logger.h>
 #include <fs2a/NaiveDate.h>
 
@@ -37,19 +39,12 @@ namespace Fs2a {
 	: day_(0), month_(0), year_(0)
 	{ }
 
-		/** Get the day of the month.
-		 * @returns Internally stored day of the month in the range between 1 and 31.
-		 * @throws std::range_error If the internal day of the month is not valid. */
 	uint8_t NaiveDate::day() const
 	{
-		FCET(day_ >= 1 && day_ <= 31, std::range_error,
-			"Day of month not im the range between 1 and 31");
+		FCET(day_, std::logic_error, "Day of month not initialized yet");
 		return day_;
 	}
 
-		/** Set the day of the month in the range 1-31.
-		 * @param day_i Day of the month to set.
-		 * @throws std::invalid_argument If the given day is not valid. */
 	void NaiveDate::day(const uint8_t day_i)
 	{
 		FCET(day_i >= 1 && day_i <= 31, std::invalid_argument,
@@ -57,50 +52,94 @@ namespace Fs2a {
 		day_ = day_i;
 	}
 
-		/** Parse a date from ISO8601 format, i.e., YYYY-MM-DD.
-		 * @param date_i Date in ISO8601 format, meaning YYYY-MM-DD.
-		 * @throws std::invalid_argument When the date was not parsable or invalid. */
-		void iso8601(const std::string & date_i);
+	void NaiveDate::iso8601(const std::string & date_i)
+	{
+		FCET(date_i.size() == 10, std::invalid_argument,
+			"ISO8601 date '{:s}' is not exactly 10 characters long, but {:d}",
+			date_i, date_i.size());
 
-		/** Return the internal date in the ISO8601 format, i.e., YYYY-MM-DD.
-		 * @throws std::range_error when the internal date is not valid. */
-		std::string iso8601() const;
+		int year, mon, day;
 
-		/** Is the internally stored year a leap year?
-		 * @returns True if leap year, false if not.
-		 * @throws std::range_error if year is invalid, i.e/, 0. */
-		bool leap() const;
+		year = std::stoi(date_i.substr(0, 4));
+		FCET(year > 0 && year <= std::numeric_limits<uint16_t>::max(), std::invalid_argument,
+			"Year not between 1 and the max for uint16_t ({:d})",
+			std::numeric_limits<uint16_t>::max());
 
-		/** Get the month.
-		 * @throws std::range_error If the internal month is not valid. */
-		uint8_t NaiveDate::month() const
-		{
-			FCET(month_ >= 1 && month_ <= 12, std::range_error,
-				"Month not in the range between 1 and 12");
-			return month_;
+		mon = std::stoi(date_i.substr(5, 2));
+		FCET(mon >= 1 && mon <= 12, std::invalid_argument, "Month not between 1 and 12");
+
+		day = std::stoi(date_i.substr(8, 2));
+		FCET(day >= 1 && day <= 31, std::invalid_argument, "Day of month not between 1 and 31");
+
+		FCET(valid_(year, month, day), std::invalid_argument, "Date '{:s}' is not valid.",
+			date_i);
+
+		year_ = static_cast<uint16_t>(year);
+		month_ = static_cast<uint8_t>(month);
+		day_ = static_cast<uint8_t>(day);
+	}
+
+	std::string NaiveDate::iso8601() const
+	{
+		FCET(initialized_(), std::logic_error, "Internal date is not valid");
+		return fmt::format("{:04d}-{:02d}-{:02d}", year_ , month_, day_);
+	}
+
+	static bool NaiveDate::leap_(const uint16_t year_i)
+	{
+		if (year_i % 400 == 0) return false;
+		return (year_i % 4 == 0);
+	}
+
+	bool NaiveDate::leap() const
+	{
+		FCET(year_, std::logic_error, "Internal date is not valid.");
+		return leap_(year_);
+	}
+
+	uint8_t NaiveDate::month() const
+	{
+		FCET(month_, std::logic_error, "Month not initialized yet");
+		return month_;
+	}
+
+	void NaiveDate::month(const uint8_t month_i)
+		FCET(month_i >= 1 && month_i <= 12, std::invalid_argument,
+			"Given month '{:d}' not in the range between 1 and 12", month_i);
+		month_ = month_i;
+	}
+
+	bool NaiveDate::valid_(const uint16_t year_i, const uint8_t month_i, const uint8_t day_i)
+	{
+		if (!year_i || !month_i || !day_i) return false;
+
+		switch (month_i) {
+			case 2:
+				if (leap_(year_i)) return day_i <= 29;
+				else return day_i <= 28;
+
+			case 4:
+			case 6:
+			case 5:
+			case 9:
+			case 11:
+				return day_i <= 30;
+
+			default:
+				return day_i <= 31;
 		}
+	}
 
-		/** Set the month.
-		 * @param month_i Month to set.
-		 * @throws std::invalid_argument If the given month is not valid. */
-		void NaiveDate::month(const uint8_t month_i)
-			FCET(month_i >= 1 && month_i <= 12, std::invalid_argument,
-				"Given month '{:d}' not in the range between 1 and 12", month_i);
-			month_ = month_i;
-		}
+	uint16_t NaiveDate::year() const
+	{
+		FCET(year_, std::logic_error, "Year not initialized yet");
+		return year_;
+	}
 
-		/** Check whether the internally stored date is valid.
-		 * This method takes leap years into account. */
-		bool valid() const;
+	void NaiveDate::year(const uint16_t year_i)
+	{
+		FCET(year_i, std::invalid_argument, "Year to set is not allowed to be 0");
+		year_ = year_i;
+	}
 
-		/** Get the year.
-		 * @throws std::range_error If the internal year is not valid. */
-		uint16_t year() const;
-
-		/** Set the year.
-		 * @param year_i Year to set. Can be in the range between 1 and 65535.
-		 * @throws std::invalid_argument If the given year is not valid. Not allowed to be 0. */
-		void year(const uint16_t year_i);
-
-	}; // NaiveDate class
 } // Fs2a namespace

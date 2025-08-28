@@ -49,6 +49,20 @@ namespace Fs2a {
 		/// Year of the date, sentinel value is 0
 		uint16_t year_;
 
+		/** Check whether this object is fully initialized or not.
+		 * This just does a basic check for all attributes being non-zero. */
+		inline bool initialized_() const { return day_ && month_ && year_; }
+
+		/** Check whether given year is a leap year or not.
+		 * @param year_i Year to check
+		 * @returns True if @p year_i is a leap year, false if it is not. */
+		static leap_(const uint16_t year_i);
+
+		/** Check validity of a given date.
+		 * Takes leap year into account.
+		 * @returns True when valid, false if not. */
+		static bool valid_(const uint16_t year_i, const uint8_t month_i, const uint8_t day_i);
+
 		public:
 		/// Basic constructor
 		NaiveDate();
@@ -58,7 +72,7 @@ namespace Fs2a {
 
 		/** Get the day of the month.
 		 * @returns Internally stored day of the month in the range between 1 and 31.
-		 * @throws std::range_error If the internal day of the month is not valid. */
+		 * @throws std::logic_error If the internal day of the month is not initialized. */
 		uint8_t day() const;
 
 		/** Set the day of the month in the range 1-31.
@@ -72,15 +86,16 @@ namespace Fs2a {
 		void iso8601(const std::string & date_i);
 
 		/** Return the internal date in the ISO8601 format, i.e., YYYY-MM-DD.
-		 * @throws std::range_error when the internal date is not valid. */
+		 * @throws std::logic_error when the internal date is not valid. */
 		std::string iso8601() const;
 
 		/** Is the internally stored year a leap year?
-		 * @returns True if leap year, false if not. */
+		 * @returns True if leap year, false if not.
+		 * @throws std::logic_error if year is invalid, i.e., 0. */
 		bool leap() const;
 
 		/** Get the month.
-		 * @throws std::range_error If the internal month is not valid. */
+		 * @throws std::logic_error If the internal month is not initialized yet. */
 		uint8_t month() const;
 
 		/** Set the month.
@@ -89,15 +104,15 @@ namespace Fs2a {
 		void month(const uint8_t month_i);
 
 		/** Reset internal date to unset.
-		 * After this metgod, the object has the same state as if it was just comstructed. */
-		void reset();
+		 * After this method, the object has the same state as if it was just comstructed. */
+		inline void reset() { year_ = 0; month_ = 0; day_ = 0; }
 
 		/** Check whether the internally stored date is valid.
 		 * This method takes leap years into account. */
-		bool valid() const;
+		inline bool valid() const { return valid_(year_, month_, day_); }
 
 		/** Get the year.
-		 * @throws std::range_error If the internal year is not valid. */
+		 * @throws std::logic_error If the internal year is not valid. */
 		uint16_t year() const;
 
 		/** Set the year.
