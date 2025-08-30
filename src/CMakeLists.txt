@@ -34,6 +34,7 @@ add_library (fs2a SHARED
 	HeaderedTable.cpp
 	IOctxtWrapper.cpp
 	Logger.cpp
+	NaiveDate.cpp
 	readCSV.cpp
 	runchecks.cpp
 	Semaphore.cpp

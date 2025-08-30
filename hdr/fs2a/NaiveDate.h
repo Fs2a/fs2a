@@ -56,7 +56,7 @@ namespace Fs2a {
 		/** Check whether given year is a leap year or not.
 		 * @param year_i Year to check
 		 * @returns True if @p year_i is a leap year, false if it is not. */
-		static leap_(const uint16_t year_i);
+		static bool leap_(const uint16_t year_i);
 
 		/** Check validity of a given date.
 		 * Takes leap year into account.

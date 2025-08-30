@@ -71,11 +71,11 @@ namespace Fs2a {
 		day = std::stoi(date_i.substr(8, 2));
 		FCET(day >= 1 && day <= 31, std::invalid_argument, "Day of month not between 1 and 31");
 
-		FCET(valid_(year, month, day), std::invalid_argument, "Date '{:s}' is not valid.",
-			date_i);
+		FCET(NaiveDate::valid_(year, mon, day), std::invalid_argument,
+			"Date '{:s}' is not valid.", date_i);
 
 		year_ = static_cast<uint16_t>(year);
-		month_ = static_cast<uint8_t>(month);
+		month_ = static_cast<uint8_t>(mon);
 		day_ = static_cast<uint8_t>(day);
 	}
 
@@ -85,7 +85,7 @@ namespace Fs2a {
 		return fmt::format("{:04d}-{:02d}-{:02d}", year_ , month_, day_);
 	}
 
-	static bool NaiveDate::leap_(const uint16_t year_i)
+	bool NaiveDate::leap_(const uint16_t year_i)
 	{
 		if (year_i % 400 == 0) return false;
 		return (year_i % 4 == 0);
@@ -104,6 +104,7 @@ namespace Fs2a {
 	}
 
 	void NaiveDate::month(const uint8_t month_i)
+	{
 		FCET(month_i >= 1 && month_i <= 12, std::invalid_argument,
 			"Given month '{:d}' not in the range between 1 and 12", month_i);
 		month_ = month_i;
