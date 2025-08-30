@@ -30,6 +30,7 @@
 #pragma once
 
 #include <cstdint>
+#include <string>
 
 namespace Fs2a {
 
@@ -48,6 +49,37 @@ namespace Fs2a {
 
 		/// Default destructor
 		~NaiveTime() = default;
+
+		/** Get the internal hour.
+		 * @returns hour in 24-hour format.
+		 * @throws std::logic_error if internal hour is not yet initialized. */
+		uint8_t hour() const;
+
+		/** Set the hour.
+		 * @param hour_i Hour to set in 24-hour format, so between 0 and 23.
+		 * @throws std::invalid_argument if @p hour_i is greater than 23. */
+		void hour(const uint8_t hour_i);
+
+		/** Get the internal minute.
+		 * @returns minute.
+		 * @throws std::logic_error if internal minute is not yet initialized. */
+		uint8_t minute() const;
+
+		/** Set the minute.
+		 * @param minute_i Minute to set. Should be between 0 and 59.
+		 * @throws std::invalid_argument if @p minute_i is greater than 59. */
+		void minute(const uint8_t minute_i);
+
+		/** Set the internal time from a string.
+		 * Parseable time formats are HH:MM, HH:M, H:MM and H:M.
+		 * @returns the object.
+		 * @throws std::invalid_argument if given string can't be parsed. */
+		NaiveTime & operator=(const std::string & time_i);
+
+		/** Return the internally stored time as a string.
+		 * @returns Internal time in HH:MM format.
+		 * @throws std::logic_error when internal hour and/or minute are not initialized. */
+		operator std::string() const;
 
 	}; // NaiveTime class
 
