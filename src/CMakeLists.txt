@@ -35,6 +35,7 @@ add_library (fs2a SHARED
 	IOctxtWrapper.cpp
 	Logger.cpp
 	NaiveDate.cpp
+	NaiveTime.cpp
 	readCSV.cpp
 	runchecks.cpp
 	Semaphore.cpp

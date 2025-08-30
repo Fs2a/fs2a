@@ -27,66 +27,79 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#pragma once
-
-#include <cstdint>
+#include <regex>
+#include <stdexcept>
 #include <string>
+#include <fmt/format.h>
+#include <fs2a/Logger.h>
+#include <fs2a/NaiveTime.h>
 
 namespace Fs2a {
 
-	/** Class to administer a time of day with hours and minutes.
-	 * No seconds are taken into account and a 24-hour clock is used for representation. */
-	class NaiveTime {
-		/// Hour, sentinel value 0xFF
-		uint8_t hour_;
+	NaiveTime::NaiveTime()
+	: hour_(0xFF), min_(0xFF)
+	{ }
 
-		/// Minute, sentinel value 0xFF
-		uint8_t min_;
+	uint8_t NaiveTime::hour() const
+	{
+		FCET(hour_ <= 23, std::logic_error, "Internal hour not initialized yet");
+		return hour_;
+	}
 
-		/** Check whether internal time is initialized. */
-		inline bool valid_() const { return hour_ <= 23 && min_ <= 59; }
-
-		public:
-		/// Default constructor
-		NaiveTime();
-
-		/// Default destructor
-		~NaiveTime() = default;
-
-		/** Get the internal hour.
-		 * @returns hour in 24-hour format.
-		 * @throws std::logic_error if internal hour is not yet initialized. */
-		uint8_t hour() const;
-
-		/** Set the hour.
-		 * @param hour_i Hour to set in 24-hour format, so between 0 and 23.
-		 * @throws std::invalid_argument if @p hour_i is greater than 23. */
-		void hour(const uint8_t hour_i);
+	void NaiveTime::hour(const uint8_t hour_i)
+	{
+		FCET(hour_i <= 23, std::invalid_argument, "Given hour {:d} should be <= 23", hour_i);
+		hour_ = hour_i;
+	}
 
 		/** Get the internal minute.
 		 * @returns minute.
 		 * @throws std::logic_error if internal minute is not yet initialized. */
-		uint8_t minute() const;
 
-		/** Set the minute.
-		 * @param minute_i Minute to set. Should be between 0 and 59.
-		 * @throws std::invalid_argument if @p minute_i is greater than 59. */
-		void minute(const uint8_t minute_i);
+	uint8_t NaiveTime::minute() const
+	{
+		FCET(min_ <= 59, std::logic_error, "Internal minute not initialized yet");
+		return min_;
+	}
+
+	void NaiveTime::minute(const uint8_t minute_i)
+	{
+		FCET(minute_i <= 59, std::invalid_argument, "Given minute {:d} should be <= 59", minute_i);
+		min_ = minute_i;
+	}
 
 		/** Set the internal time from a string.
 		 * Parseable time formats are HH:MM, HH:M, H:MM and H:M.
 		 * @returns the object.
 		 * @throws std::invalid_argument if given string can't be parsed. */
-		NaiveTime & operator=(const std::string & time_i);
+	NaiveTime & NaiveTime::operator=(const std::string & time_i)
+	{
+		FCET(time_i.size() >= 3 && time_i.size() <= 5, std::invalid_argument,
+			"String length of given time '{:s}' should be 3, 4 or 5 characters, not {:d}",
+			time_i, time_i.size());
 
-		/** Reset the internal time to unset. */
-		inline void reset() { hour_ = 0xFF; min_ = 0xFF; }
+		/// Time Regular Expression
+		std::regex tre("^([012]?[0-9]):([0-5]?[0-9])$", std::regex_constants::extended);
+		std::smatch matches;
+		std::regex_search(time_i, matches, tre);
+		FCET(matches.size() == 3, std::invalid_argument,
+			"Found {:d} regex matches for time instead of 3", matches.size());
 
-		/** Return the internally stored time as a string.
-		 * @returns Internal time in HH:MM format.
-		 * @throws std::logic_error when internal hour and/or minute are not initialized. */
-		operator std::string() const;
+		int hour = std::stoi(matches[1]);
+		int min = std::stoi(matches[2]);
 
-	}; // NaiveTime class
+		FCET(hour <= 23 && min <= 59, std::invalid_argument,
+			"Unable to parse '{:s}' as a valid 24-hour time", time_i);
+		hour_ = hour;
+		min_ = min;
+
+		return *this;
+	}
+
+	NaiveTime::operator std::string() const
+	{
+		FCET(valid_(), std::logic_error, "Internal time not (fully) initialized");
+		return fmt::format("{:02d}:{:02d}", hour_, min_);
+	}
 
 } // Fs2a namespace
