@@ -151,6 +151,10 @@ namespace Fs2a {
 		bdt.tm_year = year_ - 1900;
 		bdt.tm_mon = month_ - 1;
 		bdt.tm_mday = day_;
+		bdt.tm_hour = 12;
+		bdt.tm_min = 0;
+		bdt.tm_sec = 0;
+		bdt.tm_isdst = -1;
 
 		std::tm * tmptr = nullptr;
 		std::time_t epoch = std::mktime(&bdt);

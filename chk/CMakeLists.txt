@@ -34,6 +34,7 @@ add_executable (fs2achk
 	coolenum.cpp
 	functions.cpp
 	logger.cpp
+	naivedate.cpp
 	observing.cpp
 	readcsv.cpp
 	singleton.cpp
