@@ -58,11 +58,6 @@ namespace Fs2a {
 		 * @returns True if @p year_i is a leap year, false if it is not. */
 		static bool leap_(const uint16_t year_i);
 
-		/** Check validity of a given date.
-		 * Takes leap year into account.
-		 * @returns True when valid, false if not. */
-		static bool valid_(const uint16_t year_i, const uint8_t month_i, const uint8_t day_i);
-
 		public:
 		/** Enumerator for days of the week. The int value is intended to also be used explicitly,
 		 * because it corresponds to the weekday value of std::tm, described as: "Days since Sunday"
@@ -128,7 +123,12 @@ namespace Fs2a {
 
 		/** Check whether the internally stored date is valid.
 		 * This method takes leap years into account. */
-		inline bool valid() const { return valid_(year_, month_, day_); }
+		inline bool valid() const { return valid(year_, month_, day_); }
+
+		/** Check validity of a given date.
+		 * Takes leap year into account.
+		 * @returns True when valid, false if not. */
+		static bool valid(const uint16_t year_i, const uint8_t month_i, const uint8_t day_i);
 
 		/** Return the weekday of the internally stored date.
 		 * @throws std::logic_error if the internal date is not valid. */

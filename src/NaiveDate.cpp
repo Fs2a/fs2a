@@ -95,7 +95,7 @@ namespace Fs2a {
 		day = std::stoi(date_i.substr(8, 2));
 		FCET(day >= 1 && day <= 31, std::invalid_argument, "Day of month not between 1 and 31");
 
-		FCET(NaiveDate::valid_(year, mon, day), std::invalid_argument,
+		FCET(NaiveDate::valid(year, mon, day), std::invalid_argument,
 			"Date '{:s}' is not valid.", date_i);
 
 		year_ = static_cast<uint16_t>(year);
@@ -135,17 +135,16 @@ namespace Fs2a {
 		month_ = month_i;
 	}
 
-	bool NaiveDate::valid_(const uint16_t year_i, const uint8_t month_i, const uint8_t day_i)
+	bool NaiveDate::valid(const uint16_t year_i, const uint8_t month_i, const uint8_t day_i)
 	{
-		if (!year_i || !month_i || !day_i) return false;
-
+		if (year_i < 1900 || month_i < 1 || month_i > 12 || !day_i) return false;
 		return day_i <= days(year_i, month_i);
 	}
 
 
 	NaiveDate::weekday_t NaiveDate::weekday() const
 	{
-		FCET(valid_(year_, month_, day_), std::logic_error, "Internal date not valid");
+		FCET(valid(), std::logic_error, "Internal date not valid");
 
 		/// Broken Down Time
 		std::tm bdt {};
