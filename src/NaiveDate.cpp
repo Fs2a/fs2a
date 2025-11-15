@@ -27,6 +27,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
+#include <cstdint>
 #include <limits>
 #include <stdexcept>
 #include <string>
@@ -50,6 +51,28 @@ namespace Fs2a {
 		FCET(day_i >= 1 && day_i <= 31, std::invalid_argument,
 			"Given day of month '{:d}' not in the range between 1 and 31", day_i);
 		day_ = day_i;
+	}
+
+	uint8_t NaiveDate::days(const uint16_t year_i, const uint8_t month_i)
+	{
+		FCET(month_i > 0 && month_i <= 12, std::invalid_argument,
+			"Given month {:d} should be between 1 and 12", month_i);
+
+		switch (month_i) {
+			case 2:
+				if (leap_(year_i)) return 29;
+				else return 28;
+
+			case 4:
+			case 6:
+			case 5:
+			case 9:
+			case 11:
+				return 30;
+
+			default:
+				return 31;
+		}
 	}
 
 	void NaiveDate::iso8601(const std::string & date_i)
@@ -87,13 +110,14 @@ namespace Fs2a {
 
 	bool NaiveDate::leap_(const uint16_t year_i)
 	{
-		if (year_i % 400 == 0) return false;
+		if (year_i % 400 == 0) return true;
+		if (year_i % 100 == 0) return false;
 		return (year_i % 4 == 0);
 	}
 
 	bool NaiveDate::leap() const
 	{
-		FCET(year_, std::logic_error, "Internal date is not valid.");
+		FCET(year_, std::logic_error, "Internal date is not valid");
 		return leap_(year_);
 	}
 
@@ -114,21 +138,7 @@ namespace Fs2a {
 	{
 		if (!year_i || !month_i || !day_i) return false;
 
-		switch (month_i) {
-			case 2:
-				if (leap_(year_i)) return day_i <= 29;
-				else return day_i <= 28;
-
-			case 4:
-			case 6:
-			case 5:
-			case 9:
-			case 11:
-				return day_i <= 30;
-
-			default:
-				return day_i <= 31;
-		}
+		return day_i <= days(year_i, month_i);
 	}
 
 	uint16_t NaiveDate::year() const

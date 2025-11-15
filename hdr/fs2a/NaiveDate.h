@@ -80,6 +80,12 @@ namespace Fs2a {
 		 * @throws std::invalid_argument If the given day is not valid. */
 		void day(const uint8_t day_i);
 
+		/** Calculate the number of days in the given month, taking leap years into account.
+		 * @param year_i Year to use for calculation
+		 * @param month_i Month to use for calculation
+		 * @returns number of days in the given month. */
+		static uint8_t days(const uint16_t year_i, const uint8_t month_i);
+
 		/** Parse a date from ISO8601 format, i.e., YYYY-MM-DD.
 		 * @param date_i Date in ISO8601 format, meaning YYYY-MM-DD.
 		 * @throws std::invalid_argument When the date was not parsable or invalid. */
