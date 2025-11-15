@@ -28,6 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include <cstdint>
+#include <ctime>
 #include <limits>
 #include <stdexcept>
 #include <string>
@@ -84,8 +85,8 @@ namespace Fs2a {
 		int year, mon, day;
 
 		year = std::stoi(date_i.substr(0, 4));
-		FCET(year > 0 && year <= std::numeric_limits<uint16_t>::max(), std::invalid_argument,
-			"Year not between 1 and the max for uint16_t ({:d})",
+		FCET(year >= 1900 && year <= std::numeric_limits<uint16_t>::max(), std::invalid_argument,
+			"Year not between 1900 and the max for uint16_t ({:d})",
 			std::numeric_limits<uint16_t>::max());
 
 		mon = std::stoi(date_i.substr(5, 2));
@@ -141,6 +142,23 @@ namespace Fs2a {
 		return day_i <= days(year_i, month_i);
 	}
 
+
+	NaiveDate::weekday_t NaiveDate::weekday() const
+	{
+		FCET(valid_(year_, month_, day_), std::logic_error, "Internal date not valid");
+
+		/// Broken Down Time
+		std::tm bdt {};
+		bdt.tm_year = year_ - 1900;
+		bdt.tm_mon = month_ - 1;
+		bdt.tm_mday = day_;
+
+		std::tm * tmptr = nullptr;
+		std::time_t epoch = std::mktime(&bdt);
+		tmptr = std::gmtime(&epoch);
+		return static_cast<NaiveDate::weekday_t>(tmptr->tm_wday);
+	}
+
 	uint16_t NaiveDate::year() const
 	{
 		FCET(year_, std::logic_error, "Year not initialized yet");
@@ -149,7 +167,7 @@ namespace Fs2a {
 
 	void NaiveDate::year(const uint16_t year_i)
 	{
-		FCET(year_i, std::invalid_argument, "Year to set is not allowed to be 0");
+		FCET(year_i >= 1900, std::invalid_argument, "Year to set should be 1900 or later");
 		year_ = year_i;
 	}
 

@@ -64,6 +64,19 @@ namespace Fs2a {
 		static bool valid_(const uint16_t year_i, const uint8_t month_i, const uint8_t day_i);
 
 		public:
+		/** Enumerator for days of the week. The int value is intended to also be used explicitly,
+		 * because it corresponds to the weekday value of std::tm, described as: "Days since Sunday"
+		 */
+		enum weekday_t : uint8_t {
+			Sun = 0,
+			Mon = 1,
+			Tue = 2,
+			Wed = 3,
+			Thu = 4,
+			Fri = 5,
+			Sat = 6
+		};
+
 		/// Basic constructor
 		NaiveDate();
 
@@ -116,6 +129,10 @@ namespace Fs2a {
 		/** Check whether the internally stored date is valid.
 		 * This method takes leap years into account. */
 		inline bool valid() const { return valid_(year_, month_, day_); }
+
+		/** Return the weekday of the internally stored date.
+		 * @throws std::logic_error if the internal date is not valid. */
+		weekday_t weekday() const;
 
 		/** Get the year.
 		 * @throws std::logic_error If the internal year is not valid. */
