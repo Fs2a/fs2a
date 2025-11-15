@@ -135,6 +135,66 @@ namespace Fs2a {
 		month_ = month_i;
 	}
 
+	bool NaiveDate::operator<(const NaiveDate & rhs)
+	{
+		FCET(valid() && rhs.valid(), std::invalid_argument, "Can't compare invalid date");
+		return
+			year_ < rhs.year_ ||
+			(year_ == rhs.year_ && month_ < rhs.month_) ||
+			(year_ == rhs.year_ && month_ == rhs.month_ && day_ < rhs.day_);
+	}
+
+	bool NaiveDate::operator<=(const NaiveDate & rhs)
+	{
+		FCET(valid() && rhs.valid(), std::invalid_argument, "Can't compare invalid date");
+		return
+			year_ < rhs.year_ ||
+			(year_ == rhs.year_ && month_ < rhs.month_) ||
+			(year_ == rhs.year_ && month_ == rhs.month_ && day_ <= rhs.day_);
+	}
+
+	bool NaiveDate::operator==(const NaiveDate & rhs)
+	{
+		FCET(valid() && rhs.valid(), std::invalid_argument, "Can't compare invalid date");
+		return year_ == rhs.year_ && month_ == rhs.month_ && day_ == rhs.day_;
+	}
+
+	bool NaiveDate::operator!=(const NaiveDate & rhs)
+	{
+		FCET(valid() && rhs.valid(), std::invalid_argument, "Can't compare invalid date");
+		return year_ != rhs.year_ || month_ != rhs.month_ || day_ != rhs.day_;
+	}
+
+	bool NaiveDate::operator>=(const NaiveDate & rhs)
+	{
+		FCET(valid() && rhs.valid(), std::invalid_argument, "Can't compare invalid date");
+		return
+			year_ > rhs.year_ ||
+			(year_ == rhs.year_ && month_ > rhs.month_) ||
+			(year_ == rhs.year_ && month_ == rhs.month_ && day_ >= rhs.day_);
+	}
+
+	bool NaiveDate::operator>(const NaiveDate & rhs)
+	{
+		FCET(valid() && rhs.valid(), std::invalid_argument, "Can't compare invalid date");
+		return
+			year_ > rhs.year_ ||
+			(year_ == rhs.year_ && month_ > rhs.month_) ||
+			(year_ == rhs.year_ && month_ == rhs.month_ && day_ > rhs.day_);
+	}
+
+	NaiveDate NaiveDate::today()
+	{
+		NaiveDate nd;
+
+		std::time_t now = std::time(nullptr);
+		std::tm *bdt = std::localtime(&now);
+		nd.year(bdt->tm_year + 1900);
+		nd.month(bdt->tm_mon + 1);
+		nd.day(bdt->tm_mday);
+		return nd;
+	}
+
 	bool NaiveDate::valid(const uint16_t year_i, const uint8_t month_i, const uint8_t day_i)
 	{
 		if (year_i < 1900 || month_i < 1 || month_i > 12 || !day_i) return false;

@@ -117,9 +117,21 @@ namespace Fs2a {
 		 * @throws std::invalid_argument If the given month is not valid. */
 		void month(const uint8_t month_i);
 
+		/** @{ Comparison operators */
+		bool operator<(const NaiveDate & rhs);
+		bool operator<=(const NaiveDate & rhs);
+		bool operator==(const NaiveDate & rhs);
+		bool operator!=(const NaiveDate & rhs);
+		bool operator>=(const NaiveDate & rhs);
+		bool operator>(const NaiveDate & rhs);
+		/** @} */
+
 		/** Reset internal date to unset.
 		 * After this method, the object has the same state as if it was just comstructed. */
 		inline void reset() { year_ = 0; month_ = 0; day_ = 0; }
+
+		/** Return the date of today as a NaiveDate */
+		static NaiveDate today();
 
 		/** Check whether the internally stored date is valid.
 		 * This method takes leap years into account. */
