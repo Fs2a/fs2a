@@ -65,8 +65,10 @@ namespace Fs2a {
 		/// Threads to run I/O context in
 		std::vector<std::thread> threads_;
 
-		/// Wrapped work object to keep io context running
-		std::unique_ptr<boost::asio::io_context::work> work_;
+		/// Work guard object to keep io context running
+		std::unique_ptr<
+			boost::asio::executor_work_guard<boost::asio::io_context::executor_type>
+		> work_;
 
 		public:
 		/** Run the I/O context in place, blocking the calling thread. */

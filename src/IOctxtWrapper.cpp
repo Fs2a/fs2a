@@ -68,7 +68,6 @@ namespace Fs2a {
 		if (!ioctxt_.stopped()) ioctxt_.stop();
 		for (auto & t : threads_) t.join();
 		threads_.clear();
-		ioctxt_.reset();
 		stopWhenIdle(oldSWI);
 	}
 
@@ -76,11 +75,18 @@ namespace Fs2a {
 	{
 		std::lock_guard<std::recursive_mutex> grd(mux_);
 		if (stopWhenIdle_i) {
-			if (work_) work_.reset();
+			if (work_) {
+				work_->reset();
+				work_.reset();
+			}
 		} else {
-			if (!work_) work_.reset(
-				new boost::asio::io_context::work(ioctxt_)
-			);
+			if (!work_) {
+				work_.reset(
+					new boost::asio::executor_work_guard<
+						boost::asio::io_context::executor_type
+					>(boost::asio::make_work_guard(ioctxt_))
+				);
+			}
 		}
 	}
 
