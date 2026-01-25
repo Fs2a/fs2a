@@ -27,6 +27,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
+#include <cstdlib>
 #include <regex>
 #include <stdexcept>
 #include <string>
@@ -52,10 +53,6 @@ namespace Fs2a {
 		hour_ = hour_i;
 	}
 
-		/** Get the internal minute.
-		 * @returns minute.
-		 * @throws std::logic_error if internal minute is not yet initialized. */
-
 	uint8_t NaiveTime::minute() const
 	{
 		FCET(min_ <= 59, std::logic_error, "Internal minute not initialized yet");
@@ -68,10 +65,18 @@ namespace Fs2a {
 		min_ = minute_i;
 	}
 
-		/** Set the internal time from a string.
-		 * Parseable time formats are HH:MM, HH:M, H:MM and H:M.
-		 * @returns the object.
-		 * @throws std::invalid_argument if given string can't be parsed. */
+	NaiveTime & NaiveTime::operator+=(const uint16_t min_i)
+	{
+		FCET(valid_(), std::logic_error, "Internal time not (fully) initialized");
+		if (min_i == 0) return *this;
+
+		std::div_t qr = std::div(hour_ * 60 + min_ + min_i, 60);
+		if (qr.quot > 23) throw std::overflow_error("Minutes addition would exceed midnight");
+		hour_ = qr.quot;
+		min_ = qr.rem;
+		return *this;
+	}
+
 	NaiveTime & NaiveTime::operator=(const std::string & time_i)
 	{
 		FCET(time_i.size() >= 3 && time_i.size() <= 5, std::invalid_argument,

@@ -73,6 +73,11 @@ namespace Fs2a {
 		 * @throws std::invalid_argument if @p minute_i is greater than 59. */
 		void minute(const uint8_t minute_i);
 
+		/** Add a number of minutes to the NaiveTime.
+		 * @param min_i Minutes to add.
+		 * @throws std::overflow_error when time would increase beyond midnight */
+		NaiveTime & operator+=(const uint16_t min_i);
+
 		/** Set the internal time from a string.
 		 * Parseable time formats are HH:MM, HH:M, H:MM and H:M.
 		 * @returns the object.
