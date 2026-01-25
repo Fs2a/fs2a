@@ -84,6 +84,10 @@ namespace Fs2a {
 		 * @throws std::invalid_argument if given string can't be parsed. */
 		NaiveTime & operator=(const std::string & time_i);
 
+		/** Compare two NaiveTime objects for equality.
+		 * If either of them does not have a valid time, they are considered different. */
+		bool operator==(const NaiveTime & rhs) const;
+
 		/** Reset the internal time to unset. */
 		inline void reset() { hour_ = 0xFF; min_ = 0xFF; }
 

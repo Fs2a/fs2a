@@ -2,6 +2,10 @@
 
 This project follows (Semantic Versioning v2.0.0)[https://semver.org/spec/v2.0.0.html].
 
+## v0.2.0
+
+- feature: Add comparison operators for `Fs2a::NaiveTime`
+
 ## v0.1.0
 
 - feature: Allow adding minutes to `Fs2a::NaiveTime`
