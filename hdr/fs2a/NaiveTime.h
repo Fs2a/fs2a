@@ -73,6 +73,12 @@ namespace Fs2a {
 		 * @throws std::invalid_argument if @p minute_i is greater than 59. */
 		void minute(const uint8_t minute_i);
 
+		/** Substract two NaiveTime objects and return their difference in minutes.
+		 * @returns Difference between times in minutes
+		 * @throws std::logic_error when this object is invalid.
+		 * @throws std::invalid_argument when @p rhs object is invalid. */
+		int16_t operator-(const NaiveTime & rhs) const;
+
 		/** Add a number of minutes to the NaiveTime.
 		 * @param min_i Minutes to add.
 		 * @throws std::overflow_error when time would increase beyond midnight */

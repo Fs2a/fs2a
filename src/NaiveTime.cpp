@@ -65,6 +65,14 @@ namespace Fs2a {
 		min_ = minute_i;
 	}
 
+	int16_t NaiveTime::operator-(const NaiveTime & rhs) const
+	{
+		if (!valid_()) throw std::logic_error("Lefthand-side object is not valid");
+		if (!rhs.valid_()) throw std::invalid_argument("Righthand-side object is not valid");
+
+		return (hour_ * 60 + min_) - (rhs.hour_ * 60 + rhs.min_);
+	}
+
 	NaiveTime & NaiveTime::operator+=(const uint16_t min_i)
 	{
 		FCET(valid_(), std::logic_error, "Internal time not (fully) initialized");

@@ -2,6 +2,10 @@
 
 This project follows (Semantic Versioning v2.0.0)[https://semver.org/spec/v2.0.0.html].
 
+## v1.1.0
+
+- feature: Implement substraction of two `Fs2a::NaiveTime` objects.
+
 ## v1.0.0
 
 - feature: Add comparison operators for `Fs2a::NaiveTime`
