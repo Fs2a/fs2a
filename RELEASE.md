@@ -2,9 +2,11 @@
 
 This project follows (Semantic Versioning v2.0.0)[https://semver.org/spec/v2.0.0.html].
 
-## v0.2.0
+## v1.0.0
 
 - feature: Add comparison operators for `Fs2a::NaiveTime`
+- breaking change: Now using justfile to build release or debug versions in different build
+  directories.
 
 ## v0.1.0
 

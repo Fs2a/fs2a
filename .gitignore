@@ -1,4 +1,6 @@
 .*.swp
+.cache
 bld/**
 !bld/.keep_as_build_directory
+compile_commands.json
 tags

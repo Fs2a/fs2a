@@ -1,5 +1,5 @@
 /** @author   Bren de Hartog <bren@fs2a.pro>
- * @copyright Copyright (c) 2025, Bren de Hartog. All rights reserved.
+ * @copyright Copyright (c) 2026, Bren de Hartog. All rights reserved.
  * @license   This project is licensed under 3-clause BSD license:
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,6 +77,20 @@ namespace Fs2a {
 		return *this;
 	}
 
+	bool NaiveTime::operator<(const NaiveTime & rhs) const
+	{
+		if (!valid_()) throw std::logic_error("Lefthand-side object is not valid");
+		if (!rhs.valid_()) throw std::invalid_argument("Righthand-side object is not valid");
+		return hour_ < rhs.hour_ || (hour_ == rhs.hour_ && min_ < rhs.min_);
+	}
+
+	bool NaiveTime::operator<=(const NaiveTime & rhs) const
+	{
+		if (!valid_()) throw std::logic_error("Lefthand-side object is not valid");
+		if (!rhs.valid_()) throw std::invalid_argument("Righthand-side object is not valid");
+		return hour_ < rhs.hour_ || (hour_ == rhs.hour_ && min_ <= rhs.min_);
+	}
+
 	NaiveTime & NaiveTime::operator=(const std::string & time_i)
 	{
 		FCET(time_i.size() >= 3 && time_i.size() <= 5, std::invalid_argument,
@@ -99,6 +113,27 @@ namespace Fs2a {
 		min_ = min;
 
 		return *this;
+	}
+
+	bool NaiveTime::operator>(const NaiveTime & rhs) const
+	{
+		if (!valid_()) throw std::logic_error("Lefthand-side object is not valid");
+		if (!rhs.valid_()) throw std::invalid_argument("Righthand-side object is not valid");
+		return hour_ > rhs.hour_ || (hour_ == rhs.hour_ && min_ > rhs.min_);
+	}
+
+	bool NaiveTime::operator>=(const NaiveTime & rhs) const
+	{
+		if (!valid_()) throw std::logic_error("Lefthand-side object is not valid");
+		if (!rhs.valid_()) throw std::invalid_argument("Righthand-side object is not valid");
+		return hour_ > rhs.hour_ || (hour_ == rhs.hour_ && min_ >= rhs.min_);
+	}
+
+	bool NaiveTime::operator==(const NaiveTime & rhs) const
+	{
+		if (!valid_()) throw std::logic_error("Lefthand-side object is not valid");
+		if (!rhs.valid_()) throw std::invalid_argument("Righthand-side object is not valid");
+		return hour_ == rhs.hour_ && min_ == rhs.min_;
 	}
 
 	NaiveTime::operator std::string() const

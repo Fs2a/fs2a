@@ -78,14 +78,45 @@ namespace Fs2a {
 		 * @throws std::overflow_error when time would increase beyond midnight */
 		NaiveTime & operator+=(const uint16_t min_i);
 
+		/** Check whether another NaiveTime object is later compared to this one.
+		 * @param rhs Other NaiveTime object to compare this one with.
+		 * @returns True if @p rhs object is later than this one.
+		 * @throws std::logic_error when this object is invalid.
+		 * @throws std::invalid_argument when @p rhs object is invalid. */
+		bool operator<(const NaiveTime & rhs) const;
+
+		/** Check whether another NaiveTime object is equal or later compared to this one.
+		 * @param rhs Other NaiveTime object to compare this one with.
+		 * @returns True if @p rhs object is later than this one.
+		 * @throws std::logic_error when this object is invalid.
+		 * @throws std::invalid_argument when @p rhs object is invalid. */
+		bool operator<=(const NaiveTime & rhs) const;
+
 		/** Set the internal time from a string.
 		 * Parseable time formats are HH:MM, HH:M, H:MM and H:M.
 		 * @returns the object.
 		 * @throws std::invalid_argument if given string can't be parsed. */
 		NaiveTime & operator=(const std::string & time_i);
 
+		/** Check whether another NaiveTime object is earlier compared to this one.
+		 * @param rhs Other NaiveTime object to compare this one with.
+		 * @returns True if @p rhs object is later than this one.
+		 * @throws std::logic_error when this object is invalid.
+		 * @throws std::invalid_argument when @p rhs object is invalid. */
+		bool operator>(const NaiveTime & rhs) const;
+
+		/** Check whether another NaiveTime object is earlier or equal compared to this one.
+		 * @param rhs Other NaiveTime object to compare this one with.
+		 * @returns True if @p rhs object is later than this one.
+		 * @throws std::logic_error when this object is invalid.
+		 * @throws std::invalid_argument when @p rhs object is invalid. */
+		bool operator>=(const NaiveTime & rhs) const;
+
 		/** Compare two NaiveTime objects for equality.
-		 * If either of them does not have a valid time, they are considered different. */
+		 * @param rhs Other NaiveTime object to compare this one with.
+		 * @returns True if hour and minute values are equal, false if not.
+		 * @throws std::logic_error when this object is invalid.
+		 * @throws std::invalid_argument when @p rhs object is invalid. */
 		bool operator==(const NaiveTime & rhs) const;
 
 		/** Reset the internal time to unset. */
