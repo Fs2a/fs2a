@@ -2,6 +2,9 @@
 
 This project follows (Semantic Versioning v2.0.0)[https://semver.org/spec/v2.0.0.html].
 
+## v2.0.1
+- fix: Incorrect tagging and merging order.
+
 ## v2.0.0
 - breaking change: Renamed all header files from .h to .hpp. Easily convert all source files with:
   `sed -r -i -e 's/^#include <fs2a\/([a-zA-Z0-9-]+).h>/#include <fs2a\/\1.hpp>/g' *`
