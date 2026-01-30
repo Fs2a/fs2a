@@ -29,9 +29,9 @@ POSSIBILITY OF SUCH DAMAGE. */
 #include <errno.h>
 #include <unistd.h>
 #include <boost/program_options.hpp>
-#include <fs2a/Application.h>
-#include <fs2a/IOctxtWrapper.h>
-#include <fs2a/Logger.h>
+#include <fs2a/Application.hpp>
+#include <fs2a/IOctxtWrapper.hpp>
+#include <fs2a/Logger.hpp>
 
 #define STR(s) XSTR(s)
 #define XSTR(s) #s

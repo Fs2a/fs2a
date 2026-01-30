@@ -30,9 +30,9 @@
 
 #include <stdexcept>
 #include <utf8.h>
-#include <fs2a/CsvWriter.h>
-#include <fs2a/commondefs.h>
-#include <fs2a/Logger.h>
+#include <fs2a/CsvWriter.hpp>
+#include <fs2a/commondefs.hpp>
+#include <fs2a/Logger.hpp>
 
 namespace Fs2a {
 

@@ -24,7 +24,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE. */
 
 #include <iostream>
-#include <fs2a/roman.h>
+#include <fs2a/roman.hpp>
 
 using namespace std;
 

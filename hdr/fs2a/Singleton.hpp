@@ -32,7 +32,7 @@
 
 #include <stdlib.h>
 #include <memory>
-#include "commondefs.h"
+#include <fs2a/commondefs.hpp>
 
 namespace Fs2a {
 

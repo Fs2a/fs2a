@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "Logger.h"
+#include <fs2a/Logger.hpp>
 
 namespace Fs2a
 {

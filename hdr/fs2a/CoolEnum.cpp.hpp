@@ -1,6 +1,6 @@
 /** @author   Bren de Hartog <bren@fs2a.pro>
- * @copyright Copyright (c) 2025, Bren de Hartog. All rights reserved.
- * @license   This project is licensed under 3-clause BSD license:
+ * @copyright Copyright (c) 2026, Bren de Hartog. All rights reserved.
+ * @license   This project is licensed under the 3-clause BSD license:
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:

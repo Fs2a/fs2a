@@ -41,8 +41,8 @@
 #include <syslog.h>
 #include <thread>
 #include <fmt/format.h>
-#include "commondefs.h"
-#include "Singleton.h"
+#include <fs2a/commondefs.hpp>
+#include <fs2a/Singleton.hpp>
 
 /** @{ Easy logging macros that use libFmt formatting. */
 #ifndef NDEBUG

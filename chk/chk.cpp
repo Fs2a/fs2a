@@ -29,8 +29,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 #include <cstring>
-#include <fs2a/Logger.h>
-#include <fs2a/runchecks.h>
+#include <fs2a/Logger.hpp>
+#include <fs2a/runchecks.hpp>
 
 int main(int argc, char *argv[])
 {

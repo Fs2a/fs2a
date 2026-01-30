@@ -39,7 +39,7 @@
 #include <fmt/format.h>
 #include <fmt/printf.h>
 #include <sys/time.h>
-#include <fs2a/Logger.h>
+#include <fs2a/Logger.hpp>
 
 namespace Fs2a
 {

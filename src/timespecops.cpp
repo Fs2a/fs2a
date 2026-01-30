@@ -26,7 +26,7 @@ POSSIBILITY OF SUCH DAMAGE. */
 #include <iostream>
 #include <iomanip>
 #include <string.h>
-#include <fs2a/timespecops.h>
+#include <fs2a/timespecops.hpp>
 
 namespace std {
 

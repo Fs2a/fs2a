@@ -1,7 +1,6 @@
-/* BSD 3-Clause License
- *
- * Copyright (c) 2025, Fs2a, Bren de Hartog <bren@fs2a.pro>
- * All rights reserved.
+/** @author   Bren de Hartog <bren@fs2a.pro>
+ * @copyright Copyright (c) 2026, Bren de Hartog. All rights reserved.
+ * @license   This project is licensed under the 3-clause BSD license:
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -26,14 +25,25 @@
  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * vim:set ts=4 sw=4 noet: */
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#include "WebApp.h"
+#include <cstdint>
+#include <unordered_map>
+#include <string>
 
-namespace Fs2a {
+#ifdef COOLENUM
+#undef COOLENUM_BEGIN
+#undef COOLENUM
+#undef COOLENUM_END
+#endif
 
-
-
-} // Fs2a namespace
+#define COOLENUM_BEGIN(NAME, KEYTYPE) \
+	enum NAME : KEYTYPE; \
+	extern std::unordered_map<KEYTYPE, std::string> NAME ## _k2s; \
+	extern std::unordered_map<std::string, KEYTYPE> NAME ## _s2k; \
+	const std::string & NAME ## _ (const KEYTYPE p_key); \
+	NAME NAME ## _ (const std::string & p_str); \
+	void NAME ## _fillenummaps(); \
+	enum NAME : KEYTYPE {
+#define COOLENUM(VALUE, INDEX) VALUE = INDEX,
+#define COOLENUM_END() };

@@ -30,7 +30,7 @@
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <fs2a/Table.h>
+#include <fs2a/Table.hpp>
 
 #define CHECKNAME tableCheck
 

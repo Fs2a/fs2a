@@ -31,9 +31,9 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-#include <fs2a/CoolEnum.h.h>
+#include <fs2a/CoolEnum.hpp.hpp>
 #include "coolenum.def"
-#include <fs2a/CoolEnum.cpp.h>
+#include <fs2a/CoolEnum.cpp.hpp>
 #include "coolenum.def"
 
 #define CHECKNAME CoolEnumCheck

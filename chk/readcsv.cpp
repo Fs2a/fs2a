@@ -32,7 +32,7 @@
 #include <string>
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <fs2a/readCSV.h>
+#include <fs2a/readCSV.hpp>
 
 #define CHECKNAME readcsvCheck
 

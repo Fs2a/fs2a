@@ -31,7 +31,7 @@
 #include <string>
 #include <unordered_map>
 #include <time.h>
-#include <fs2a/functions.h>
+#include <fs2a/functions.hpp>
 
 namespace Fs2a {
 

@@ -1,7 +1,6 @@
-/* BSD 3-Clause License
- *
- * Copyright (c) 2025, Fs2a, Bren de Hartog <bren@fs2a.pro>
- * All rights reserved.
+/** @author   Bren de Hartog <bren@fs2a.pro>
+ * @copyright Copyright (c) 2026, Bren de Hartog. All rights reserved.
+ * @license   This project is licensed under the 3-clause BSD license:
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -30,45 +29,5 @@
 
 #pragma once
 
-#include <string>
-#include <unordered_map>
-#include "Table.h"
-
-namespace Fs2a {
-
-	class HeaderedTable : public Table<std::string>
-	{
-		protected:
-		/// Map of strings to column indices to mimic associative columns.
-		std::unordered_map<std::string, uint16_t> hdrs_;
-
-		/** Make header names unique by adding digits when duplicates are
-		 * found. */
-		void makeHeadersUnique_();
-
-		/** Read the column headers for associative column addressing. */
-		void readHeaders_();
-
-		public:
-		/// Constructor
-		HeaderedTable() = default;
-
-		/// Copy constructor from superclass
-		HeaderedTable(const Table<std::string> & obj_i)
-		: Table(obj_i)
-		{}
-
-		/// Destructor
-		virtual ~HeaderedTable() = default;
-
-		/// Explicitly inherit the Table::cell() method, otherwise it is hidden.
-		using Table<std::string>::cell;
-
-		/** Reference a cell by row number and column name.
-		 * @param colname_i Column name to reference.
-		 * @param row_i Row number to reference, header is row 0. */
-		virtual std::string & cell(const std::string & colname_i, const uint32_t row_i);
-
-	};
-
-} // Fs2a namespace
+#include <fs2a/CoolEnum.hpp.hpp>
+#include "someenum.def"

@@ -26,7 +26,7 @@ POSSIBILITY OF SUCH DAMAGE. */
 #include <memory>
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <fs2a/Singleton.h>
+#include <fs2a/Singleton.hpp>
 
 #define CHECKNAME SingletonCheck
 

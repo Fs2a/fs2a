@@ -32,8 +32,8 @@
 #include <stdexcept>
 #include <string>
 #include <fmt/format.h>
-#include <fs2a/Logger.h>
-#include <fs2a/NaiveTime.h>
+#include <fs2a/Logger.hpp>
+#include <fs2a/NaiveTime.hpp>
 
 namespace Fs2a {
 

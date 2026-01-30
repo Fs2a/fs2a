@@ -26,7 +26,7 @@ POSSIBILITY OF SUCH DAMAGE. */
 #include <stdexcept>
 #include <string.h>
 #include <unistd.h>
-#include <fs2a/run.h>
+#include <fs2a/run.hpp>
 
 namespace Fs2a {
 

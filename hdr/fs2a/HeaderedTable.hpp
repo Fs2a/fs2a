@@ -1,6 +1,7 @@
-/** @author   Bren de Hartog <bren@fs2a.pro>
- * @copyright Copyright (c) 2025, Bren de Hartog. All rights reserved.
- * @license   This project is licensed under 3-clause BSD license:
+/* BSD 3-Clause License
+ *
+ * Copyright (c) 2025, Fs2a, Bren de Hartog <bren@fs2a.pro>
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,23 +28,47 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-#include <cstdint>
-#include <unordered_map>
+#pragma once
+
 #include <string>
+#include <unordered_map>
+#include <fs2a/Table.hpp>
 
-#ifdef COOLENUM
-#undef COOLENUM_BEGIN
-#undef COOLENUM
-#undef COOLENUM_END
-#endif
+namespace Fs2a {
 
-#define COOLENUM_BEGIN(NAME, KEYTYPE) \
-	enum NAME : KEYTYPE; \
-	extern std::unordered_map<KEYTYPE, std::string> NAME ## _k2s; \
-	extern std::unordered_map<std::string, KEYTYPE> NAME ## _s2k; \
-	const std::string & NAME ## _ (const KEYTYPE p_key); \
-	NAME NAME ## _ (const std::string & p_str); \
-	void NAME ## _fillenummaps(); \
-	enum NAME : KEYTYPE {
-#define COOLENUM(VALUE, INDEX) VALUE = INDEX,
-#define COOLENUM_END() };
+	class HeaderedTable : public Table<std::string>
+	{
+		protected:
+		/// Map of strings to column indices to mimic associative columns.
+		std::unordered_map<std::string, uint16_t> hdrs_;
+
+		/** Make header names unique by adding digits when duplicates are
+		 * found. */
+		void makeHeadersUnique_();
+
+		/** Read the column headers for associative column addressing. */
+		void readHeaders_();
+
+		public:
+		/// Constructor
+		HeaderedTable() = default;
+
+		/// Copy constructor from superclass
+		HeaderedTable(const Table<std::string> & obj_i)
+		: Table(obj_i)
+		{}
+
+		/// Destructor
+		virtual ~HeaderedTable() = default;
+
+		/// Explicitly inherit the Table::cell() method, otherwise it is hidden.
+		using Table<std::string>::cell;
+
+		/** Reference a cell by row number and column name.
+		 * @param colname_i Column name to reference.
+		 * @param row_i Row number to reference, header is row 0. */
+		virtual std::string & cell(const std::string & colname_i, const uint32_t row_i);
+
+	};
+
+} // Fs2a namespace

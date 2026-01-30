@@ -32,7 +32,7 @@
 
 #include <mutex>
 #include <list>
-#include "Observer.h"
+#include <fs2a/Observer.hpp>
 
 namespace Fs2a {
 	/** Keep track of observers that are observing us and notify them when

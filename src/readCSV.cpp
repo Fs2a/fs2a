@@ -31,7 +31,7 @@
 #include <cstdint>
 #include <iostream>
 #include <string>
-#include <fs2a/readCSV.h>
+#include <fs2a/readCSV.hpp>
 
 #define ERR "Error at line "s + std::to_string(line) + ", character "s + std::to_string(pos) + ": "s
 

@@ -32,8 +32,8 @@
 #include <sstream>
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <fs2a/Observer.h>
-#include <fs2a/Observable.h>
+#include <fs2a/Observer.hpp>
+#include <fs2a/Observable.hpp>
 
 #define CHECKNAME ObservingCheck
 

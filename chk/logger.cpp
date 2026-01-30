@@ -25,7 +25,7 @@ POSSIBILITY OF SUCH DAMAGE. */
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <fs2a/Logger.h>
+#include <fs2a/Logger.hpp>
 
 #define CHECKNAME LoggerCheck
 

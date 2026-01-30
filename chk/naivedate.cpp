@@ -29,7 +29,7 @@
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include <fs2a/NaiveDate.h>
+#include <fs2a/NaiveDate.hpp>
 
 #define CHECKNAME NaiveDateCheck
 

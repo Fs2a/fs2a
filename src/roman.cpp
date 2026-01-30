@@ -32,7 +32,7 @@
 #include <iostream>
 #include <map>
 #include <string>
-#include <fs2a/roman.h>
+#include <fs2a/roman.hpp>
 
 namespace Fs2a {
 
