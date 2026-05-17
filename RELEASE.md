@@ -2,6 +2,10 @@
 
 This project follows (Semantic Versioning v2.0.0)[https://semver.org/spec/v2.0.0.html].
 
+## v2.1.0
+- feature: Add `Fs2a::Child` class to execute processes with configurable environment and
+  optional stdout/stderr capturing.
+
 ## v2.0.1
 - fix: Incorrect tagging and merging order.
 

@@ -29,6 +29,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 add_library (fs2a SHARED
+	Child.cpp
 	CsvWriter.cpp
 	functions.cpp
 	HeaderedTable.cpp
