@@ -192,7 +192,6 @@ namespace Fs2a {
 
 			envvar = line.substr(7, pos - 7);
 			val = line.substr(pos + 2, line.size() - pos - 3);
-			FD("Found environment setting {:s}={:s}", envvar, val);
 			if (env_.contains(envvar)) continue;
 			env_[envvar] = val;
 		}
