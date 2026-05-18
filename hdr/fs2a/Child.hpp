@@ -93,11 +93,11 @@ namespace Fs2a {
 		 * @param arguments optional arguments for the executable, excluding the zeroth argument. */
 		void command(const fs::path & executable, const std::vector<std::string> & arguments = {});
 
-		/** Actually fork the child, passing it the given arguments and environment and capturing
+		/** Actually run the child, passing it the given arguments and environment and capturing
 		 * output if so desired. This method can be called multiple consecutive times to execute the
 		 * same command more than once.
 		 * @returns exit status of child */
-		uint8_t fork();
+		uint8_t run();
 	};
 
 } // Fs2a namespace

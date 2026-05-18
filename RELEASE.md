@@ -2,6 +2,9 @@
 
 This project follows (Semantic Versioning v2.0.0)[https://semver.org/spec/v2.0.0.html].
 
+## v2.1.1
+- fix: Prevent fork looping in `Fs2a::Child` and added unitcheck.
+
 ## v2.1.0
 - feature: Add `Fs2a::Child` class to execute processes with configurable environment and
   optional stdout/stderr capturing.

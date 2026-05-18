@@ -68,7 +68,7 @@ namespace Fs2a {
 		args_ = arguments;
 	}
 
-	uint8_t Child::fork()
+	uint8_t Child::run()
 	{
 		FCET(!cmd_.empty(), std::logic_error, "No executable command set yet");
 

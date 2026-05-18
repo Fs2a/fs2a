@@ -30,6 +30,7 @@
 find_package (CppUnit REQUIRED)
 
 add_executable (fs2achk
+	child.cpp
 	chk.cpp
 	coolenum.cpp
 	functions.cpp
