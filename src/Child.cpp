@@ -110,6 +110,7 @@ namespace Fs2a {
 				FCEA(args[pos] != nullptr, throw std::bad_alloc(),
 					"Failed allocating memory for argument {:d}: {:s}", pos, arg);
 				std::strcpy(args[pos], arg.c_str());
+				pos++;
 			}
 
 			char **env = new char *[env_.size() + 1];

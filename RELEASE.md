@@ -2,6 +2,9 @@
 
 This project follows (Semantic Versioning v2.0.0)[https://semver.org/spec/v2.0.0.html].
 
+## v2.1.2
+- fix: Argument passing to execve() failed with more than one argument, correctly increment pos.
+
 ## v2.1.1
 - fix: Prevent fork looping in `Fs2a::Child` and added unitcheck.
 
