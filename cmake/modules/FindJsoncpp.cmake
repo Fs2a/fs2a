@@ -16,7 +16,7 @@
 
 # only look in default directories
 find_path(
-	JSONCPP_INCLUDE_DIR 
+	JSONCPP_INCLUDE_DIR
 	NAMES jsoncpp/json/json.h json/json.h
 	DOC "jsoncpp include dir"
 )
@@ -39,7 +39,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 		NAMES jsoncppd
 		DOC "jsoncpp debug library"
 	)
-	
+
 	set(JSONCPP_LIBRARIES optimized ${JSONCPP_LIBRARIES} debug ${JSONCPP_LIBRARY_DEBUG})
 
 endif()
